@@ -1,0 +1,42 @@
+body, textarea, td, th, input:date		{ font-family: "Sans-serif"; }
+table 						{ border-collapse:collapse; }
+td, th						{ border:solid 1px silver; 
+						  vertical-align:top; 
+						  text-align: left; }
+th 						{ font-weight: bold; }
+input, textarea, select				{ background: transparent; width:200px; }
+input[ng-model^='trip'], 
+textarea[ng-model^='trip'],
+input[ng-model^='email'], 
+textarea[ng-model^='email']			{ width:500px; }
+input[ng-model^='participant'], 
+textarea[ng-model^='participant']		{ width:200px; }
+input[type=checkbox]				{ width:30px; }
+input[ng-model='participant.vehiclerego']	{ width:60px; }
+input[disabled=disabled], 
+textarea[disabled=disabled]			{ border: none;  color: black;}
+.imageCell 					{ height: 20px; }
+.imageGap 					{ height: 5px; }
+.updated 					{ background: yellow; }
+.inserted 					{ background: greenyellow; }
+.highlight1					{ background: pink; }
+.highlight2 					{ background: cyan; }
+.highlight3					{ background: lime; }
+.highlight4					{ background: orange; }
+.highlight5					{ background: silver; }
+.isRemoved					{ background-image: url("removed.png"); background-repeat: repeat-x; background-position: center center }
+div[ng-show*='$error'], .error			{ font-weight: bold; color: red;}
+.oddrow						{ background: #F0F0FF; }
+button.open					{ width: 20px; height: 20px; background: url("open.png"); border: none; }
+button.closed					{ width: 20px; height: 20px; background: url("closed.png"); border: none; }
+@media screen and (min-width: 992px) { 
+	.mobile-only				{ display:none !important; }
+}
+@media screen and (max-width: 991px) { 
+	.desktop-only				{ display:none !important; } 
+}
+
+@media print { 
+	button, .mobileonly, .noprint		{ display:none; }
+	input, textarea				{ border:none; }
+}
