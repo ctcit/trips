@@ -1,0 +1,50 @@
+﻿<!doctype html>
+<!-- The Trips app.
+-->
+<html lang="en" ng-app="tripApp">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Show Trip</title>
+
+    <!-- Third-party scripts/styles -->
+    <script src="third-party/angular.js"></script>
+    <script src="third-party/angular-route.js"></script>
+    <script src="third-party/angular-ui-router.js"></script>
+    <script src="third-party/angular-resource.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.6/angular-animate.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+
+
+    <!-- Our app scripts/styles -->
+    <script src="app/app.js"></script>
+    <script src="app/globals.js"></script>
+
+    <script src="app/config/states.js"></script>
+    <script src="app/config/site.js"></script>
+
+    <script src="app/model/State.js"></script>
+    <script src="app/model/Trip.js"></script>
+    <script src="app/model/Participant.js"></script>
+    <script src="app/model/Change.js"></script>
+    <script src="app/model/Group.js"></script>
+    <script src="app/model/TripSummary.js"></script>
+
+    <script src="app/common/current-user-service.js"></script>
+    <script src="app/common/trips-service.js"></script>
+
+    <script src="app/show-trip/show-trip-controller.js"></script>
+    <script src="app/show-all-trips/show-all-trips-controller.js"></script>
+
+    <link rel="stylesheet" href="app/styles/trips.css">
+
+</head>
+
+<body role="document">
+    <div ui-view="app-content"></div>
+</body>
+</html>
