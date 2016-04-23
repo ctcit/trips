@@ -1,99 +1,99 @@
-<form name="tripForm" novalidate>
+<form name="tripForm" ng-controller="showTripController as controller" novalidate>
     <div class="container">
         <div class="noprint">
             <div>
-	            <button ui-sref="trip.showAllTrips">
-	                <img src="app/assets/ctc.png" />All Trips
-	            </button>
-	            <button ng-disabled="!state.SaveEnabled()" ng-click="state.Save(false)">
-	                <img src="app/assets/save.png" />Save
-	            </button>
-	            <button ng-disabled="state.Undo.length == 0" ng-click="state.UndoAction('Undo','Redo')" ng-attr-title="{{state.UndoTitle('Undo')}}">
-	                <img src="app/assets/undo.png" />Undo
-	            </button>
-	            <button ng-disabled="state.Redo.length == 0" ng-click="state.UndoAction('Redo','Undo')" ng-attr-title="{{state.UndoTitle('Redo')}}">
-	                <img src="app/assets/redo.png" />Redo
-	            </button>
-	            <img ng-show="state.savestate == 'Saving'" src="app/assets/waiting.gif" />
-	            <span ng-bind="state.savestate"></span>
-	            <span ng-bind="state.DiffString()"></span>
-	    </div>
-            <div class="error" style="white-space: nowrap" ng-repeat="warning in state.warnings" ng-bind="warning">
+                <button ui-sref="controller.showAllTrips">
+                    <img src="app/assets/ctc.png" />All Trips
+                </button>
+                <button ng-disabled="!controller.saveEnabled()" ng-click="controller.save(false)">
+                    <img src="app/assets/save.png" />Save
+                </button>
+                <button ng-disabled="controller.Undo.length == 0" ng-click="controller.undoAction('Undo','Redo')" ng-attr-title="{{controller.undoTitle('Undo')}}">
+                    <img src="app/assets/undo.png" />Undo
+                </button>
+                <button ng-disabled="controller.Redo.length == 0" ng-click="controller.undoAction('Redo','Undo')" ng-attr-title="{{controller.undoTitle('Redo')}}">
+                    <img src="app/assets/redo.png" />Redo
+                </button>
+                <img ng-show="controller.savestate == 'Saving'" src="app/assets/waiting.gif" />
+                <span ng-bind="controller.savestate"></span>
+                <span ng-bind="controller.diffString()"></span>
+            </div>
+            <div class="error" style="white-space: nowrap" ng-repeat="warning in controller.warnings" ng-bind="warning">
             </div>
         </div>
 
-        <h4 ng-click="state.showdetail = !state.showdetail">
-            <button ng-class="state.showdetail ? 'open' : 'closed'"></button>
-            {{trip.title}}
+        <h4 ng-click="controller.showdetail = !controller.showdetail">
+            <button ng-class="controller.showdetail ? 'open' : 'closed'"></button>
+            {{controller.trip.title}}
         </h4>
-        <div class="slide" ng-show="state.showdetail">
+        <div class="slide" ng-show="controller.showdetail">
             <table class="table table-condensed">
                 <tr>
                     <th><label for="title">Title</label></th>
                     <td>
-                        <input type="text" ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.title"
-                                ng-class="trip.Class('title')" id="title" />
+                        <input type="text" ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.title"
+                               ng-class="controller.tripClass('title')" id="title" />
                     </td>
                 </tr>
                 <tr>
                     <th><label for="date">Date</label></th>
                     <td>
-                        <input type="date" ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.date"
-                                ng-class="trip.Class('date')" id="date" />
+                        <input type="date" ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.date"
+                               ng-class="controller.tripClass('date')" id="date" />
                     </td>
                 </tr>
                 <tr>
                     <th><label for="length">Length</label></th>
                     <td>
-                        <input type="text" ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.length"
-                                ng-class="trip.Class('length')" id="length" />
+                        <input type="text" ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.length"
+                               ng-class="controller.tripClass('length')" id="length" />
                     </td>
                 </tr>
                 <tr>
                     <th><label for="closeDate">Close Date</label></th>
                     <td>
-                        <input type="date" ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.closeDate"
-                                ng-class="trip.Class('closeDate')" id="closeDate" />
+                        <input type="date" ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.closeDate"
+                               ng-class="controller.tripClass('closeDate')" id="closeDate" />
                     </td>
                 </tr>
                 <tr>
                     <th><label for="departurePoint">Departure Point</label></th>
                     <td>
-                        <input type="text" ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.departurePoint"
-                                ng-class="trip.Class('departurePoint')" id="departurePoint" />
+                        <input type="text" ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.departurePoint"
+                               ng-class="controller.tripClass('departurePoint')" id="departurePoint" />
                     </td>
                 </tr>
                 <tr>
                     <th><label for="cost">Cost</label></th>
                     <td>
-                        <input type="text" ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.cost"
-                                ng-class="trip.Class('cost')" id="cost" />
+                        <input type="text" ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.cost"
+                               ng-class="controller.tripClass('cost')" id="cost" />
                     </td>
                 </tr>
                 <tr>
                     <th><label for="grade">Grade</label></th>
                     <td>
-                        <input type="text" ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.grade"
-                                ng-class="trip.Class('grade')" id="grade" />
+                        <input type="text" ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.grade"
+                               ng-class="controller.tripClass('grade')" id="grade" />
                     </td>
                 </tr>
                 <tr>
                     <th><label for="status">Status</label></th>
                     <td>
-                        <textarea ng-disabled="!state.tripeditable" ng-change="state.Update()" ng-model="trip.status"
-                                    ng-class="trip.Class('status')" id="status"
-                                    ng-attr-rows="{{trip.status.split('\n').length}}" ng-focus="state.TextareaFocus('status')"></textarea>
+                        <textarea ng-disabled="!controller.tripeditable" ng-change="controller.update()" ng-model="controller.trip.status"
+                                  ng-class="controller.tripClass('status')" id="status"
+                                  ng-attr-rows="{{controller.trip.status.split('\n').length}}" ng-focus="controller.textAreaFocus('status')"></textarea>
                     </td>
                 </tr>
             </table>
         </div>
 
-        <h4 ng-click="state.showparticipants = !state.showparticipants" ng-class="state.showparticipants ? '' : 'noprint'">
-            <button ng-class="state.showparticipants ? 'open' : 'closed'"></button>
+        <h4 ng-click="controller.showparticipants = !controller.showparticipants" ng-class="controller.showparticipants ? '' : 'noprint'">
+            <button ng-class="controller.showparticipants ? 'open' : 'closed'"></button>
             Participants
         </h4>
-        <div class="slide" ng-show="state.showparticipants">
-            <button ng-click="trip.SignMeUp();" ng-show="!trip.ImSignedUp() && trip.isOpen">Sign Me Up</button>
+        <div class="slide" ng-show="controller.showparticipants">
+            <button ng-click="controller.signMeUp();" ng-show="!controller.ImSignedUp() && controller.trip.isOpen">Sign Me Up</button>
             <table class="table table-condensed">
                 <tr>
                     <th></th>
@@ -106,67 +106,67 @@
                     <th class="desktop-only">Car<br />rego</th>
                     <th>Status</th>
                 </tr>
-                <tbody ng-repeat="participant in trip.participants | limitTo: state.visibleparticipants">
+                <tbody ng-repeat="participant in controller.participants | limitTo: controller.maxParticipants">
                     <tr>
-                        <th ng-class="participant.Class('memberid')" ng-click="participant.showdetail = !participant.showdetail">
+                        <th ng-class="controller.participantClass(participant,'memberid')" ng-click="participant.showdetail = !participant.showdetail">
                             <button ng-class="participant.showdetail ? 'open' : 'closed'" class="mobile-only"></button>
                             {{participant.line + 1}}
                         </th>
-                        <td ng-class="participant.Class('isRemoved')" class="desktop-only">
-                            <input ng-disabled="!participant.Enabled()" type="checkbox" ng-change="state.Update()" ng-model="participant.isRemoved" />
+                        <td ng-class="controller.participantClass(participant,'isRemoved')" class="desktop-only">
+                            <input ng-disabled="!controller.participantEnabled(participant)" type="checkbox" ng-change="controller.update()" ng-model="participant.isRemoved" />
                         </td>
-                        <td ng-class="participant.Class('name')">
+                        <td ng-class="controller.participantClass(participant,'name')">
                             <select ng-show="participant.nameui == '(Members)'"
-                                    ng-change="participant.UpdateName()" ng-model="participant.name">
-                                    <option></option>
-                                    <option ng-repeat="member in trip.members">{{member}}</option>
+                                    ng-change="controller.participantUpdateName(participant)" ng-model="participant.name">
+                                <option></option>
+                                <option ng-repeat="member in controller.members">{{member}}</option>
                             </select>
                             <select ng-show="participant.nameui == '(Full)'"
-                                    ng-change="participant.UpdateName()" ng-model="participant.name">
-                                    <option></option>
-                                    <optgroup label="Non Members">
-                                        <option ng-repeat="nonmember in nonmembers">{{nonmember.name}}</option>
-                                        <option>(Someone else)</option>
-                                    </optgroup>
-                                    <optgroup label="Members">
-                                        <option ng-repeat="member in members">{{member.name}}</option>
-                                    </optgroup>
+                                    ng-change="controller.participantUpdateName(participant)" ng-model="participant.name">
+                                <option></option>
+                                <optgroup label="Non Members">
+                                    <option ng-repeat="nonmember in nonmembers">{{nonmember.name}}</option>
+                                    <option>(Someone else)</option>
+                                </optgroup>
+                                <optgroup label="Members">
+                                    <option ng-repeat="member in members">{{member.name}}</option>
+                                </optgroup>
                             </select>
                             <input ng-show="participant.nameui == '(Readonly)'"
-                                    ng-disabled="true"
-                                    type="text" ng-model="participant.name" />
+                                   ng-disabled="true"
+                                   type="text" ng-model="participant.name" />
                             <input ng-show="participant.nameui == '(Someone else)'"
-                                    type="text" ng-model="participant.name"
-                                    ng-change="participant.UpdateName()" />
+                                   type="text" ng-model="participant.name"
+                                   ng-change="controller.participantUpdateName(participant)" />
                             <button ng-show="participant.nameui == '(Someone else)'"
                                     type='input'
-                                    ng-click="participant.CancelSomeoneElse()"
+                                    ng-click="controller.participantCancelSomeoneElse(participant)"
                                     title="Select a member">
                                 X
                             </button>
                         </td>
-                        <td ng-class="participant.Class('isLeader')" class="desktop-only">
-                            <input ng-disabled="!state.tripeditable" type="checkbox" ng-change="state.Update()" ng-model="participant.isLeader" />
+                        <td ng-class="controller.participantClass(participant,'isLeader')" class="desktop-only">
+                            <input ng-disabled="!controller.tripeditable" type="checkbox" ng-change="controller.update()" ng-model="participant.isLeader" />
                         </td>
-                        <td ng-class="participant.Class('email')" class="desktop-only">
-                            <input ng-disabled="!participant.Enabled()" type="email" ng-change="state.Update()" ng-model="participant.email" name="{{'email'+$index}}" />
+                        <td ng-class="controller.participantClass(participant,'email')" class="desktop-only">
+                            <input ng-disabled="!controller.participantEnabled(participant)" type="email" ng-change="controller.update()" ng-model="participant.email" name="{{'email'+$index}}" />
                             <div ng-show="tripForm['email' + $index].$error.email">Invalid Email</div>
                         </td>
-                        <td ng-class="participant.Class('phone')" class="desktop-only">
-                            <input ng-disabled="!participant.Enabled()" type="text" ng-change="state.Update()" ng-model="participant.phone" />
+                        <td ng-class="controller.participantClass(participant,'phone')" class="desktop-only">
+                            <input ng-disabled="!controller.participantEnabled(participant)" type="text" ng-change="controller.update()" ng-model="participant.phone" />
                         </td>
-                        <td ng-class="participant.Class('isVehicleProvider')" class="desktop-only">
-                            <input ng-disabled="!participant.Enabled()" type="checkbox" ng-change="state.Update()" ng-model="participant.isVehicleProvider" />
+                        <td ng-class="controller.participantClass(participant,'isVehicleProvider')" class="desktop-only">
+                            <input ng-disabled="!controller.participantEnabled(participant)" type="checkbox" ng-change="controller.update()" ng-model="participant.isVehicleProvider" />
                         </td>
-                        <td ng-class="participant.Class('vehicleRego')" class="desktop-only">
-                            <input ng-disabled="!participant.Enabled()" type="text" ng-change="state.Update()" ng-model="participant.vehicleRego"
-                                    ng-show="participant.isVehicleProvider" />
+                        <td ng-class="controller.participantClass(participant,'vehicleRego')" class="desktop-only">
+                            <input ng-disabled="!controller.participantEnabled(participant)" type="text" ng-change="controller.update()" ng-model="participant.vehicleRego"
+                                   ng-show="participant.isVehicleProvider" />
                         </td>
-                        <td ng-class="participant.Class('status')" class="desktop-only">
-                            <textarea ng-disabled="!participant.Enabled()" type="text" ng-change="state.Update()" ng-model="participant.status" id="{{'status'+$index}}"
-                                        ng-attr-rows="{{participant.status.split('\n').length}}" ng-focus="state.TextareaFocus('status'+$index)"></textarea>
+                        <td ng-class="controller.participantClass(participant,'status')" class="desktop-only">
+                            <textarea ng-disabled="!controller.participantEnabled(participant)" type="text" ng-change="controller.update()" ng-model="participant.status" id="{{'status'+$index}}"
+                                      ng-attr-rows="{{participant.status.split('\n').length}}" ng-focus="controller.textAreaFocus('status'+$index)"></textarea>
                         </td>
-                        <td ng-class="participant.Class('memberid')" class="mobile-only">
+                        <td ng-class="controller.participantClass(participant,'memberid')" class="mobile-only">
                             <img ng-show="participant.isLeader" src="app/assets/leader.png" />
                             <span ng-show="participant.isVehicleProvider"><img src="app/assets/car.png" />{{participant.vehicleRego}}</span>
                             <b ng-show="participant.status != ''">+</b>{{participant.status}}
@@ -178,51 +178,51 @@
                                 <table>
                                     <tr>
                                         <th><label for="isRemoved{{$index}}">Removed</label></th>
-                                        <td ng-class="participant.Class('isRemoved')">
-                                            <input ng-disabled="!participant.Enabled()" type="checkbox" ng-change="state.Update()" ng-model="participant.isRemoved" id="isRemoved{{$index}}" />
+                                        <td ng-class="controller.participantClass(participant,'isRemoved')">
+                                            <input ng-disabled="!controller.participantEnabled(participant)" type="checkbox" ng-change="controller.update()" ng-model="participant.isRemoved" id="isRemoved{{$index}}" />
                                         </td>
                                     </tr>
                                     <tr>
                                         <th><label for="isLeader{{$index}}">Leader</label></th>
-                                        <td ng-class="participant.Class('leader')">
-                                            <input ng-disabled="!state.tripeditable" type="checkbox" ng-change="state.Update()" ng-model="participant.isLeader" id="isLeader{{$index}}" />
+                                        <td ng-class="controller.participantClass(participant,'leader')">
+                                            <input ng-disabled="!controller.tripeditable" type="checkbox" ng-change="controller.update()" ng-model="participant.isLeader" id="isLeader{{$index}}" />
                                         </td>
                                     </tr>
                                     <tr>
                                         <th><label for="email{{$index}}">Email</label></th>
-                                        <td ng-class="participant.Class('email')">
-                                            <input ng-disabled="!participant.Enabled()" type="email" ng-change="state.Update()" ng-model="participant.email" id="email{{$index}}"
-                                                    name="Memail{{$index}}" />
+                                        <td ng-class="controller.participantClass(participant,'email')">
+                                            <input ng-disabled="!controller.participantEnabled(participant)" type="email" ng-change="controller.update()" ng-model="participant.email" id="email{{$index}}"
+                                                   name="Memail{{$index}}" />
                                             <div ng-show="tripForm['Memail' + $index].$error.email">Invalid Email</div>
                                         </td>
                                     </tr>
                                     <tr>
                                         <th><label for="phone{{$index}}">Phone</label></th>
-                                        <td ng-class="participant.Class('phone')">
-                                            <input ng-disabled="!participant.Enabled()" type="text" ng-change="state.Update()" ng-model="participant.phone" id="phone{{$index}}" />
+                                        <td ng-class="controller.participantClass(participant,'phone')">
+                                            <input ng-disabled="!controller.participantEnabled(participant)" type="text" ng-change="controller.update()" ng-model="participant.phone" id="phone{{$index}}" />
                                         </td>
                                     </tr>
-		                    <tr>
-		                        <th><label for="isVehicleProvider{{$index}}">Car</label></th>
-		                        <td ng-class="participant.Class('isVehicleProvider')">
-		                            <input ng-disabled="!participant.Enabled()" type="checkbox" ng-change="state.Update()" ng-model="participant.isVehicleProvider"
-		                                    id="isVehicleProvider{{$index}}" />
-		                        </td>
-		                    </tr>
-		                    <tr ng-show="participant.isVehicleProvider">
-		                        <th><label for="vehicleRego{{$index}}">Rego</label></th>
-		                        <td ng-class="participant.Class('vehicleRego')">
-		                            <input ng-disabled="!participant.Enabled()" type="text" ng-change="state.Update()" ng-model="participant.vehicleRego"
-		                                    id="isLeader{{$index}}" />
-		                        </td>
-		                    </tr>
-		                    <tr>
-		                        <th><label for="status{{$index}}">Status</label></th>
-		                        <td ng-class="participant.Class('status')">
-		                            <textarea ng-disabled="!participant.Enabled()" type="text" ng-change="state.Update()" ng-model="participant.status" id="status{{$index}}"
-		                                        ng-attr-rows="{{participant.status.split('\n').length}}" ng-focus="state.TextareaFocus('status'+$index)"></textarea>
-		                        </td>
-		                    </tr>
+                                    <tr>
+                                        <th><label for="isVehicleProvider{{$index}}">Car</label></th>
+                                        <td ng-class="controller.participantClass(participant,'isVehicleProvider')">
+                                            <input ng-disabled="!controller.participantEnabled(participant)" type="checkbox" ng-change="controller.update()" ng-model="participant.isVehicleProvider"
+                                                   id="isVehicleProvider{{$index}}" />
+                                        </td>
+                                    </tr>
+                                    <tr ng-show="participant.isVehicleProvider">
+                                        <th><label for="vehicleRego{{$index}}">Rego</label></th>
+                                        <td ng-class="controller.participantClass(participant,'vehicleRego')">
+                                            <input ng-disabled="!controller.participantEnabled(participant)" type="text" ng-change="controller.update()" ng-model="participant.vehicleRego"
+                                                   id="isLeader{{$index}}" />
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th><label for="status{{$index}}">Status</label></th>
+                                        <td ng-class="controller.participantClass(participant,'status')">
+                                            <textarea ng-disabled="!controller.participantEnabled(participant)" type="text" ng-change="controller.update()" ng-model="participant.status" id="status{{$index}}"
+                                                      ng-attr-rows="{{participant.status.split('\n').length}}" ng-focus="controller.textAreaFocus('status'+$index)"></textarea>
+                                        </td>
+                                    </tr>
                                 </table>
                             </div>
                         </td>
@@ -231,68 +231,68 @@
             </table>
         </div>
 
-        <h4 ng-class="state.showdescription ? '' : 'noprint'" ng-click="state.showdescription = !state.showdescription">
-            <button ng-class="state.showdescription ? 'open' : 'closed'"></button>
+        <h4 ng-class="controller.showdescription ? '' : 'noprint'" ng-click="controller.showdescription = !controller.showdescription">
+            <button ng-class="controller.showdescription ? 'open' : 'closed'"></button>
             Description (from newsletter)
         </h4>
-        <div class="slide" ng-show="state.showdescription">
+        <div class="slide" ng-show="controller.showdescription">
             <table>
-                <tr><td ng-bind="trip.text" style="width: 400px;"></td></tr>
+                <tr><td ng-bind="controller.trip.text" style="width: 400px;"></td></tr>
             </table>
         </div>
 
-        <h4 class="noprint" ng-click="state.showtripemail = !state.showtripemail">
-            <button ng-class="state.showtripemail? 'open' : 'closed'"></button>
+        <h4 class="noprint" ng-click="controller.showtripemail = !controller.showtripemail">
+            <button ng-class="controller.showtripemail? 'open' : 'closed'"></button>
             Trip Email
         </h4>
-        <div class="noprint slide" ng-show="state.showtripemail">
+        <div class="noprint slide" ng-show="controller.showtripemail">
             <table>
                 <tr>
                     <th>Subject</th>
-                    <td><input type="text" ng-disabled="!state.tripeditable" ng-model="email.subject" name="emailsubject" required /></th>
+                    <td><input type="text" ng-disabled="!controller.tripeditable" ng-model="email.subject" name="emailsubject" required /></th>
                     <td><div ng-show="tripForm.emailsubject.$error.required">required</div></td>
                 </tr>
                 <tr>
                     <th>Body</th>
-                    <td><textarea ng-disabled="!state.tripeditable" ng-model="email.body" name="emailbody" required></textarea></th>
+                    <td><textarea ng-disabled="!controller.tripeditable" ng-model="email.body" name="emailbody" required></textarea></th>
                     <td>
                         <div ng-show="tripForm.emailbody.$error.required">required</div>
-                        <button ng-disabled="!state.tripeditable || tripForm.emailsubject.$error.required || tripForm.emailbody.$error.required"
-                                ng-click="state.Save(true)">
+                        <button ng-disabled="!controller.tripeditable || tripForm.emailsubject.$error.required || tripForm.emailbody.$error.required"
+                                ng-click="controller.save(true)">
                             <img src="app/assets/send.png" />Send
                         </button>
-                        <img ng-show="state.savestate == 'Sending'" src="app/assets/waiting.gif" /><span ng-bind="state.savestate"></span>
+                        <img ng-show="controller.savestate == 'Sending'" src="app/assets/waiting.gif" /><span ng-bind="controller.savestate"></span>
                     </td>
                 </tr>
             </table>
         </div>
 
-        <h4 class="noprint" ng-click="state.showhistory = !state.showhistory">
-            <button ng-class="state.showhistory? 'open' : 'closed'"></button>
+        <h4 class="noprint" ng-click="controller.showhistory = !controller.showhistory">
+            <button ng-class="controller.showhistory? 'open' : 'closed'"></button>
             Change History
         </h4>
-        <div class="noprint slide" ng-show="state.showhistory">
+        <div class="noprint slide" ng-show="controller.showhistory">
             <table width="100%">
                 <tr>
                     <th>Date</th>
                     <th>Name</th>
                     <th>Description</th>
                 </tr>
-                <tbody ng-repeat="group in changes">
+                <tbody ng-repeat="changesGroup in changes">
                     <tr>
-                        <td ng-class="group[0].classname" style="white-space: nowrap" ng-click="group[0].DetailToggle()">
-                            <button ng-class="group[0].showdetail ? 'open' : 'closed'"></button>
-                            {{group[0].Timestamp()}}
+                        <td ng-class="changesGroup[0].classname" style="white-space: nowrap" ng-click="changesGroup[0].DetailToggle()">
+                            <button ng-class="changesGroup[0].showdetail ? 'open' : 'closed'"></button>
+                            {{changesGroup[0].Timestamp()}}
                         </td>
-                        <td ng-class="group[0].classname">{{group[0].Name(group[0].memberid)}}</td>
-                        <td ng-class="group[0].classname">
-                            <span ng-repeat="change in group | limitTo: 4">{{$index < 3 ? change.Description() : '...'}}</span>
+                        <td ng-class="changesGroup[0].classname">{{changesGroup[0].Name(changesGroup[0].memberid)}}</td>
+                        <td ng-class="changesGroup[0].classname">
+                            <span ng-repeat="change in changesGroup | limitTo: 4">{{$index < 3 ? change.Description() : '...'}}</span>
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="3" ng-class="group[0].classname">
-                            <div class="slide" ng-show="group[0].showdetail">
-                                <div ng-repeat="change in group">{{change.Description()}}<br />{{change.body}}</div>
+                        <td colspan="3" ng-class="changesGroup[0].classname">
+                            <div class="slide" ng-show="changesGroup[0].showdetail">
+                                <div ng-repeat="change in changesGroup">{{change.Description()}}<br />{{change.body}}</div>
                             </div>
                         </td>
                     </tr>

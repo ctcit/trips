@@ -6,6 +6,7 @@
       function ($stateProvider, $urlRouterProvider) {
 
           $urlRouterProvider
+                // BSJ -todo
               .when('/trip', '/trip/showalltrips')
               .otherwise('/trip/showalltrips');
 
@@ -16,14 +17,15 @@
                     'app-content': {
                         templateUrl: 'app/app.html'
                     }
-                },
-                resolve: {
-                    currentUser: ['currentUserService',
-                        function (currentUserService) {
-                            return currentUserService.load();
-                        }
-                    ]
                 }
+                // BSJ -todo
+                //resolve: {
+                //    currentUser: ['currentUserService',
+                //        function (currentUserService) {
+                //            return currentUserService.load();
+                //        }
+                //    ]
+                //}
             })
             .state('trip.showTrip', {
                 url: '/trip/showtrip/:tripId',

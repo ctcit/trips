@@ -1,21 +1,21 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "trips", ".", "{D475B523-2BD1-4D43-889A-7F98722B00E0}"
 	ProjectSection(WebsiteProperties) = preProject
 		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.0"
-		Debug.AspNetCompiler.VirtualPath = "/localhost_53281"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_62735"
 		Debug.AspNetCompiler.PhysicalPath = "..\trips\"
-		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53281\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62735\"
 		Debug.AspNetCompiler.Updateable = "true"
 		Debug.AspNetCompiler.ForceOverwrite = "true"
 		Debug.AspNetCompiler.FixedNames = "false"
 		Debug.AspNetCompiler.Debug = "True"
-		Release.AspNetCompiler.VirtualPath = "/localhost_53281"
+		Release.AspNetCompiler.VirtualPath = "/localhost_62735"
 		Release.AspNetCompiler.PhysicalPath = "..\trips\"
-		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_53281\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_62735\"
 		Release.AspNetCompiler.Updateable = "true"
 		Release.AspNetCompiler.ForceOverwrite = "true"
 		Release.AspNetCompiler.FixedNames = "false"

@@ -22,8 +22,9 @@
     angular.module('tripApp').constant('site',
         {
             url: site_url,
-            resturl: site_url + '/api.get.php'
-        });
+            getresturl: site_url + '/trips/api.get.php',
+            postresturl: site_url + '/trips/api.get.php'
+    });
 
 }());
 

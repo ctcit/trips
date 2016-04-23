@@ -1,4 +1,4 @@
-﻿<form name="tripsForm" novalidate>
+﻿<form name="tripsForm"  ng-controller="showAllTripsController as controller" novalidate>
     <div class="container">
         <div ng-repeat="group in groups">
             <h2 ng-click="group.showdetail = !group.showdetail">

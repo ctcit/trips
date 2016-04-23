@@ -12,7 +12,7 @@
             state.$timeout = $timeout;
             state.$scope.state = state;
 
-            tripsService.getGroups()
+            tripsService.getTripGroups()
                 .then(function (groups) {
                     state.$scope.groups = groups;
                     state.$scope.groups[1].showdetail = state.$scope.groups[0].trips.length == 0;
