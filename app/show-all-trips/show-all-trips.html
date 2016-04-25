@@ -1,6 +1,6 @@
 ﻿<form name="tripsForm"  ng-controller="showAllTripsController as controller" novalidate>
     <div class="container">
-        <div ng-repeat="group in groups">
+        <div ng-repeat="group in controller.groups">
             <h2 ng-click="group.showdetail = !group.showdetail">
                 <button ng-class="group.showdetail ? 'open' : 'closed'"></button>
                 {{group.name}}

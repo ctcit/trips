@@ -6,7 +6,6 @@
       function ($stateProvider, $urlRouterProvider) {
 
           $urlRouterProvider
-                // BSJ -todo
               .when('/trip', '/trip/showalltrips')
               .otherwise('/trip/showalltrips');
 

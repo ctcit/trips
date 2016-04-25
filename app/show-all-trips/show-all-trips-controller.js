@@ -2,20 +2,18 @@
 (function () {
     "use strict";
 
-    var state = {};
-
     angular.module('tripApp').controller("showAllTripsController",
-        ['$scope', '$timeout', 'site', 'tripsService',
-        function ($scope, $timeout, site, tripsService) {
+        ['$scope', '$timeout', 'site', 'tripsService', 'Group',
+        function ($scope, $timeout, site, tripsService, Group) {
 
-            state.$scope = $scope;
-            state.$timeout = $timeout;
-            state.$scope.state = state;
+            var controller = this;
+
+            controller.groups = [];
 
             tripsService.getTripGroups()
                 .then(function (groups) {
-                    state.$scope.groups = groups;
-                    state.$scope.groups[1].showdetail = state.$scope.groups[0].trips.length == 0;
+                    controller.groups = groups;
+                    controller.groups[1].showdetail = controller.groups[0].trips.length == 0;
                 });
 
         }]).animation('.slide', AnimationSlide);

@@ -24,8 +24,13 @@
                 this.metadata = tripMetadata;
             }
 
-            //angular.extend(Trip.prototype, {
-            //});
+            angular.extend(Trip.prototype, {
+
+                Date: function tripDate() {
+                	return dow[this.date.getDay()] + " " + this.date.getDate() + " " + moy[this.date.getMonth()];
+                }
+
+            });
 
             return Trip;
         }]

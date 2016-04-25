@@ -2,7 +2,7 @@
     <div class="container">
         <div class="noprint">
             <div>
-                <button ui-sref="controller.showAllTrips">
+                <button ui-sref="trip.showAllTrips">
                     <img src="app/assets/ctc.png" />All Trips
                 </button>
                 <button ng-disabled="!controller.saveEnabled()" ng-click="controller.save(false)">
@@ -125,11 +125,11 @@
                                     ng-change="controller.participantUpdateName(participant)" ng-model="participant.name">
                                 <option></option>
                                 <optgroup label="Non Members">
-                                    <option ng-repeat="nonmember in nonmembers">{{nonmember.name}}</option>
+                                    <option ng-repeat="nonmember in controller.nonmembers">{{nonmember.name}}</option>
                                     <option>(Someone else)</option>
                                 </optgroup>
                                 <optgroup label="Members">
-                                    <option ng-repeat="member in members">{{member.name}}</option>
+                                    <option ng-repeat="member in controller.members">{{member.name}}</option>
                                 </optgroup>
                             </select>
                             <input ng-show="participant.nameui == '(Readonly)'"
@@ -280,19 +280,19 @@
                 </tr>
                 <tbody ng-repeat="changesGroup in changes">
                     <tr>
-                        <td ng-class="changesGroup[0].classname" style="white-space: nowrap" ng-click="changesGroup[0].DetailToggle()">
+                        <td ng-class="changesGroup[0].classname" style="white-space: nowrap" ng-click="controller.changeDetailToggle(changesGroup[0])">
                             <button ng-class="changesGroup[0].showdetail ? 'open' : 'closed'"></button>
-                            {{changesGroup[0].Timestamp()}}
+                            {{controller.changeTimestamp(changesGroup[0])}}
                         </td>
                         <td ng-class="changesGroup[0].classname">{{changesGroup[0].Name(changesGroup[0].memberid)}}</td>
                         <td ng-class="changesGroup[0].classname">
-                            <span ng-repeat="change in changesGroup | limitTo: 4">{{$index < 3 ? change.Description() : '...'}}</span>
+                            <span ng-repeat="change in changesGroup | limitTo: 4">{{$index < 3 ? controller.changeDescription(change) : '...'}}</span>
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3" ng-class="changesGroup[0].classname">
                             <div class="slide" ng-show="changesGroup[0].showdetail">
-                                <div ng-repeat="change in changesGroup">{{change.Description()}}<br />{{change.body}}</div>
+                                <div ng-repeat="change in changesGroup">{{controller.changeDescription(change)}}<br />{{change.body}}</div>
                             </div>
                         </td>
                     </tr>

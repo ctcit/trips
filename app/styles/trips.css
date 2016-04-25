@@ -24,11 +24,11 @@ textarea[disabled=disabled]			{ border: none;  color: black;}
 .highlight3					{ background: lime; }
 .highlight4					{ background: orange; }
 .highlight5					{ background: silver; }
-.isRemoved					{ background-image: url("removed.png"); background-repeat: repeat-x; background-position: center center }
+.isRemoved					{ background-image: url("../assets/removed.png"); background-repeat: repeat-x; background-position: center center }
 div[ng-show*='$error'], .error			{ font-weight: bold; color: red;}
 .oddrow						{ background: #F0F0FF; }
-button.open					{ width: 20px; height: 20px; background: url("open.png"); border: none; }
-button.closed					{ width: 20px; height: 20px; background: url("closed.png"); border: none; }
+button.open					{ width: 20px; height: 20px; background: url("../assets/open.png"); border: none; }
+button.closed					{ width: 20px; height: 20px; background: url("../assets/closed.png"); border: none; }
 @media screen and (min-width: 992px) { 
 	.mobile-only				{ display:none !important; }
 }
