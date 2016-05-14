@@ -16,7 +16,7 @@
                         <button ng-class="changesGroup[0].showdetail ? 'open' : 'closed'"></button>
                         {{showHistoryController.changeTimestamp(changesGroup[0])}}
                     </td>
-                    <td ng-class="changesGroup[0].classname">{{changesGroup[0].Name(changesGroup[0].memberid)}}</td>
+                    <td ng-class="changesGroup[0].classname">{{showHistoryController.changeName(changesGroup[0].memberid)}}</td>
                     <td ng-class="changesGroup[0].classname">
                         <span ng-repeat="change in changesGroup | limitTo: 4">{{$index < 3 ? showHistoryController.changeDescription(change) : '...'}}</span>
                     </td>

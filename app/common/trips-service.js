@@ -15,12 +15,12 @@
             var metadata = undefined;
             var userId = undefined;
             var editId = undefined;
-            var changes = [];
             var participants = [];
             var members = [];
             var nonmembers = [];
             var edits = [];
             var modifications = [];
+            var changes = [];
 
 
             //---------------------------------
@@ -29,6 +29,7 @@
                 // BSJ -todo
                 return $http.get(site.getresturl + "?action=gettrips")
                     .then(function (response) {
+
                         if (ValidateResponse(response)) {
                             // cache these values
                             config = response.config;
@@ -45,8 +46,10 @@
 
             function getTrip(tripId, editId) {
                 var queryString = "?action=gettrip&tripid=" + tripId + (editId != undefined ? ("&editid=" + editid) : "");
+
                 return $http.get(site.getresturl + queryString)
                     .then(function (response) {
+
                         if (ValidateResponse(response)) {
                             // cache these values
                             config = response.config;
@@ -60,7 +63,8 @@
                             nonmembers = response.nonmembers ? response.nonmembers : [];
 
                             edits = response.edits ? response.edits : [];
-                            modifications = modifications.edits ? modifications.edits : [];
+                            modifications = response.modifications ? response.modifications : [];
+                            changes = response.changes ? response.changes : [];
 
                             // resolve on this value
                             return new Trip(response.trip, response.metadata.trips);

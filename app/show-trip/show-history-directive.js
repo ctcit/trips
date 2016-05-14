@@ -9,7 +9,7 @@
                 var showHistoryController = this;
 
                 showHistoryController.changeTimestamp = function changeTimestamp(change) {
-                    var date = new Date(change.timestamp + " UTC");
+                    var date = new Date(change.timestamp.replace(" ", "T") + "Z");  // "2016-05-14 22:17:38 UTC" won't work on IE; "2016-05-14T22:17:38Z" is equivalent
                     return dow[date.getDay()] + " " + date.getDate() + " " + moy[date.getMonth()] + " " + date.toISOString().substr(11, 5);
                 };
 
@@ -22,7 +22,7 @@
                 };
 
                 showHistoryController.changeColName = function changeColName(change) {
-                    return metadata[showHistoryController.changeTable(change)][change.column].Display;
+                    return showHistoryController.metadata[showHistoryController.changeTable(change)][change.column].Display;
                 };
 
                 showHistoryController.changeDescription = function changeDescription(change) {
@@ -33,10 +33,10 @@
                         change.column == "memberid"
                             ? change.verb + " line " + (parseInt(change.line) + 1) + " Member from '" +
                                         showHistoryController.changeName(change.before || -1) + "' to '" + showHistoryController.changeName(change.after) + "'" :
-                        metadata[showHistoryController.changeTable(change)][change.column].Type == "tinyint(1)"
+                        showHistoryController.metadata[showHistoryController.changeTable(change)][change.column].Type == "tinyint(1)"
                             ? change.verb + " line " + (parseInt(change.line) + 1) + " " + showHistoryController.changeColName(change) + " from " +
                                         (change.before == true ? "yes" : "no") + " to " + (change.after == true ? "yes" : "no")
-                            : change.verb + " line " + (parseInt(change.line) + 1) + " " + showHistoryController.ColName(change) + " from '" +
+                            : change.verb + " line " + (parseInt(change.line) + 1) + " " + showHistoryController.changeColName(change) + " from '" +
                                         change.before + "' to '" + change.after + "'";
                 };
 
@@ -80,6 +80,7 @@
                 showhistory: '=',
                 changes: '=',
                 membersById: '=',
+                metadata: '=',
                 highlights: '='
             },
             controller: controller,
