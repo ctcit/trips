@@ -1,0 +1,34 @@
+﻿<div>
+    <h4 class="noprint" ng-click="showHistoryController.showhistory = !showHistoryController.showhistory">
+        <button ng-class="showHistoryController.showhistory? 'open' : 'closed'"></button>
+        Change History
+    </h4>
+    <div class="noprint slide" ng-show="showHistoryController.showhistory">
+        <table width="100%">
+            <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+            <tbody ng-repeat="changesGroup in showHistoryController.changes">
+                <tr>
+                    <td ng-class="changesGroup[0].classname" style="white-space: nowrap" ng-click="showHistoryController.changeDetailToggle(changesGroup[0])">
+                        <button ng-class="changesGroup[0].showdetail ? 'open' : 'closed'"></button>
+                        {{showHistoryController.changeTimestamp(changesGroup[0])}}
+                    </td>
+                    <td ng-class="changesGroup[0].classname">{{changesGroup[0].Name(changesGroup[0].memberid)}}</td>
+                    <td ng-class="changesGroup[0].classname">
+                        <span ng-repeat="change in changesGroup | limitTo: 4">{{$index < 3 ? showHistoryController.changeDescription(change) : '...'}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" ng-class="changesGroup[0].classname">
+                        <div class="slide" ng-show="changesGroup[0].showdetail">
+                            <div ng-repeat="change in changesGroup">{{showHistoryController.changeDescription(change)}}<br />{{change.body}}</div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
