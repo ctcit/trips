@@ -3,15 +3,14 @@
     "use strict";
 
     angular.module('tripApp').controller("showTripController",
-        ['$window', '$q', '$timeout', '$stateParams', 'site', 'tripsService', 'membersService', 'State', 'Trip', 'TripEmail', 'Participant', 'Change',
-        function ($window, $q, $timeout, $stateParams, site, tripsService, membersService, State, Trip, TripEmail, Participant, Change) {
+        ['$window', '$q', '$timeout', '$stateParams', 'site', 'tripsService', 'membersService', 'metadataService', 'State', 'Trip', 'TripEmail', 'Participant', 'Change',
+        function ($window, $q, $timeout, $stateParams, site, tripsService, membersService, metadataService, State, Trip, TripEmail, Participant, Change) {
 
             var controller = this;
 
             controller.tripId = $stateParams.tripId;
             controller.trip = null;
             controller.config = null;
-            controller.metadata = null;
             controller.userId = 0;
             controller.editId = 0;
 
@@ -45,10 +44,7 @@
                             .then(function (config) {
                                 controller.config = config;
                             }),
-    	                tripsService.getMetadata()
-                            .then(function (metadata) {
-                                controller.metadata = metadata;
-                            }),
+    	                metadataService.initMetadata(),
     	                tripsService.getUserId()
                             .then(function (userId) {
                                 controller.userId = userId;
@@ -155,7 +151,7 @@
 
                 controller[redo].push(angular.copy(controller.trip));
 
-                for (var prop in controller.metadata.trips) {
+                for (var prop in metadataService.getTripsMetadata()) {
                     controller.trip[prop] = popped[prop];
                 }
                 controller.participants = angular.copy(popped.participants);
@@ -276,19 +272,21 @@
 
                 var diffs = [], diff = {};
 
-                for (diff.column in controller.metadata.trips) {
-                    diff.before = ToSql(refState.trip[diff.column], controller.metadata.trips[diff.column]);
-                    diff.after = ToSql(currentState.trip[diff.column], controller.metadata.trips[diff.column]);
+                var tripsMetadata = metadataService.getTripsMetadata();
+                for (diff.column in tripsMetadata) {
+                    diff.before = ToSql(refState.trip[diff.column], tripsMetadata[diff.column]);
+                    diff.after = ToSql(currentState.trip[diff.column], tripsMetadata[diff.column]);
                     if (diff.before != diff.after) {
                         diff.action = "updatetrip";
                         diffs.push(angular.copy(diff));
                     }
                 }
 
+                var participantsMetadata = metadataService.getParticipantsMetadata();
                 for (diff.line in controller.participants) {
-                    for (diff.column in controller.metadata.participants) {
-                        diff.before = ToSql(refState.participants[diff.line][diff.column], controller.metadata.participants[diff.column]);
-                        diff.after = ToSql(currentState.participants[diff.line][diff.column], controller.metadata.participants[diff.column]);
+                    for (diff.column in participantsMetadata) {
+                        diff.before = ToSql(refState.participants[diff.line][diff.column], participantsMetadata[diff.column]);
+                        diff.after = ToSql(currentState.participants[diff.line][diff.column], participantsMetadata[diff.column]);
                         if (diff.before != diff.after) {
                             diff.action = currentState.participants[diff.line].isNew ? "insertparticipant" : "updateparticipant";
                             diffs.push(angular.copy(diff));

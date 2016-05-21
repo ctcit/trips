@@ -16,7 +16,6 @@
 
             function initMembers() {
 
-                //return $http.get(site.getresturl + "?action=gettrips")
                 return tripsService.getMembers()
                     .then(function (members) {
                         _members = members;

@@ -3,8 +3,8 @@
 
     angular.module('tripApp').directive('showHistory', [function () {
 
-        var controller = ['membersService',
-            function (membersService) {
+        var controller = ['membersService', 'metadataService',
+            function (membersService, metadataService) {
 
                 var showHistoryController = this;
 
@@ -22,7 +22,7 @@
                 };
 
                 showHistoryController.changeColName = function changeColName(change) {
-                    return showHistoryController.metadata[showHistoryController.changeTable(change)][change.column].Display;
+                    return metadataService.getMetadataForTable(showHistoryController.changeTable(change))[change.column].Display;
                 };
 
                 showHistoryController.changeDescription = function changeDescription(change) {
@@ -33,7 +33,7 @@
                         change.column == "memberid"
                             ? change.verb + " line " + (parseInt(change.line) + 1) + " Member from '" +
                                         showHistoryController.changeName(change.before || -1) + "' to '" + showHistoryController.changeName(change.after) + "'" :
-                        showHistoryController.metadata[showHistoryController.changeTable(change)][change.column].Type == "tinyint(1)"
+                        metadataService.getMetadataForTable(showHistoryController.changeTable(change))[change.column].Type == "tinyint(1)"
                             ? change.verb + " line " + (parseInt(change.line) + 1) + " " + showHistoryController.changeColName(change) + " from " +
                                         (change.before == true ? "yes" : "no") + " to " + (change.after == true ? "yes" : "no")
                             : change.verb + " line " + (parseInt(change.line) + 1) + " " + showHistoryController.changeColName(change) + " from '" +
@@ -79,7 +79,6 @@
             bindToController: {
                 showhistory: '=',
                 changes: '=',
-                metadata: '=',
                 highlights: '='
             },
             controller: controller,
