@@ -3,8 +3,8 @@
 
     angular.module('tripApp').directive('showHistory', [function () {
 
-        var controller = [
-            function () {
+        var controller = ['membersService',
+            function (membersService) {
 
                 var showHistoryController = this;
 
@@ -14,7 +14,7 @@
                 };
 
                 showHistoryController.changeName = function changeName(memberid) {
-                    return showHistoryController.membersById[memberid] ? showHistoryController.membersById[memberid].name : "blank";
+                    return membersService.getMember(memberid) ? membersService.getMember(memberid).name : "blank";
                 };
 
                 showHistoryController.changeTable = function changeTable(change) {
@@ -79,7 +79,6 @@
             bindToController: {
                 showhistory: '=',
                 changes: '=',
-                membersById: '=',
                 metadata: '=',
                 highlights: '='
             },

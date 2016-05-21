@@ -3,18 +3,22 @@
 
     angular.module('tripApp').directive('showParticipants', [function () {
 
-        var controller = [
-            function () {
+        var controller = ['membersService',
+            function (membersService) {
 
                 var showParticipantsController = this;
 
+                showParticipantsController.members = membersService.getMembers();
+
                 showParticipantsController.signMeUp = function signMeUp() {
                     for (var i = 0; i < showParticipantsController.participants.length; i++) {
-                        if (showParticipantsController.participants[i].isNew && (showParticipantsController.participants[i].name || "") == "") {
-                            showParticipantsController.participants[i].memberid = showParticipantsController.userId;
-                            showParticipantsController.participants[i].name = showParticipantsController.membersById[showParticipantsController.userId].name;
-                            showParticipantsController.participants[i].email = showParticipantsController.membersById[showParticipantsController.userId].email;
-                            showParticipantsController.participants[i].phone = showParticipantsController.membersById[showParticipantsController.userId].phone;
+                        var participant = showParticipantsController.participants[i];
+                        if (participant.isNew && (participant.name || "") == "") {
+                            var member = membersService.getMember(showParticipantsController.userId);
+                            participant.memberid = showParticipantsController.userId;
+                            participant.name = member.name;
+                            participant.email = member.email;
+                            participant.phone = member.phone;
                             showParticipantsController.maxParticipants = Math.max(i + 2, showParticipantsController.maxParticipants);
                             showParticipantsController.update();
                             break;
@@ -24,7 +28,8 @@
 
                 showParticipantsController.ImSignedUp = function ImSignedUp() {
                     for (var i in showParticipantsController.participants) {
-                        if (showParticipantsController.participants[i].memberid == showParticipantsController.userId) {
+                        var participant = showParticipantsController.participants[i];
+                        if (participant.memberid == showParticipantsController.userId) {
                             return true;
                         }
                     }
@@ -45,22 +50,25 @@
                 }
 
                 showParticipantsController.participantUpdateName = function participantUpdateName(participant) {
-                    if (showParticipantsController.membersByName[participant.name]) {
-                        participant.memberid = showParticipantsController.membersByName[participant.name].id;
-                        participant.email = showParticipantsController.membersByName[participant.name].email;
-                        participant.phone = showParticipantsController.membersByName[participant.name].phone;
+                    var member = membersService.getMemberByName(participant.name);
+                    if (member) {
+                        participant.memberid = member.id;
+                        participant.email = member.email;
+                        participant.phone = member.phone;
                         participant.lastname = participant.name;
-                    } else if (showParticipantsController.nonmembers[participant.name]) {
-                        participant.memberid = null;
-                        participant.email = showParticipantsController.nonmembers[participant.name].email;
-                        participant.phone = showParticipantsController.nonmembers[participant.name].phone;
-                        participant
-                    } else if (participant.name == "(Someone else)") {
-                        participant.memberid = null;
-                        participant.nameui = "(Someone else)";
-                        participant.name = participant.lastname;
                     } else {
-                        participant.memberid = null;
+                        var nonmember = showParticipantsController.nonmembers[participant.name];
+                        if (nonmember) {
+                            participant.memberid = null;
+                            participant.email = nonmember.email;
+                            participant.phone = nonmember.phone;
+                        } else if (participant.name == "(Someone else)") {
+                            participant.memberid = null;
+                            participant.nameui = "(Someone else)";
+                            participant.name = participant.lastname;
+                        } else {
+                            participant.memberid = null;
+                        }
                     }
                     showParticipantsController.maxParticipants = Math.max(participant.line + 2, showParticipantsController.maxParticipants);
                     showParticipantsController.update();
@@ -93,9 +101,6 @@
                 memberid: '=',
                 participants: '=',
                 maxParticipants: '=',
-                membersById: '=',
-                membersByName: '=',
-                members: '=',
                 nonmembers: '=',
                 nonmembersByName: '=',
                 metadata: '=',

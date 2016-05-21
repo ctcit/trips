@@ -3,8 +3,8 @@
     "use strict";
 
     angular.module('tripApp').controller("showTripController",
-        ['$window', '$q', '$timeout', '$stateParams', 'site', 'tripsService', 'State', 'Trip', 'TripEmail', 'Participant', 'Change',
-        function ($window, $q, $timeout, $stateParams, site, tripsService, State, Trip, TripEmail, Participant, Change) {
+        ['$window', '$q', '$timeout', '$stateParams', 'site', 'tripsService', 'membersService', 'State', 'Trip', 'TripEmail', 'Participant', 'Change',
+        function ($window, $q, $timeout, $stateParams, site, tripsService, membersService, State, Trip, TripEmail, Participant, Change) {
 
             var controller = this;
 
@@ -19,10 +19,6 @@
 
             controller.participants = [];
             controller.maxParticipants = [];
-
-            controller.membersById = {};
-            controller.membersByName = {};
-            controller.members = [];
 
             controller.nonmembers = [];
             controller.nonmembersByName = {};
@@ -69,10 +65,11 @@
                             .then(function (changes) {
                                 controller.setChanges(changes);
                             }),
-    	                tripsService.getMembers()
-                            .then(function (members) {
-                                controller.setMembers(members);
-                            }),
+    	                membersService.initMembers()
+            	            .then(function (members) {
+            	                var currentUserMember = membersService.getMember(controller.userId);
+            	                controller.tripeditable = currentUserMember && currentUserMember.role != null;
+            	            }),
     	                tripsService.getNonmembers()
                             .then(function (nonmembers) {
                                 controller.setNonMembers(nonmembers);
@@ -129,18 +126,6 @@
                             controller.participants[change.line].iseditable = change.memberid == controller.userId;
                         }
                     }
-                }
-            }
-
-            controller.setMembers = function setMembers(members) {
-                controller.members = members;
-                controller.membersById = {};
-                controller.membersByName = {};
-
-                for (var i in members) {
-                    controller.membersById[members[i].id] = members[i];
-                    controller.membersByName[members[i].name] = members[i];
-                    controller.tripeditable = controller.tripeditable || (members[i].id == controller.userId && members[i].role != null);
                 }
             }
 
@@ -225,11 +210,11 @@
                                 }
 
                                 for (i = 0; i < edits.length; i++) {
-                                    controller.warnings.push('This is also being edited by ' + controller.membersById[edits[i].memberid].name + (i == 0 ? "" : " (" + (i + 1) + ")"));
+                                    controller.warnings.push('This is also being edited by ' + membersService.getMemberById(edits[i].memberid).name + (i == 0 ? "" : " (" + (i + 1) + ")"));
                                 }
 
                                 for (i = 0; i < modifications.length && i < 1; i++) {
-                                    controller.warnings.push('This has just been saved by ' + controller.membersById[modifications[i].memberid].name +
+                                    controller.warnings.push('This has just been saved by ' + membersService.getMemberById(modifications[i].memberid).name +
                                                 ' - this may be now out-of-date.');
                                 }
 
@@ -267,11 +252,11 @@
                     var diff = diffs[i];
                     var participants = controller.participants;
 
-                    if (diff.line != null && participants[diff.line].isNew &&
-                        controller.membersById[participants[diff.line].memberid] &&
-                        controller.membersById[participants[diff.line].memberid][diff.column] &&
-                        controller.membersById[participants[diff.line].memberid][diff.column] == diff.after) {
-                        diffs.splice(i--, 1);
+                    if (diff.line != null && participants[diff.line].isNew) {
+                        var member = membersService.getMemberById(participants[diff.line].memberid);
+                        if (member && member[diff.column] && member[diff.column] == diff.after) {
+                            diffs.splice(i--, 1);
+                        }
                     }
                 }
 
