@@ -44,12 +44,13 @@
     	                metadataService.initMetadata(),
 
     	                membersService.initMembers()
-            	            .then(function (members) {
-            	                var currentUser = currentUserService.user();
-            	                controller.tripeditable = currentUser && currentUser.role != null;
-            	            }),
+                            .then(function() {
+                                return currentUserService.initCurrentUser()
+                                    .then(function (currentUser) {
+                                        controller.tripeditable = currentUser && currentUser.role != null;
+                                    })
+                            }),
 
-    	                currentUserService.initCurrentUser(),
 
     	                tripsService.getEditId()
                             .then(function (editId) {

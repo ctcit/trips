@@ -98,7 +98,6 @@
             bindToController: {
                 showparticipants: '=',
                 tripeditable: '=',
-                memberid: '=',
                 participants: '=',
                 maxParticipants: '=',
                 nonmembers: '=',

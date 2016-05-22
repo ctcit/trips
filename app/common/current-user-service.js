@@ -15,8 +15,12 @@
                 return tripsService.getUserId()
                     .then(function (userId) {
                         _userId = userId;
-                        return _userId;
+                        return user();
                     });
+            }
+
+            function user() {
+                return membersService.getMember(_userId);
             }
 
             //---------------------------------
@@ -26,7 +30,7 @@
 
                 userId: function () { return _userId; },
 
-                user: function () { return membersService.getMember(_userId); }
+                user: user
 
             }
         }]
