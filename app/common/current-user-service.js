@@ -1,35 +1,35 @@
-﻿(function () {
+﻿
+(function () {
     'use strict';
 
-    angular.module('tripApp').factory('currentUserService', ['$http', 'site',
-        function ($http, site) {
+    angular.module('tripApp').factory('currentUserService',
+        ['tripsService', 'membersService',
+        function (tripsService, membersService) {
 
-            // Obtain the currently-logged in user (i.e., the user who
-            // has authenticated on the main CTC website on the same machine as
-            // the one on which this code is running).
+            var _userId = 0;
 
-            var currentUser = null;
+            //---------------------------------
+
+            function initCurrentUser() {
+
+                return tripsService.getUserId()
+                    .then(function (userId) {
+                        _userId = userId;
+                        return _userId;
+                    });
+            }
+
+            //---------------------------------
 
             return {
-                currentUser: function () { return currentUser; },
-                isLoggedIn: function () { return currentUser != null; },
-                hasRoles: function() { return currentUser && currentUser.roles && currentUser.roles.length > 0; },
+                initCurrentUser: initCurrentUser,
 
-                load: function () {
-                    return $http.get(site.url + '/db/index.php/rest/user')
-                        .success(function (user) {
-                            currentUser = user;
-                            console.log('currentUser.id = ' + currentUser.id);
-                            return currentUser;
-                        })
-                       .error(function (fail) {
-                           currentUser = null;
-                           alert("Couldn't fetch user info (" + fail.status + "). A network problem?");
-                           return currentUser;
-                       })
-                }
+                userId: function () { return _userId; },
+
+                user: function () { return membersService.getMember(_userId); }
+
             }
-        }
-    ]);
+        }]
+    );
 
 }());

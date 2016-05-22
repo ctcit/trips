@@ -3,8 +3,8 @@
 
     angular.module('tripApp').directive('showParticipants', [function () {
 
-        var controller = ['membersService', 'metadataService',
-            function (membersService, metadataService) {
+        var controller = ['currentUserService', 'membersService', 'metadataService',
+            function (currentUserService, membersService, metadataService) {
 
                 var showParticipantsController = this;
 
@@ -14,11 +14,11 @@
                     for (var i = 0; i < showParticipantsController.participants.length; i++) {
                         var participant = showParticipantsController.participants[i];
                         if (participant.isNew && (participant.name || "") == "") {
-                            var member = membersService.getMember(showParticipantsController.userId);
-                            participant.memberid = showParticipantsController.userId;
-                            participant.name = member.name;
-                            participant.email = member.email;
-                            participant.phone = member.phone;
+                            var currentUser = currentUserService.user();
+                            participant.memberid = currentUser.id;
+                            participant.name = currentUser.name;
+                            participant.email = currentUser.email;
+                            participant.phone = currentUser.phone;
                             showParticipantsController.maxParticipants = Math.max(i + 2, showParticipantsController.maxParticipants);
                             showParticipantsController.update();
                             break;
@@ -27,9 +27,10 @@
                 }
 
                 showParticipantsController.ImSignedUp = function ImSignedUp() {
+                    var currentUser = currentUserService.user();
                     for (var i in showParticipantsController.participants) {
                         var participant = showParticipantsController.participants[i];
-                        if (participant.memberid == showParticipantsController.userId) {
+                        if (participant.memberid == currentUser.id) {
                             return true;
                         }
                     }
@@ -97,7 +98,6 @@
             bindToController: {
                 showparticipants: '=',
                 tripeditable: '=',
-                userId: '=',
                 memberid: '=',
                 participants: '=',
                 maxParticipants: '=',

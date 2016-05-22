@@ -3,18 +3,15 @@
     "use strict";
 
     angular.module('tripApp').controller("showTripController",
-        ['$window', '$q', '$timeout', '$stateParams', 'site', 'tripsService', 'membersService', 'metadataService', 'State', 'Trip', 'TripEmail', 'Participant', 'Change',
-        function ($window, $q, $timeout, $stateParams, site, tripsService, membersService, metadataService, State, Trip, TripEmail, Participant, Change) {
+        ['$window', '$q', '$timeout', '$stateParams', 'site', 'configService', 'membersService', 'metadataService', 'currentUserService', 'tripsService', 'State', 'Trip', 'TripEmail', 'Participant', 'Change',
+        function ($window, $q, $timeout, $stateParams, site, configService, membersService, metadataService, currentUserService, tripsService, State, Trip, TripEmail, Participant, Change) {
 
             var controller = this;
 
-            controller.tripId = $stateParams.tripId;
-            controller.trip = null;
-            controller.config = null;
-            controller.userId = 0;
             controller.editId = 0;
 
-            controller.changes = [];
+            controller.tripId = $stateParams.tripId;
+            controller.trip = null;
 
             controller.participants = [];
             controller.maxParticipants = [];
@@ -23,6 +20,8 @@
             controller.nonmembersByName = {};
 
             controller.email = new TripEmail();
+
+            controller.changes = [];
 
             controller.tripeditable = false;
             controller.savestate = "Loading...";
@@ -40,15 +39,18 @@
     	            controller.trip = trip;
 
     	            $q.all([
-    	                tripsService.getConfig()
-                            .then(function (config) {
-                                controller.config = config;
-                            }),
+    	                configService.initConfig(),
+
     	                metadataService.initMetadata(),
-    	                tripsService.getUserId()
-                            .then(function (userId) {
-                                controller.userId = userId;
-                            }),
+
+    	                membersService.initMembers()
+            	            .then(function (members) {
+            	                var currentUser = currentUserService.user();
+            	                controller.tripeditable = currentUser && currentUser.role != null;
+            	            }),
+
+    	                currentUserService.initCurrentUser(),
+
     	                tripsService.getEditId()
                             .then(function (editId) {
                                 controller.editId = editId;
@@ -61,11 +63,6 @@
                             .then(function (changes) {
                                 controller.setChanges(changes);
                             }),
-    	                membersService.initMembers()
-            	            .then(function (members) {
-            	                var currentUserMember = membersService.getMember(controller.userId);
-            	                controller.tripeditable = currentUserMember && currentUserMember.role != null;
-            	            }),
     	                tripsService.getNonmembers()
                             .then(function (nonmembers) {
                                 controller.setNonMembers(nonmembers);
@@ -96,11 +93,12 @@
 
 
             controller.setParticipants = function setParticipants(participants) {
+                var currentUserId = currentUserService.userId();
 
                 controller.maxParticipants = participants.length;
 
                 controller.participants = [];
-                for (var i = 0; i < controller.maxParticipants + this.config.AdditionalLines; i++) {
+                for (var i = 0; i < controller.maxParticipants + configService.additionalLines(); i++) {
                     var participant = this.participants[i] = new Participant(participants[i] || { line: i, isNew: true });
 
                     if (parseInt(participant.line) > i) {
@@ -108,18 +106,19 @@
                         controller.participants.splice(i, 0, new Particpant({ line: i, isNew: true }));
                     } else {
                         participant.line = i;
-                        controller.tripeditable = controller.tripeditable || (participant.memberid == controller.userId && participant.isLeader);
+                        controller.tripeditable = controller.tripeditable || (participant.memberid == currentUserId && participant.isLeader);
                     }
                 }
             }
 
             controller.setChanges = function setChanges(changes) {
+                var currentUserId = currentUserService.userId();
                 controller.changes = changes;
                 for (var g in changes) {
                     for (var c in changes[g]) {
                         var change = changes[g][c] = new Change(changes[g][c]);
                         if (change.line && controller.participants[change.line]) {
-                            controller.participants[change.line].iseditable = change.memberid == controller.userId;
+                            controller.participants[change.line].iseditable = change.memberid == currentUserId;
                         }
                     }
                 }
@@ -215,7 +214,7 @@
                                 }
 
                                 $timeout(); // force a digest cycle
-                                $timeout(function () { controller.editRefresh(); }, controller.config.EditRefreshInSec * 1000); // schedule next refresh
+                                $timeout(function () { controller.editRefresh(); }, configService.editRefreshInSec() * 1000); // schedule next refresh
                             })
 
                     });
@@ -227,7 +226,7 @@
             // Save trip
 
             controller.diffString = function () {
-                return controller.config && controller.config.ShowDebugUpdate && controller.trip ? JSON.stringify(controller.trip.Diffs(controller.originalState)) : '';
+                return configService.showDebugUpdate() && controller.trip ? JSON.stringify(controller.trip.Diffs(controller.originalState)) : '';
             };
 
             controller.saveEnabled = function () {

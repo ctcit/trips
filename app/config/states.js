@@ -17,14 +17,6 @@
                         templateUrl: 'app/app.html'
                     }
                 }
-                // BSJ -todo
-                //resolve: {
-                //    currentUser: ['currentUserService',
-                //        function (currentUserService) {
-                //            return currentUserService.load();
-                //        }
-                //    ]
-                //}
             })
             .state('trip.showTrip', {
                 url: '/trip/showtrip/:tripId',
