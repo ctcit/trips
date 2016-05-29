@@ -5,9 +5,9 @@
         [
         function () {
 
-            function State(trip, participants) {
-                this.trip = trip;
-                this.participants = participants;
+            function State(trip) {
+                this.tripDetail = trip.tripDetail;
+                this.participants = trip.participants;
             }
 
             //angular.extend(State.prototype, {

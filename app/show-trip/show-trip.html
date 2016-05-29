@@ -24,34 +24,35 @@
 
         <show-detail showdetail="controller.showdetail"
                      tripeditable="controller.tripeditable"
-                     trip="controller.trip"
-                     original-state="controller.originalState"
+                     trip-detail="controller.trip.tripDetail"
+                     original-trip-detail="controller.originalState.tripDetail"
                      highlights="controller.highlights"
-                     update="controller.update"
-                     text-area-focus="controller.textAreaFocus">
+                     update="controller.update()">
         </show-detail>
 
         <show-participants showparticipants="controller.showparticipants"
                            tripeditable="controller.tripeditable"
-                           participants="controller.participants" max-participants="controller.maxParticipants"
-                           nonmembers="controller.nonmembers" nonmembers-by-name="controller.nonmembersByName"
-                           original-state="controller.originalState"
+                           trip-is-open="controller.trip.tripDetail.isOpen"
+                           participants="controller.trip.participants"
+                           nonmembers="controller.trip.nonmembers"
+                           original-participants="controller.originalState.participants"
                            highlights="controller.highlights"
-                           update="controller.update"
-                           text-area-focus="controller.textAreaFocus">
+                           update="controller.update()">
         </show-participants>
 
         <show-description showdescription="controller.showdescription"
-                          trip="controller.trip">
+                          trip="controller.trip.tripDetail">
         </show-description>
 
         <show-trip-email showtripemail="controller.showtripemail"
-                         email="controller.email" tripeditable="controller.tripeditable"
-                         savestate="controller.savestate" trip-form="controller.tripForm">
+                         email="controller.trip.tripEmail" 
+                         tripeditable="controller.tripeditable"
+                         savestate="controller.savestate" 
+                         trip-form="controller.tripForm">
         </show-trip-email>
 
         <show-history showhistory="controller.showhistory"
-                      changes="controller.changes"
+                      changes="controller.editSession.changes"
                       highlights="controller.highlights">
         </show-history>
 

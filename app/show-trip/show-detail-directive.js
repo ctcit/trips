@@ -9,11 +9,21 @@
                 var showDetailController = this;
 
                 showDetailController.tripClass = function tripClass(prop) {
+                    if (!showDetailController.originalTripDetail) {
+                        return "";
+                    }
                     var tripsMetadata = metadataService.getTripsMetadata();
-                    var before = ToSql(showDetailController.originalState.trip[prop], tripsMetadata[prop]);
-                    var after = ToSql(showDetailController.trip[prop], tripsMetadata[prop]);
+                    var before = ToSql(showDetailController.originalTripDetail[prop], tripsMetadata[prop]);
+                    var after = ToSql(showDetailController.tripDetail[prop], tripsMetadata[prop]);
                     return (before == after ? "" : "updated") + " " + (showDetailController.highlights[prop] || "");
-                }
+                };
+
+                showDetailController.textAreaFocus = function(id) {
+                    $('#' + id).keyup(function () {
+                        $(this).attr('rows', $(this).val().split('\n').length);
+                    });
+                };
+
 
             }];
 
@@ -24,11 +34,10 @@
             bindToController: {
                 showdetail: '=',
                 tripeditable: '=',
-                trip: '=',
-                originalState: '=',
+                tripDetail: '=',
+                originalTripDetail: '=',
                 highlights: '=',
-                update: '&',
-                textAreaFocus: '&'
+                update: '&'
             },
             controller: controller,
             controllerAs: 'showDetailController',

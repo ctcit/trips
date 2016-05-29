@@ -4,7 +4,7 @@
         Participants
     </h4>
     <div class="slide" ng-show="showParticipantsController.showparticipants">
-        <button ng-click="showParticipantsController.signMeUp();" ng-show="!showParticipantsController.ImSignedUp() && showParticipantsController.trip.isOpen">Sign Me Up</button>
+        <button ng-click="showParticipantsController.signMeUp();" ng-show="!showParticipantsController.ImSignedUp() && showParticipantsController.tripIsOpen">Sign Me Up</button>
         <table class="table table-condensed">
             <tr>
                 <th></th>
@@ -17,7 +17,7 @@
                 <th class="desktop-only">Car<br />rego</th>
                 <th>Status</th>
             </tr>
-            <tbody ng-repeat="participant in showParticipantsController.participants | limitTo: showParticipantsController.maxParticipants">
+            <tbody ng-repeat="participant in showParticipantsController.participants | limitTo: showParticipantsController.visibleParticipants">
                 <tr>
                     <th ng-class="showParticipantsController.participantClass(participant,'memberid')" ng-click="participant.showdetail = !participant.showdetail">
                         <button ng-class="participant.showdetail ? 'open' : 'closed'" class="mobile-only"></button>

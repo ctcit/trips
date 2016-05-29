@@ -3,12 +3,32 @@
 
     angular.module('tripApp').directive('showParticipants', [function () {
 
-        var controller = ['currentUserService', 'membersService', 'metadataService',
-            function (currentUserService, membersService, metadataService) {
+        var controller = ['configService', 'currentUserService', 'membersService', 'metadataService', 'Participant',
+            function (configService, currentUserService, membersService, metadataService, Participant) {
 
                 var showParticipantsController = this;
 
+                var currentUserId = currentUserService.userId();
+
                 showParticipantsController.members = membersService.getMembers();
+
+                showParticipantsController.nonmembersByName = {};
+                showParticipantsController.nonmembers.forEach(function (nonmember) {
+                    showParticipantsController.nonmembersByName[nonmember.name] = nonmember;
+                })
+
+                showParticipantsController.participants.forEach(function (participant, i) {
+                    participant.nameui = (showParticipantsController.tripeditable ? "(Full)" : (participant.iseditable ? "(Members)" : "(Readonly)"));
+                })
+
+                showParticipantsController.visibleParticipants = 0;
+                showParticipantsController.participants.forEach(function (participant) {
+                    if (!participant.isNew && participant.line >= showParticipantsController.visibleParticipants) {
+                        showParticipantsController.visibleParticipants++;
+                    }
+                });
+                showParticipantsController.visibleParticipants += showParticipantsController.tripIsOpen || showParticipantsController.tripeditable ? 1 : 0;
+
 
                 showParticipantsController.signMeUp = function signMeUp() {
                     for (var i = 0; i < showParticipantsController.participants.length; i++) {
@@ -19,7 +39,7 @@
                             participant.name = currentUser.name;
                             participant.email = currentUser.email;
                             participant.phone = currentUser.phone;
-                            showParticipantsController.maxParticipants = Math.max(i + 2, showParticipantsController.maxParticipants);
+                            showParticipantsController.visibleParticipants = Math.max(i + 2, showParticipantsController.visibleParticipants);
                             showParticipantsController.update();
                             break;
                         }
@@ -28,13 +48,9 @@
 
                 showParticipantsController.ImSignedUp = function ImSignedUp() {
                     var currentUser = currentUserService.user();
-                    for (var i in showParticipantsController.participants) {
-                        var participant = showParticipantsController.participants[i];
-                        if (participant.memberid == currentUser.id) {
-                            return true;
-                        }
-                    }
-                    return false;
+                    return showParticipantsController.participants.some(function(participant) {
+                        return participant.memberid == currentUser.id;
+                    })
                 }
 
                 //-----------------
@@ -58,7 +74,7 @@
                         participant.phone = member.phone;
                         participant.lastname = participant.name;
                     } else {
-                        var nonmember = showParticipantsController.nonmembers[participant.name];
+                        var nonmember = showParticipantsController.nonmembersByName[participant.name];
                         if (nonmember) {
                             participant.memberid = null;
                             participant.email = nonmember.email;
@@ -71,22 +87,31 @@
                             participant.memberid = null;
                         }
                     }
-                    showParticipantsController.maxParticipants = Math.max(participant.line + 2, showParticipantsController.maxParticipants);
+                    showParticipantsController.visibleParticipants = Math.max(participant.line + 2, showParticipantsController.visibleParticipants);
                     showParticipantsController.update();
                 }
 
                 showParticipantsController.participantClass = function participantClass(participant, prop) {
+                    if (!showParticipantsController.originalParticipants) {
+                        return "";
+                    }
                     var classname = (participant.isRemoved ? "isRemoved" : "") + " " + (showParticipantsController.highlights[prop + participant.line] || showParticipantsController.highlights[participant.line] || "");
+                    var originalParticipant = showParticipantsController.originalParticipants[participant.line];
                     if (participant.isNew) {
                         for (var p in metadataService.getParticipantsMetadata()) {
-                            if (showParticipantsController.originalState.participants[participant.line][p] != participant[p]) {
+                            if (!originalParticipant || originalParticipant[p] != participant[p]) {
                                 return classname + " inserted";
                             }
                         }
                     }
-                    return classname + (showParticipantsController.originalState.participants[participant.line][prop] == participant[prop] ? "" : " updated");
+                    return classname + (originalParticipant && originalParticipant[prop] == participant[prop] ? "" : " updated");
                 }
 
+                showParticipantsController.textAreaFocus = function (id) {
+                    $('#' + id).keyup(function () {
+                        $(this).attr('rows', $(this).val().split('\n').length);
+                    });
+                };
 
 
             }];
@@ -98,14 +123,12 @@
             bindToController: {
                 showparticipants: '=',
                 tripeditable: '=',
+                tripIsOpen: '=',
                 participants: '=',
-                maxParticipants: '=',
                 nonmembers: '=',
-                nonmembersByName: '=',
-                originalState: '=',
+                originalParticipants: '=',
                 highlights: '=',
-                update: '&',
-                textAreaFocus: '&'
+                update: '&'
             },
             controller: controller,
             controllerAs: 'showParticipantsController',

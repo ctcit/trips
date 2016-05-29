@@ -2,15 +2,15 @@
     "use strict";
 
     angular.module('tripApp').factory("Group",
-        ['Trip',
-        function(Trip) {
+        ['TripDetail',
+        function (TripDetail) {
             
             function Group(source, tripMetadata) {
 
                 this.name = source.name;
                 this.showdetail = this.isMyTrips = source.isMyTrips;
                 this.trips = !source.trips ? [] : source.trips.map(function (tripData) {
-                    return new Trip(tripData, tripMetadata);
+                    return new TripDetail(tripData, tripMetadata);
                 });
             }
 

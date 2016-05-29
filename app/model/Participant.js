@@ -20,7 +20,6 @@
                 Initialize(this, participantData, participantMetadata);
 
                 this.lastname = this.name;
-                this.metadata = participantMetadata;
             }
 
             //angular.extend(Participant.prototype, {

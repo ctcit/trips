@@ -38,7 +38,7 @@
             }
 
             function getMemberByName(name) {
-                return getMemberByName[name];
+                return _membersByName[name];
             }
 
             //---------------------------------
