@@ -41,10 +41,16 @@
 
             //---------------------------------
 
+            var highlights = {};
+
+            //---------------------------------
+
             return {
                 changeTimestamp: changeTimestamp,
                 changeName: changeName,
-                changeDescription: changeDescription
+                changeDescription: changeDescription,
+
+                highlights: highlights
             }
         }]
     );

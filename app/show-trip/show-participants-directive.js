@@ -3,8 +3,8 @@
 
     angular.module('tripApp').directive('showParticipants', [function () {
 
-        var controller = ['configService', 'currentUserService', 'membersService', 'metadataService', 'Participant',
-            function (configService, currentUserService, membersService, metadataService, Participant) {
+        var controller = ['configService', 'currentUserService', 'membersService', 'metadataService', 'changeService', 'Participant',
+            function (configService, currentUserService, membersService, metadataService, changeService, Participant) {
 
                 var showParticipantsController = this;
 
@@ -91,7 +91,7 @@
                     if (!showParticipantsController.originalParticipants) {
                         return "";
                     }
-                    var classname = (participant.isRemoved ? "isRemoved" : "") + " " + (showParticipantsController.highlights[prop + participant.line] || showParticipantsController.highlights[participant.line] || "");
+                    var classname = (participant.isRemoved ? "isRemoved" : "") + " " + (changeService.highlights[prop + participant.line] || changeService.highlights[participant.line] || "");
                     var originalParticipant = showParticipantsController.originalParticipants[participant.line];
                     if (participant.isNew) {
                         for (var p in metadataService.getParticipantsMetadata()) {
@@ -123,7 +123,6 @@
                 participants: '=',
                 nonmembers: '=',
                 originalParticipants: '=',
-                highlights: '=',
                 update: '&'
             },
             controller: controller,

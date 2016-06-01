@@ -18,7 +18,7 @@
             controller.originalState = null;
             controller.lastState = null;
 
-            controller.highlights = {};
+            changeService.highlights = {};
 
 
             //-----------------------------------

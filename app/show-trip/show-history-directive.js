@@ -31,13 +31,13 @@
                         }
                     }
 
-                    showHistoryController.highlights = {};
+                    changeService.highlights = {};
                     for (g in showHistoryController.changes) {
                         var group = showHistoryController.changes[g][0];
                         if (group.classname != "") {
                             for (c in showHistoryController.changes[g]) {
                                 var change = showHistoryController.changes[g][c];
-                                showHistoryController.highlights[(change.action == "insert" ? "" : change.column) +
+                                changeService.highlights[(change.action == "insert" ? "" : change.column) +
                                          (change.line == null ? "" : change.line)] = group.classname;
                             }
                         }
@@ -52,8 +52,7 @@
             scope: {},
             bindToController: {
                 showhistory: '=',
-                changes: '=',
-                highlights: '='
+                changes: '='
             },
             controller: controller,
             controllerAs: 'showHistoryController',

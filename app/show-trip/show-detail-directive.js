@@ -3,8 +3,8 @@
 
     angular.module('tripApp').directive('showDetail', [function () {
 
-        var controller = ['metadataService',
-            function (metadataService) {
+        var controller = ['metadataService', 'changeService',
+            function (metadataService, changeService) {
 
                 var showDetailController = this;
 
@@ -15,7 +15,7 @@
                     var tripsMetadata = metadataService.getTripsMetadata();
                     var before = ToSql(showDetailController.originalTripDetail[prop], tripsMetadata[prop]);
                     var after = ToSql(showDetailController.tripDetail[prop], tripsMetadata[prop]);
-                    return (before == after ? "" : "updated") + " " + (showDetailController.highlights[prop] || "");
+                    return (before == after ? "" : "updated") + " " + (changeService.highlights[prop] || "");
                 };
 
                 showDetailController.textAreaFocus = function(id) {
@@ -36,7 +36,6 @@
                 tripeditable: '=',
                 tripDetail: '=',
                 originalTripDetail: '=',
-                highlights: '=',
                 update: '&'
             },
             controller: controller,
