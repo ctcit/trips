@@ -27,12 +27,12 @@
                         <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox" ng-change="showParticipantsController.update()" ng-model="participant.isRemoved" />
                     </td>
                     <td ng-class="showParticipantsController.participantClass(participant,'name')">
-                        <select ng-show="participant.nameui == '(Members)'"
+                        <select ng-if="participant.nameui == '(Members)'"
                                 ng-change="showParticipantsController.participantUpdateName(participant)" ng-model="participant.name">
                             <option></option>
-                            <option ng-repeat="member in showParticipantsController.members">{{member}}</option>
+                            <option ng-repeat="member in ::showParticipantsController.members track by member.id">{{::member}}</option>
                         </select>
-                        <select ng-show="participant.nameui == '(Full)'"
+                        <select ng-if="participant.nameui == '(Full)'"
                                 ng-change="showParticipantsController.participantUpdateName(participant)" ng-model="participant.name">
                             <option></option>
                             <optgroup label="Non Members">
@@ -40,16 +40,16 @@
                                 <option>(Someone else)</option>
                             </optgroup>
                             <optgroup label="Members">
-                                <option ng-repeat="member in showParticipantsController.members">{{member.name}}</option>
+                                <option ng-repeat="member in ::showParticipantsController.members track by member.id">{{::member.name}}</option>
                             </optgroup>
                         </select>
-                        <input ng-show="participant.nameui == '(Readonly)'"
+                        <input ng-if="participant.nameui == '(Readonly)'"
                                ng-disabled="true"
                                type="text" ng-model="participant.name" />
-                        <input ng-show="participant.nameui == '(Someone else)'"
+                        <input ng-if="participant.nameui == '(Someone else)'"
                                type="text" ng-model="participant.name"
                                ng-change="showParticipantsController.participantUpdateName(participant)" />
-                        <button ng-show="participant.nameui == '(Someone else)'"
+                        <button ng-if="participant.nameui == '(Someone else)'"
                                 type='input'
                                 ng-click="showParticipantsController.participantCancelSomeoneElse(participant)"
                                 title="Select a member">

@@ -17,10 +17,6 @@
                     showParticipantsController.nonmembersByName[nonmember.name] = nonmember;
                 })
 
-                showParticipantsController.participants.forEach(function (participant, i) {
-                    participant.nameui = (showParticipantsController.tripeditable ? "(Full)" : (participant.iseditable ? "(Members)" : "(Readonly)"));
-                })
-
                 showParticipantsController.visibleParticipants = 0;
                 showParticipantsController.participants.forEach(function (participant) {
                     if (!participant.isNew && participant.line >= showParticipantsController.visibleParticipants) {

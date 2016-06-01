@@ -63,6 +63,11 @@
                                 }
                                 participant.line = i;
                             }
+                            // add derived properties before saving original state
+                            controller.trip.participants.forEach(function (participant, i) {
+                                participant.nameui = (controller.tripeditable ? "(Full)" : (participant.iseditable ? "(Members)" : "(Readonly)"));
+                            })
+
 
                             controller.editSession.changes.forEach(function (group) {
                                 return group.forEach(function (change) {
