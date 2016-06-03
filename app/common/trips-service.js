@@ -20,22 +20,24 @@
 
             var editSession = undefined;
 
-
             //---------------------------------
 
             function getTripGroups() {
 
                 return $http.get(site.getresturl + "?action=gettrips")
                     .then(function (response) {
+
                         if (ValidateResponse(response)) {
+                            var data = response.data;
+
                             // cache these values
-                            config = response.config;
-                            metadata = response.metadata;
-                            userId = response.userid;
+                            config = data.config;
+                            metadata = data.metadata;
+                            userId = data.userid;
 
                             // resolve on this value
-                            return response.groups.map(function (groupData) {
-                                return new Group(groupData, response.metadata.trips);
+                            return data.groups.map(function (groupData) {
+                                return new Group(groupData, data.metadata.trips);
                             });
                         }
                     });
@@ -48,33 +50,35 @@
                     .then(function (response) {
 
                         if (ValidateResponse(response)) {
+                            var data = response.data;
+
                             // cache these values
 
-                            config = response.config;
-                            metadata = response.metadata;
-                            members = response.members ? response.members : [];
-                            userId = response.userid;
+                            config = data.config;
+                            metadata = data.metadata;
+                            members = data.members ? data.members : [];
+                            userId = data.userid;
 
                             // Trip
-                            var tripDetail = new TripDetail(response.trip, response.metadata.trips);
+                            var tripDetail = new TripDetail(data.trip, data.metadata.trips);
                             var tripEmail = new TripEmail();
                             tripEmail.setSubject("RE: " + tripDetail.title + " trip on " + tripDetail.FullDate());
-                            var participants = response.participants ? response.participants.map(function (participant) {
-                                return new Participant(participant, response.metadata.participants);
+                            var participants = data.participants ? data.participants.map(function (participant) {
+                                return new Participant(participant, data.metadata.participants);
                             }) : [];
-                            var nonmembers = response.nonmembers ? response.nonmembers : [];
+                            var nonmembers = data.nonmembers ? data.nonmembers : [];
                             trip = new Trip(tripDetail, tripEmail, participants, nonmembers);
                             
                             // EditSession
-                            var editId = response.editid;
-                            var changes = !response.changes ? [] :
-                                response.changes.map(function (group) {
+                            var editId = data.editid;
+                            var changes = !data.changes ? [] :
+                                data.changes.map(function (group) {
                                     return group.map(function (change) {
                                         return new Change(change);
                                     })
                                 });
-                            var edits = response.edits ? response.edits : [];
-                            var modifications = response.modifications ? response.modifications : [];
+                            var edits = data.edits ? data.edits : [];
+                            var modifications = data.modifications ? data.modifications : [];
                             editSession = new EditSession(editId, changes, edits, modifications);
 
                             // resolve on this value
@@ -108,10 +112,10 @@
             //---------------------------------
 
             function putTrip(tripId, diffs) {
-                return $http.post("api.post.php", { tripid: tripId, diffs: diffs })
+                return $http.post(site.postresturl, { tripid: tripId, diffs: diffs })
                     .then(function (response) {
-                        if (ValidateResponse(result)) {
-                            return getTrip(tripid, editId);
+                        if (ValidateResponse(response)) {
+                            return getTrip(tripId, editId);
                         }
                     });
             };
@@ -120,15 +124,14 @@
             //---------------------------------
 
             function closeEditSession(editId) {
-                return $http.get("api.get.php?action=editend&editid=" + editId);
+                return $http.get(site.getresturl + "?action=editend&editid=" + editId);
             };
 
             //---------------------------------
 
             function ValidateResponse(response) {
                 if (typeof (response) == "string") {
-                    state.savestate = response;
-                    state.$timeout(function () { state.$scope.$apply(); }, 0);
+// todo                    savestate = response;
                 }
                 return typeof (response) == "object";
             }

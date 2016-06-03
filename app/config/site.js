@@ -23,7 +23,7 @@
         {
             url: site_url,
             getresturl: site_url + '/trips/api.get.php',
-            postresturl: site_url + '/trips/api.get.php'
+            postresturl: site_url + '/trips/api.post.php'
     });
 
 }());

@@ -14,6 +14,7 @@
             controller.editSession = null;
             controller.tripeditable = false;
 
+            controller.loading = true;
             controller.savestate = "Loading...";
             controller.originalState = null;
             controller.lastState = null;
@@ -86,6 +87,7 @@
                             $timeout(); // force a digest cycle
                             $timeout(function () { controller.editRefresh(); }, configService.editRefreshInSec() * 1000); // schedule next refresh
 
+                            controller.loading = false;
                             controller.savestate = "";
                         })
                     
