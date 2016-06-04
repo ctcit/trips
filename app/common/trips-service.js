@@ -199,7 +199,7 @@
                 getTripGroups: getTripGroups,
 
                 getTrip: getTrip,
-                tripeditable: tripeditable,
+                tripeditable: function () { return tripeditable; },
 
                 getConfig: getConfig,
                 getMetadata: getMetadata,
@@ -212,7 +212,7 @@
 
                 closeEditSession: closeEditSession,
 
-                lastResponseMessage: lastResponseMessage
+                lastResponseMessage: function () { return lastResponseMessage; }
             }
         }]
     );

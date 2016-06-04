@@ -46,7 +46,7 @@
                     ])
                         .then(function () {
 
-                            controller.tripeditable = controller.tripeditable || tripsService.tripeditable;
+                            controller.tripeditable = controller.tripeditable || tripsService.tripeditable();
 
                             var state = new State(controller.trip);
                             controller.originalState = angular.copy(state);
@@ -176,9 +176,13 @@
                 controller.savestate = "Saving";
                 tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
                     .then(function (trip) {
-                        controller.savestate = "Saved " + tripsService.lastResponseMessage ? tripsService.lastResponseMessage : "";
-                        controller.trip = trip;
-                        $timeout();
+                        return tripsService.getEditSession()
+                                .then(function (editSession) {
+                                    controller.savestate = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
+                                    controller.trip = trip;
+                                    controller.editSession = editSession;
+                                    $timeout();
+                                })
                     }, function (data, status) {
                         controller.savestate = "FAILED " + data + " " + status;
                         $timeout();
