@@ -30,12 +30,12 @@
                     change.line == null
                         ? change.verb + " " + changeColName(change) + " from '" + change.before + "' to '" + change.after + "'" :
                     change.column == "memberid"
-                        ? change.verb + " line " + (parseInt(change.line) + 1) + " Member from '" +
+                        ? change.verb + " line " + (change.line + 1) + " Member from '" +
                                     changeName(change.before || -1) + "' to '" + changeName(change.after || -1) + "'" :
                     metadataService.getMetadataForTable(changeTable(change))[change.column].Type == "tinyint(1)"
-                        ? change.verb + " line " + (parseInt(change.line) + 1) + " " + changeColName(change) + " from " +
+                        ? change.verb + " line " + (change.line + 1) + " " + changeColName(change) + " from " +
                                     (change.before == true ? "yes" : "no") + " to " + (change.after == true ? "yes" : "no")
-                        : change.verb + " line " + (parseInt(change.line) + 1) + " " + changeColName(change) + " from '" +
+                        : change.verb + " line " + (change.line + 1) + " " + changeColName(change) + " from '" +
                                     change.before + "' to '" + change.after + "'";
             }
 

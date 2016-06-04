@@ -19,6 +19,7 @@
 
                 Initialize(this, participantData, participantMetadata);
 
+                this.line = parseInt(this.line); // get this back as string - but simpler to deal with it as an number
                 this.lastname = this.name;
             }
 

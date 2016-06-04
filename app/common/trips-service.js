@@ -17,8 +17,11 @@
             var userId = undefined;
 
             var trip = undefined;
+            var tripeditable = false;
 
             var editSession = undefined;
+
+            var lastResponseMessage = undefined;
 
             //---------------------------------
 
@@ -44,7 +47,7 @@
             }
 
             function getTrip(tripId, editId) {
-                var queryString = "?action=gettrip&tripid=" + tripId + (editId != undefined ? ("&editid=" + editid) : "");
+                var queryString = "?action=gettrip&tripid=" + tripId + (editId != undefined ? ("&editid=" + editId) : "");
 
                 return $http.get(site.getresturl + queryString)
                     .then(function (response) {
@@ -52,34 +55,90 @@
                         if (ValidateResponse(response)) {
                             var data = response.data;
 
+                            //------------------
                             // cache these values
 
                             config = data.config;
                             metadata = data.metadata;
                             members = data.members ? data.members : [];
-                            userId = data.userid;
+                            userId = data.userid.toString(); // all other member ids are string
 
+                            //------------------
                             // Trip
                             var tripDetail = new TripDetail(data.trip, data.metadata.trips);
+
                             var tripEmail = new TripEmail();
                             tripEmail.setSubject("RE: " + tripDetail.title + " trip on " + tripDetail.FullDate());
+
                             var participants = data.participants ? data.participants.map(function (participant) {
                                 return new Participant(participant, data.metadata.participants);
                             }) : [];
-                            var nonmembers = data.nonmembers ? data.nonmembers : [];
+                            // add additional particpant lines; also preserve participants in their original line position
+                            var maxLine = participants
+                                .map(function (participant) { return participant.line; })
+                                .reduce(function (previous, current) { return Math.max(previous, current); }, 0);
+                            var maxLength = Math.max(maxLine + 1, participants.length) + (config.AdditionalLines ? config.AdditionalLines : 0);
+                            var tempParticipants = participants.slice(); //shallow copy
+                            for (var i = 0; i < maxLength ; i++) {
+                                participants[i] = new Participant({ isNew: true, line: i });
+                            }
+                            tempParticipants.forEach(function (participant) {
+                                participants[participant.line] = participant;
+                            })
+
+
+                            tripeditable = false;
+                            members.some(function (member) {
+                                if (member.id == userId) {
+                                    tripeditable = member.role != null;
+                                    return true;
+                                }
+                                return false;
+                            });
+                            tripeditable = tripeditable || participants.some(function (participant) {
+                                return participant.memberid == userId && participant.isLeader;
+                            })
+                            participants.forEach(function (participant, i) {
+                                participant.nameui = (tripeditable ? "(Full)" : (participant.iseditable ? "(Members)" : "(Readonly)"));
+                            })
+
+                            var nonmembers = [];
+                            if (data.nonmembers) {
+                                for (var i in data.nonmembers) {
+                                    nonmembers.push(data.nonmembers[i]);
+                                }
+                            }
+
                             trip = new Trip(tripDetail, tripEmail, participants, nonmembers);
                             
+                            //------------------
                             // EditSession
                             var editId = data.editid;
+
                             var changes = !data.changes ? [] :
                                 data.changes.map(function (group) {
                                     return group.map(function (change) {
                                         return new Change(change);
                                     })
                                 });
+
                             var edits = data.edits ? data.edits : [];
+
                             var modifications = data.modifications ? data.modifications : [];
+
                             editSession = new EditSession(editId, changes, edits, modifications);
+
+                            //------------------
+
+                            editSession.changes.forEach(function (group) {
+                                return group.forEach(function (change) {
+                                    if (change.line != null && participants[change.line]) {
+                                        trip.participants[change.line].iseditable = change.memberid == userId;
+                                    }
+                                })
+                            });
+
+                            //------------------
 
                             // resolve on this value
                             return trip;
@@ -111,10 +170,11 @@
 
             //---------------------------------
 
-            function putTrip(tripId, diffs) {
+            function putTrip(tripId, editId, diffs) {
                 return $http.post(site.postresturl, { tripid: tripId, diffs: diffs })
                     .then(function (response) {
                         if (ValidateResponse(response)) {
+                            lastResponseMessage = response.data.result ? response.data.result : undefined;
                             return getTrip(tripId, editId);
                         }
                     });
@@ -130,10 +190,7 @@
             //---------------------------------
 
             function ValidateResponse(response) {
-                if (typeof (response) == "string") {
-// todo                    savestate = response;
-                }
-                return typeof (response) == "object";
+                return response && response.data && typeof (response.data) == "object";
             }
 
             //---------------------------------
@@ -142,6 +199,7 @@
                 getTripGroups: getTripGroups,
 
                 getTrip: getTrip,
+                tripeditable: tripeditable,
 
                 getConfig: getConfig,
                 getMetadata: getMetadata,
@@ -152,7 +210,9 @@
 
                 putTrip: putTrip,
 
-                closeEditSession: closeEditSession
+                closeEditSession: closeEditSession,
+
+                lastResponseMessage: lastResponseMessage
             }
         }]
     );

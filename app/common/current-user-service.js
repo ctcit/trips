@@ -6,7 +6,7 @@
         ['tripsService', 'membersService',
         function (tripsService, membersService) {
 
-            var _userId = 0;
+            var _userId = undefined;
 
             //---------------------------------
 

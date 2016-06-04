@@ -10,9 +10,9 @@
 
             controller.tripId = $stateParams.tripId;
 
+            controller.tripeditable = false;
             controller.trip = null;
             controller.editSession = null;
-            controller.tripeditable = false;
 
             controller.loading = true;
             controller.savestate = "Loading...";
@@ -36,10 +36,7 @@
 
     	                membersService.initMembers()
                             .then(function() {
-                                return currentUserService.initCurrentUser()
-                                    .then(function (currentUser) {
-                                        controller.tripeditable = currentUser && currentUser.role != null;
-                                    })
+                                return currentUserService.initCurrentUser();
                             }),
 
     	                tripsService.getEditSession()
@@ -49,34 +46,7 @@
                     ])
                         .then(function () {
 
-                            var currentUserId = currentUserService.userId();
-
-                            controller.tripeditable = controller.tripeditable || controller.trip.participants.some(function (participant) {
-                                return participant.memberid == currentUserId && participant.isLeader;
-                            })
-
-                            // add additional particpant lines before saving original state
-                            var maxLength = controller.trip.participants.length + configService.additionalLines();
-                            for (var i = 0; i < maxLength ; i++) {
-                                var participant = controller.trip.participants[i] || new Participant({ isNew: true });
-                                if (!participant.line || parseInt(participant.line) > i) {
-                                    controller.trip.participants.splice(i, 0, participant);
-                                }
-                                participant.line = i;
-                            }
-                            // add derived properties before saving original state
-                            controller.trip.participants.forEach(function (participant, i) {
-                                participant.nameui = (controller.tripeditable ? "(Full)" : (participant.iseditable ? "(Members)" : "(Readonly)"));
-                            })
-
-
-                            controller.editSession.changes.forEach(function (group) {
-                                return group.forEach(function (change) {
-                                    if (change.line && controller.trip.participants[change.line]) {
-                                        controller.trip.participants[change.line].iseditable = change.memberid == currentUserId;
-                                    }
-                                })
-                            });
+                            controller.tripeditable = controller.tripeditable || tripsService.tripeditable;
 
                             var state = new State(controller.trip);
                             controller.originalState = angular.copy(state);
@@ -204,9 +174,9 @@
                 }
 
                 controller.savestate = "Saving";
-                tripsService.putTrip(controller.tripId, diffs)
+                tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
                     .then(function (trip) {
-                        controller.savestate = "Saved " + result.result;
+                        controller.savestate = "Saved " + tripsService.lastResponseMessage ? tripsService.lastResponseMessage : "";
                         controller.trip = trip;
                         $timeout();
                     }, function (data, status) {
