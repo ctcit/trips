@@ -122,11 +122,7 @@
                                     })
                                 });
 
-                            var edits = data.edits ? data.edits : [];
-
-                            var modifications = data.modifications ? data.modifications : [];
-
-                            editSession = new EditSession(editId, changes, edits, modifications);
+                            editSession = new EditSession(editId, changes, [], []);
 
                             //------------------
 
@@ -144,6 +140,21 @@
                             return trip;
                         }
                     });
+            }
+
+            function getTripEdits(tripId, editId) {
+                var queryString = "?action=editrefresh&tripid=" + tripId + "&editid=" + editId;
+
+                return $http.get(site.getresturl + queryString)
+                    .then(function (response) {
+
+                        if (ValidateResponse(response)) {
+                            var data = response.data;
+                            editSession.edits = data.edits ? data.edits : [];
+                            editSession.modifications = data.modifications ? data.modifications : [];
+                        }
+                    });
+
             }
 
             function getConfig() {
@@ -207,6 +218,7 @@
                 getUserId: getUserId,
 
                 getEditSession: getEditSession,
+                getTripEdits: getTripEdits,
 
                 putTrip: putTrip,
 

@@ -53,12 +53,10 @@
                             controller.lastState = angular.copy(state);
                             controller.reset();
 
-                            generateWarnings(controller.trip, controller.editSession);
-                            $timeout(); // force a digest cycle
-                            $timeout(function () { controller.editRefresh(); }, configService.editRefreshInSec() * 1000); // schedule next refresh
-
                             controller.loading = false;
                             controller.savestate = "";
+
+                            $timeout(function () { controller.editRefresh(); }, 0);
                         })
                     
     	        });
@@ -73,18 +71,13 @@
 
             controller.editRefresh = function () {
 
-                tripsService.getTrip(controller.tripId)
-                    .then(function (trip) {
+                tripsService.getTripEdits(controller.tripId, controller.editSession.editId)
+                    .then(function () {
+                        generateWarnings(controller.trip, controller.editSession);
 
-                        tripsService.getEditSession()
-                            .then(function (editSession) {
-                                generateWarnings(trip, editSession);
-
-                                $timeout(); // force a digest cycle
-                                $timeout(function () { controller.editRefresh(); }, configService.editRefreshInSec() * 1000); // schedule next refresh
-                            })
+                        $timeout(); // force a digest cycle
+                        $timeout(function () { controller.editRefresh(); }, configService.editRefreshInSec() * 1000); // schedule next refresh
                     });
-
             };
 
 
