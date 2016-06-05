@@ -1,7 +1,7 @@
 ﻿(function () {
     'use strict';
 
-    angular.module('tripApp').directive('showTripEmail', [function () {
+    angular.module('tripSignupApp').directive('showTripEmail', [function () {
 
         var controller = [
             function () {

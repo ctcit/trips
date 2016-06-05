@@ -1,7 +1,7 @@
 ﻿(function () {
     'use strict';
 
-    angular.module('tripApp').directive('showDetail', [function () {
+    angular.module('tripSignupApp').directive('showDetail', [function () {
 
         var controller = ['metadataService', 'changeService',
             function (metadataService, changeService) {

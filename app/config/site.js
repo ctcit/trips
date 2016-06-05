@@ -7,7 +7,7 @@
     if (!site_url) {
         // Set global constant site.url from window.location
         var full_url = window.location.href,
-            pathMatcher = new RegExp('(.*?)/tripreports.*'),
+            pathMatcher = new RegExp('(.*?)/tripsignup.*'),
             bits = pathMatcher.exec(full_url),
             site_url = 'invalidurl';
         if (bits != null) {
@@ -19,11 +19,11 @@
 
     console.log("Setting site url to " + site_url);
 
-    angular.module('tripApp').constant('site',
+    angular.module('tripSignupApp').constant('site',
         {
             url: site_url,
-            getresturl: site_url + '/trips/api.get.php',
-            postresturl: site_url + '/trips/api.post.php'
+            getresturl: site_url + '/tripsignup/api/api.get.php',
+            postresturl: site_url + '/tripsignup/api/api.post.php'
     });
 
 }());

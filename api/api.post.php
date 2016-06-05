@@ -1,6 +1,6 @@
 <?php
 define( '_VALID_MOS', 1 );
-require_once( '../includes/alastair.php' );
+require_once( '../../includes/alastair.php' );
 require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 

@@ -1,12 +1,18 @@
-﻿<!doctype html>
-<!-- The Trips app.
--->
-<html lang="en" ng-app="tripSignupApp">
+﻿<!DOCTYPE html>
+<html>
 <head>
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Show Trip</title>
+    <title>Jasmine Spec Runner v2.3.4</title>
+
+    <link rel="shortcut icon" type="image/png" href="tests/third-party/jasmine-standalone-2.3.4/lib/jasmine-2.3.4/jasmine_favicon.png">
+    <link rel="stylesheet" href="tests/third-party/jasmine-standalone-2.3.4/lib/jasmine-2.3.4/jasmine.css">
+
+    <script src="tests/third-party/jasmine-standalone-2.3.4/lib/jasmine-2.3.4/jasmine.js"></script>
+    <script src="tests/third-party/jasmine-standalone-2.3.4/lib/jasmine-2.3.4/jasmine-html.js"></script>
+    <script src="tests/third-party/jasmine-standalone-2.3.4/lib/jasmine-2.3.4/boot.js"></script>
+
+    <!-- -----------------------------------------------   -->
+    <!-- include source files here... -->
 
     <!-- Third-party scripts/styles -->
     <script src="third-party/jquery.min.js"></script> <!-- https://ajax.googleapis.com/ajax/libs/jquery/1.12.3/jquery.min.js" -->
@@ -17,7 +23,6 @@
     <script src="third-party/angular-animate.min.js"></script> <!-- http://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular-animate.js -->
 
     <script src="third-party/bootstrap.min.js"></script> <!-- http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js -->
-    <link rel="stylesheet" href="third-party/bootstrap.min.css"> <!-- http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css -->
 
     <!-- Our app scripts/styles -->
     <script src="app/app.js"></script>
@@ -52,11 +57,17 @@
     <script src="app/show-trip/show-trip-email-directive.js"></script>
     <script src="app/show-trip/show-history-directive.js"></script>
 
-    <link rel="stylesheet" href="app/styles/trips.css">
+    <!-- -----------------------------------------------   -->
+
+    <!-- include spec files here... -->
+    <script src="tests/third-party/angular-mocks.js"></script>
+    <script src="tests/show-all-trips/show-all-trips-controller.tests.js"></script>
+    <script src="tests/show-trip/show-trip-controller.tests.js"></script>
+
+    <!-- -----------------------------------------------   -->
 
 </head>
 
-<body role="document">
-    <div ui-view="app-content"></div>
+<body>
 </body>
 </html>

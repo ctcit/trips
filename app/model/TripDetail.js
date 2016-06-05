@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
 
-    angular.module('tripApp').factory("TripDetail",
+    angular.module('tripSignupApp').factory("TripDetail",
         ['$timeout',
         function ($timeout) {
             

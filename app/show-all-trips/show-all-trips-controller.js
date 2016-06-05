@@ -2,7 +2,7 @@
 (function () {
     "use strict";
 
-    angular.module('tripApp').controller("showAllTripsController",
+    angular.module('tripSignupApp').controller("showAllTripsController",
         ['$scope', '$timeout', 'site', 'tripsService', 'Group',
         function ($scope, $timeout, site, tripsService, Group) {
 

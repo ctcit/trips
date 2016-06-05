@@ -2,7 +2,7 @@
     'use strict';
 
     // State provider
-    angular.module('tripApp').config(['$stateProvider', '$urlRouterProvider',
+    angular.module('tripSignupApp').config(['$stateProvider', '$urlRouterProvider',
       function ($stateProvider, $urlRouterProvider) {
 
           $urlRouterProvider

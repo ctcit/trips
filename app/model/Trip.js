@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
 
-    angular.module('tripApp').factory("Trip",
+    angular.module('tripSignupApp').factory("Trip",
         ['Participant',
         function (Participant) {
 

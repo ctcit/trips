@@ -3,14 +3,14 @@
 
     /* App Module */
 
-    var tripApp = angular.module('tripApp', [
+    var tripSignupApp = angular.module('tripSignupApp', [
       'ngRoute',
       'ngResource',
       'ui.router',
       'ngAnimate'
     ]);
     
-    tripApp.config( [
+    tripSignupApp.config( [
         '$compileProvider',
         function($compileProvider) {
             $compileProvider.aHrefSanitizationWhitelist(/^\s*(https?|ftp|mailto|chrome-extension):|data:image\//);
@@ -20,7 +20,7 @@
     
     //// Define global functions for the app
     
-    //tripApp.run(function ($rootScope, $sce) {
+    //tripSignupApp.run(function ($rootScope, $sce) {
     //    $rootScope.range = function(start, stop) {
     //        // Equivalent to Python's range function
     //        var i = 0,
@@ -47,19 +47,19 @@
     //    };
     //});
     
-    tripApp.filter('unsafe', function ($sce) {
+    tripSignupApp.filter('unsafe', function ($sce) {
         return $sce.trustAsHtml;
     });
 
     // This is meant to prevent caching of old view code, but doesn't
     // always work.
-    tripApp.run(function($rootScope, $templateCache) {
+    tripSignupApp.run(function($rootScope, $templateCache) {
        $rootScope.$on('$viewContentLoaded', function() {
           $templateCache.removeAll();
        });
     });
     
-    tripApp.run(function ($state) {
+    tripSignupApp.run(function ($state) {
         $state.go('trip');
     });
 

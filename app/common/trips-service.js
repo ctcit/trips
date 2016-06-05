@@ -2,7 +2,7 @@
 (function () {
     'use strict';
 
-    angular.module('tripApp').factory('tripsService',
+    angular.module('tripSignupApp').factory('tripsService',
         ['site', '$http', '$q', 'Group', 'Trip', 'TripDetail', 'Participant', 'TripEmail', 'EditSession', 'Change',
         function (site, $http, $q, Group, Trip, TripDetail, Participant, TripEmail, EditSession, Change) {
 

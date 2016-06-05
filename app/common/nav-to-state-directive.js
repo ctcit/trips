@@ -2,7 +2,7 @@
     'use strict';
 
     // Directive to navigate to new state 
-    angular.module('tripApp').directive('navToState', [function () {
+    angular.module('tripSignupApp').directive('navToState', [function () {
 
         var controller = ['$scope', '$state',
             function ($scope, $state) {

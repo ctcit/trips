@@ -2,7 +2,7 @@
 (function () {
     "use strict";
 
-    angular.module('tripApp').controller("showTripController",
+    angular.module('tripSignupApp').controller("showTripController",
         ['$window', '$q', '$timeout', '$stateParams', 'site', 'configService', 'membersService', 'metadataService', 'currentUserService', 'tripsService', 'changeService', 'State', 'TripDetail', 'TripEmail', 'Participant', 'Change',
         function ($window, $q, $timeout, $stateParams, site, configService, membersService, metadataService, currentUserService, tripsService, changeService, State, TripDetail, TripEmail, Participant, Change) {
 
