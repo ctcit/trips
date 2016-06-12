@@ -31,12 +31,13 @@
             },
             controller: controller,
             controllerAs: 'navToStateController',
-            template:
-                '<a ' +
-                    'ng-href="../index.php/trip?goto={{navToStateController.url}}" ' +
-                    'ng-click="navToStateController.navigateToState($event)" ' +
-                    'ng-transclude>' +
-                '</a>'
+            template: function (elem, attr) {
+                return '<' + attr.type + ' ' +
+                            'ng-href="../index.php/trip?goto={{navToStateController.url}}" ' +
+                            'ng-click="navToStateController.navigateToState($event)" ' +
+                            'ng-transclude>' +
+                       '</' + attr.type + '>';
+            }
         };
     }]);
 

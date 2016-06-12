@@ -23,7 +23,10 @@
                                 {{trip.Date()}}
                             </td>
                             <td ng-click="trip.showdetail = !trip.showdetail" ng-class-odd="'oddrow'">{{trip.length}}</td>
-                            <td ng-class-odd="'oddrow'"><a ui-sref="trip.showTrip({tripId: trip.tripid })">{{trip.title}}</a></td>
+                            <td ng-class-odd="'oddrow'">
+                                <!--<a ui-sref="trip.showTrip({tripId: trip.tripid })">{{trip.title}}</a>-->
+                                <nav-to-state type="a" name="trip.showTrip" params="{ tripId: {{trip.tripid}} }"><span ng-bind-html='trip.title | unsafe'><span></nav-to-state>
+                            </td>
                             <td class="desktop-only" ng-class-odd="'oddrow'">{{trip.grade}}</td>
                             <td class="desktop-only" ng-class-odd="'oddrow'">{{trip.leader}}</td>
                             <td class="desktop-only" ng-class-odd="'oddrow'" ng-show="group.isMyTrips">{{trip.role}}</td>

@@ -2,9 +2,10 @@
     <div class="container">
         <div class="noprint">
             <div>
-                <button ui-sref="trip.showAllTrips">
+                <nav-to-state type="button" name="trip.showAllTrips">
+                    <!--<button ui-sref="trip.showAllTrips">-->
                     <img src="app/assets/ctc.png" />All Trips
-                </button>
+                </nav-to-state>
                 <button ng-disabled="!controller.saveEnabled()" ng-click="controller.save(false)">
                     <img src="app/assets/save.png" />Save
                 </button>
