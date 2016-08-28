@@ -1,9 +1,9 @@
 <?php
-
+/*
 require_once( '/home1/ctcweb9/public_html/globals.php' );
 require_once( '/home1/ctcweb9/public_html/configuration.php' );
 require_once( '/home1/ctcweb9/public_html/includes/joomla.php' );
-require_once( '/home1/ctcweb9/public_html/includes/sef.php' );
+require_once( '/home1/ctcweb9/public_html/includes/sef.php' ); // What is sef.php??
 
 
 // mainframe is an API workhorse, lots of 'core' interaction routines
@@ -17,11 +17,31 @@ if (!$con)
 {
     die('mysql_connect failed');
 }
+*/
+define('_JEXEC', 1);
+define('JPATH_BASE', dirname(dirname(__DIR__)));// Assume we are two leveld down in website
+require_once ( JPATH_BASE.'/includes/defines.php' );
+require_once ( JPATH_BASE.'/includes/framework.php' );
+$app = JFactory::getApplication('site');
+$user = JFactory::getUser();
+$config = JFactory::getConfig();
+
+
+$con        = mysql_connect("localhost",   $config->get("user"), $config->get("password"));
+// N.B. userid here is the JOOMLA id NOT the db id. The common ground here is username.
+$username   = array("id"=>$user->id,"name"=>$user->username);
+
+if (!$con)
+{
+    die('mysql_connect failed');
+}
+
+
 
 function GetLogonDetails($con,$username,$params="",$roleclause="1=1")
 {
     $userrow = SqlResultArray($con,"
-            SELECT primaryEmail,firstName,lastName
+            SELECT primaryEmail,firstName,lastName,m.id
             FROM ctcweb9_ctc.members             m
             LEFT JOIN ctcweb9_ctc.members_roles  mr  on mr.memberid = m.id
             LEFT JOIN ctcweb9_ctc.roles          r   on r.id = mr.roleid
@@ -30,7 +50,7 @@ function GetLogonDetails($con,$username,$params="",$roleclause="1=1")
     if (count($userrow))
     {
         return array(
-            "userid"    => $username["id"],
+            "userid"    => $userrow[0]["id"],
             "username"  => $username["name"],
             "email"     => $userrow[0]["primaryEmail"],
             "firstname" => $userrow[0]["firstName"],
@@ -38,10 +58,7 @@ function GetLogonDetails($con,$username,$params="",$roleclause="1=1")
     }
     else
     {
-        $contentid= SqlResultArray($con,"SELECT id from ctcweb9_joom1.jos_content WHERE title = 'Redirect'");
-        $id = $contentid[0]["id"];
-        echo "<script>window.location.replace('http://www.ctc.org.nz/index.php?option=com_content&task=view&id=$id&$params');</script>";
-        die("not logged on");
+        die("You are not logged on.");
     }
 }
 

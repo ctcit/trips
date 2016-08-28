@@ -1,6 +1,6 @@
 <?php
-	define( '_VALID_MOS', 1 );
-	require_once( '/home1/ctcweb9/public_html/includes/alastair.php' );
+	define( '_JEXEC', 1 );
+	require_once( 'alastair.php' );
 	
 	$tbefore = SqlResultScalar($con,"select count(*) count from ctcweb9_trip.trips");
 	$pbefore = SqlResultScalar($con,"select count(*) count from ctcweb9_trip.participants");

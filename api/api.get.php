@@ -1,6 +1,6 @@
 <?php
-define( '_VALID_MOS', 1 );
-require_once( '../../includes/alastair.php' );
+define('_JEXEC', 1);
+require_once( 'alastair.php' );
 require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
@@ -10,7 +10,7 @@ mysql_query("SET CHARACTER SET utf8",$con);
 $action   	= strval($_GET["action"]);
 $tripid   	= intval($_GET["tripid"]);
 $editid   	= intval($_GET["editid"]);
-$logondetails	= GetLogonDetails($con,$username,$tripid == null ? "redirect=trips" : "tripid=$tripid&redirect=trips/ShowTrip.html");
+$logondetails	= GetLogonDetails($con,$username /*,$tripid == null ? "redirect=trips" : "tripid=$tripid&redirect=trips/ShowTrip.html"*/);
 $userid 	= intval($logondetails["userid"]);
 $config 	= new ReflectionClass("TripConfig");
 $metadata	= GetMetadata($con);
