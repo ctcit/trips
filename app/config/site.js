@@ -2,7 +2,7 @@
     'use strict';
 
     // change as appropriate; comment out to set it from window.location
-    var site_url = 'http://localhost/ctc34';
+    //var site_url = 'http://localhost/ctc34';
 
     if (!site_url) {
         // Set global constant site.url from window.location
