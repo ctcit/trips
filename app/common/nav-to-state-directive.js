@@ -33,7 +33,7 @@
             controllerAs: 'navToStateController',
             template: function (elem, attr) {
                 return '<' + attr.type + ' ' +
-                            'ng-href="../index.php/trip?goto={{navToStateController.url}}" ' +
+                            'ng-href="../index.php/current-trips?goto={{navToStateController.url}}" ' +
                             'ng-click="navToStateController.navigateToState($event)" ' +
                             'ng-transclude>' +
                        '</' + attr.type + '>';
