@@ -3,8 +3,10 @@
     "use strict";
 
     angular.module('tripSignupApp').controller("showTripController",
-        ['$window', '$q', '$timeout', '$stateParams', 'site', 'configService', 'membersService', 'metadataService', 'currentUserService', 'tripsService', 'changeService', 'State', 'TripDetail', 'TripEmail', 'Participant', 'Change',
-        function ($window, $q, $timeout, $stateParams, site, configService, membersService, metadataService, currentUserService, tripsService, changeService, State, TripDetail, TripEmail, Participant, Change) {
+        ['$scope', '$window', '$q', '$timeout', '$stateParams', 'site', 'configService', 'membersService', 'metadataService', 
+		 'currentUserService', 'tripsService', 'changeService', 'State', 'TripDetail', 'TripEmail', 'Participant', 'Change',
+        function ($scope, $window, $q, $timeout, $stateParams, site, configService, membersService, metadataService, 
+				  currentUserService, tripsService, changeService, State, TripDetail, TripEmail, Participant, Change) {
 
             var controller = this;
 
@@ -20,6 +22,10 @@
             controller.lastState = null;
 
             changeService.highlights = {};
+			
+			$scope.$on("$destroy", function(){
+				tripsService.closeEditSession(controller.editId);
+			});
 
 
             //-----------------------------------
@@ -89,8 +95,10 @@
                     controller.warnings.push('This trip is CLOSED. Contact the leader for more information.');
                 }
 
-                editSession.edits.forEach(function (edit, i) {
-                    controller.warnings.push('This is also being edited by ' + membersService.getMember(edit.memberid).name + (i == 0 ? "" : " (" + (i + 1) + ")"));
+                editSession.edits.forEach(function (edit) {
+					if (edit.id != editSession.editId) {
+						controller.warnings.push('This is also being edited by ' + membersService.getMember(edit.memberid).name);
+					}
                 });
 
                 editSession.modifications.forEach(function (modification, i) {

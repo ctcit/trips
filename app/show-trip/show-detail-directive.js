@@ -3,8 +3,8 @@
 
     angular.module('tripSignupApp').directive('showDetail', [function () {
 
-        var controller = ['metadataService', 'changeService',
-            function (metadataService, changeService) {
+        var controller = ['$sce', 'metadataService', 'changeService',
+            function ($sce, metadataService, changeService) {
 
                 var showDetailController = this;
 
@@ -23,6 +23,10 @@
                         $(this).attr('rows', $(this).val().split('\n').length);
                     });
                 };
+				
+				showDetailController.getMapHtml = function() {
+					return $sce.trustAsHtml(showDetailController.tripDetail.mapHtml);
+				};
 
 
             }];

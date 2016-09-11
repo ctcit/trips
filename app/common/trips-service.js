@@ -195,7 +195,7 @@
             //---------------------------------
 
             function closeEditSession(editId) {
-                return $http.get(site.getresturl + "?action=editend&editid=" + editId);
+                return $http.get(site.getresturl + "?action=editend&editid=" + editSession.editId);
             };
 
             //---------------------------------

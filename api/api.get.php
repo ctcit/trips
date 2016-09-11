@@ -111,24 +111,35 @@ if ($action == "gettrips") {
 				WHERE tripid = $tripid and memberid = $userid");
 				
 	if ($editid == null) {
-		SqlExecOrDie($con,"	INSERT ctcweb9_trip.edit(tripid,memberid,`read`,`current`)
+		$editid = SqlResultScalar($con,"
+					SELECT id
+					FROM ctcweb9_trip.edit
+					WHERE tripid=$tripid and memberid=$userid and `read` > DATE_ADD(utc_timestamp(),INTERVAL -10 SECOND)");
+					
+		if ($editid == null) {
+			SqlExecOrDie($con,"
+					INSERT ctcweb9_trip.edit(tripid,memberid,`read`,`current`)
 					VALUES($tripid,$userid,utc_timestamp(),utc_timestamp())");
-		$result["editid"] = mysql_insert_id($con);
+			$editid = mysql_insert_id($con);
+		}
+		
 	} else {
-		SqlExecOrDie($con,"	UPDATE ctcweb9_trip.edit 
+		SqlExecOrDie($con,"
+					UPDATE ctcweb9_trip.edit 
 					SET `current` = utc_timestamp(),
-					    `read` = utc_timestamp() WHERE id=$editid");
-		$result["editid"] = $editid;
+					    `read` = utc_timestamp() 
+					WHERE id=$editid");
 	}
+
+	$result["editid"] = $editid;
 	
 } else if ($action == "editrefresh") {
 	SqlExecOrDie($con,"UPDATE ctcweb9_trip.edit SET `current` = utc_timestamp() WHERE id=$editid");
 	
 	$result = array("action" => $action);
-	$result["edits"] = SqlResultArray($con,"select memberid
+	$result["edits"] = SqlResultArray($con,"select memberid, id
 						from ctcweb9_trip.edit
 						where tripid = $tripid 
-						/*and id <> $editid*/
 						and `current` >  DATE_ADD(utc_timestamp(),INTERVAL ".(TripConfig::EditRefreshInSec*-2)." SECOND)");
 	$result["modifications"] = SqlResultArray($con,"Select h.memberid, h.timestamp
 							from ctcweb9_trip.changehistory h

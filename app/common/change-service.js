@@ -17,7 +17,7 @@
             }
 
             function changeTable(change) {
-                return change.table || (change.line == null ? "trips" : "participants");
+                return change.table || (change.line == null || isNaN(change.line) ? "trips" : "participants");
             }
 
             function changeColName(change) {
@@ -27,7 +27,7 @@
             function changeDescription(change) {
                 return change.action == "email"
                         ? "Sent email Subject: " + change.subject :
-                    change.line == null
+                    change.line == null || isNaN(change.line)
                         ? change.verb + " " + changeColName(change) + " from '" + change.before + "' to '" + change.after + "'" :
                     change.column == "memberid"
                         ? change.verb + " line " + (change.line + 1) + " Member from '" +

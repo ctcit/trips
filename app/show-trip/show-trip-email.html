@@ -2,19 +2,27 @@
     <h4 class="noprint" ng-click="showTripEmailController.showtripemail = !showTripEmailController.showtripemail">
         <button ng-class="showTripEmailController.showtripemail? 'open' : 'closed'"></button>
         Trip Email
+		<img src="app/assets/email.png" class="section-icon" />
     </h4>
     <div class="noprint slide" ng-show="showTripEmailController.showtripemail">
-        <table>
+        <table class="table table-condensed">
             <tr>
                 <th>Subject</th>
-                <td><input type="text" ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.subject" name="emailsubject" required /></th>
-                <td><div ng-show="tripForm.emailsubject.$error.required">required</div></td>
+                <td>
+					<input type="text" ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.subject" name="emailsubject" required />
+					<div ng-show="tripForm.emailsubject.$error.required">required</div>
+				</td>
             </tr>
             <tr>
                 <th>Body</th>
-                <td><textarea ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.body" name="emailbody" required></textarea></th>
                 <td>
+					<textarea ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.body" name="emailbody" required></textarea>
                     <div ng-show="tripForm.emailbody.$error.required">required</div>
+				</td>
+            </tr>
+            <tr>
+				<td></td>
+                <td>
                     <button ng-disabled="!showTripEmailController.tripeditable || tripForm.emailsubject.$error.required || tripForm.emailbody.$error.required"
                             ng-click="showTripEmailController.save(true)">
                         <img src="app/assets/send.png" />Send
