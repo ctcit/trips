@@ -6,7 +6,9 @@
 			src="app/assets/participant.png" class="section-icon" />
     </h4>
     <div class="slide" ng-show="showParticipantsController.showparticipants">
-        <button ng-click="showParticipantsController.signMeUp();" ng-show="!showParticipantsController.ImSignedUp() && showParticipantsController.tripIsOpen">Sign Me Up</button>
+        <button ng-click="showParticipantsController.signMeUp();" ng-show="!showParticipantsController.ImSignedUp() && showParticipantsController.tripIsOpen">
+			<img src="app/assets/pen.gif"/>Sign Me Up
+		</button>
         <table class="table table-condensed">
             <tr>
                 <th></th>
@@ -17,7 +19,7 @@
                 <th class="desktop-only">Phone</th>
                 <th class="desktop-only">Can<br />take<br />car</th>
                 <th class="desktop-only">Car<br />rego</th>
-                <th>Status</th>
+                <th>Notes</th>
             </tr>
             <tbody ng-repeat="participant in showParticipantsController.participants | limitTo: showParticipantsController.visibleParticipants">
                 <tr>
@@ -138,7 +140,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th><label for="status{{$index}}">Status</label></th>
+                                    <th><label for="status{{$index}}">Notes</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'status')">
                                         <textarea ng-disabled="!showParticipantsController.participantEnabled(participant)" type="text" ng-change="showParticipantsController.update()" ng-model="participant.status" id="status{{$index}}"
                                                   ng-attr-rows="{{participant.status.split('\n').length}}" ng-focus="showParticipantsController.textAreaFocus('status'+$index)"></textarea>

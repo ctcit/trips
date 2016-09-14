@@ -91,7 +91,10 @@
                 var i;
                 controller.warnings.length = 0;
 
-                if (!trip.tripDetail.isOpen) {
+                if (trip.tripDetail.isRemoved) {
+                    controller.warnings.push('This trip is DELETED. Contact the leader for more information.');
+                }
+                else if (!trip.tripDetail.isOpen) {
                     controller.warnings.push('This trip is CLOSED. Contact the leader for more information.');
                 }
 
@@ -114,7 +117,9 @@
             controller.Redo = [];
 
             controller.undoTitle = function undoTitle(undo) {
-                return !controller.trip || controller[undo].length == 0 ? "" : changeService.changeDescription(new Change(calculateDiffs(new State(controller.trip), this[undo][this[undo].length - 1])[0], undo));
+                return !controller.trip || controller[undo].length == 0 
+						? "" 
+						: changeService.changeDescription(new Change(calculateDiffs(new State(controller.trip), this[undo][this[undo].length - 1])[0], undo));
             }
 
             controller.undoAction = function undoAction(undo, redo) {
@@ -133,11 +138,15 @@
             }
 
             controller.update = function () {
-                var state = new State(controller.trip);
-                if (controller.trip.tripDetail && calculateDiffs(state, controller.lastState).length > 0) {
-                    controller.Undo.push(controller.lastState);
-                    controller.lastState = angular.copy(state);
-                    controller.Redo.length = 0;
+                if (controller.trip.tripDetail) {
+					var state = new State(controller.trip);
+					var diffs = calculateDiffs(state, controller.lastState);
+					
+					if (diffs.length > 0) {
+						controller.Undo.push(controller.lastState);
+						controller.lastState = angular.copy(state);
+						controller.Redo.length = 0;
+					}
                 }
             };
 
@@ -153,7 +162,13 @@
                 return controller.trip && calculateDiffs(new State(controller.trip), controller.originalState).length > 0;
             };
 
-            controller.save = function (includeEmail) {
+            controller.save = function (includeEmail, remove) {
+				
+				if (remove === true || remove === false)
+				{
+					controller.trip.tripDetail.isRemoved = remove;
+				}
+				
                 var state = new State(controller.trip);
                 var diffs = calculateDiffs(state, controller.originalState);
 

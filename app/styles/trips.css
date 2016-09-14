@@ -10,7 +10,7 @@ td, th {
     border: solid 1px silver;
     vertical-align: top;
     text-align: left;
-	background: #dddddd;
+	background-color: #dddddd;
 }
 
 th {
@@ -57,31 +57,31 @@ input, textarea, select {
 }
 
 .updated {
-    background: yellow;
+    background-color: yellow;
 }
 
 .inserted {
-    background: greenyellow;
+    background-color: greenyellow;
 }
 
 .highlight1 {
-    background: pink;
+    background-color: pink;
 }
 
 .highlight2 {
-    background: cyan;
+    background-color: cyan;
 }
 
 .highlight3 {
-    background: lime;
+    background-color: lime;
 }
 
 .highlight4 {
-    background: orange;
+    background-color: orange;
 }
 
 .highlight5 {
-    background: silver;
+    background-color: silver;
 }
 
 .isRemoved {
@@ -96,7 +96,7 @@ div[ng-show*='$error'], .error {
 }
 
 .oddrow {
-    background: #F0F0FF;
+    background-color: #F0F0FF;
 }
 
 .section-icon {

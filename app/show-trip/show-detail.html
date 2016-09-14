@@ -67,7 +67,7 @@
                 </td>
             </tr>
             <tr>
-                <th><label for="status">Status</label></th>
+                <th><label for="status">Notes</label></th>
                 <td>
                     <textarea ng-disabled="!showDetailController.tripeditable" ng-change="showDetailController.update()" 
 							ng-model="showDetailController.tripDetail.status"
@@ -75,6 +75,10 @@
                             ng-attr-rows="{{showDetailController.tripDetail.status.split('\n').length}}" 
 							ng-focus="showDetailController.textAreaFocus('status')"></textarea>
                 </td>
+            </tr>
+            <tr ng-show="!showDetailController.tripDetail.isAdHoc" >
+                <th>Description</th>
+                <td ng-bind="showDetailController.tripDetail.text"></td>
             </tr>
             <tr>
                 <th><label for="status">Map</label></th>

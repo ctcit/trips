@@ -15,6 +15,14 @@
                 <button ng-disabled="controller.Redo.length == 0" ng-click="controller.undoAction('Redo','Undo')" ng-attr-title="{{controller.undoTitle('Redo')}}">
                     <img src="app/assets/redo.png" />Redo
                 </button>
+                <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && !controller.trip.tripDetail.isRemoved" 
+						ng-click="controller.save(false,true)" ng-attr-title="Delete this trip">
+                    <img src="app/assets/cross.png" />Delete
+                </button>
+                <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && controller.trip.tripDetail.isRemoved" 
+						ng-click="controller.save(false,false)" ng-attr-title="Un-delete this trip">
+                    <img src="app/assets/tick.png" />Un-delete
+                </button>
                 <img ng-show="controller.savestate == 'Saving'" src="app/assets/waiting.gif" />
                 <span ng-bind="controller.savestate"></span>
                 <span ng-bind="controller.diffString()"></span>
@@ -39,10 +47,6 @@
                                original-participants="controller.originalState.participants"
                                update="controller.update()">
             </show-participants>
-
-            <show-description showdescription="controller.showdescription"
-                              trip="controller.trip.tripDetail">
-            </show-description>
 
             <show-trip-email showtripemail="controller.showtripemail"
                              email="controller.trip.tripEmail"

@@ -173,8 +173,6 @@
                 return $q.when(userId);
             }
 
-
-
             function getEditSession() {
                 return $q.when(editSession);
             }
@@ -191,13 +189,16 @@
                     });
             };
 
+			function newTrip(){
+				return $http.post(site.newtrippostresturl + "?action=newtrip");
+			};
 
             //---------------------------------
 
             function closeEditSession(editId) {
                 return $http.get(site.getresturl + "?action=editend&editid=" + editSession.editId);
             };
-
+			
             //---------------------------------
 
             function ValidateResponse(response) {
@@ -221,6 +222,7 @@
                 getTripEdits: getTripEdits,
 
                 putTrip: putTrip,
+				newTrip: newTrip,
 
                 closeEditSession: closeEditSession,
 

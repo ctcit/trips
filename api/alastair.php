@@ -172,9 +172,10 @@ function GetColor($image,$color1,$color2="")
     $rgb1 = Colors::$colormap[strtolower($color1)];
     $rgb2 = Colors::$colormap[strtolower($color2 == "" ? $color1 : $color2)];
 
-    return imagecolorallocate($image,   ((($rgb1 >> 16) & 0xFF)+(($rgb2 >> 16) & 0xFF))/2,
-                        ((($rgb1 >>  8) & 0xFF)+(($rgb2 >>  8) & 0xFF))/2,
-                        ((($rgb1 >>  0) & 0xFF)+(($rgb2 >>  0) & 0xFF))/2);
+    return imagecolorallocate($image,   
+		((($rgb1 >> 16) & 0xFF)+(($rgb2 >> 16) & 0xFF))/2,
+        ((($rgb1 >>  8) & 0xFF)+(($rgb2 >>  8) & 0xFF))/2,
+        ((($rgb1 >>  0) & 0xFF)+(($rgb2 >>  0) & 0xFF))/2);
 }
 
 
