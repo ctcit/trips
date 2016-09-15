@@ -1,5 +1,6 @@
 var dow = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 var moy = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+var globalShowTripController = null;
 
 function Initialize(obj, source, metadata) {
     var prop;

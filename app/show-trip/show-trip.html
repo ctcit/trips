@@ -6,21 +6,15 @@
                     <!--<button ui-sref="trip.showAllTrips">-->
                     <img src="app/assets/ctc.png" />All Trips
                 </nav-to-state>
-                <button ng-disabled="!controller.saveEnabled()" ng-click="controller.save(false)">
+                <button ng-disabled="!controller.isDirty()" ng-click="controller.save(false)">
                     <img src="app/assets/save.png" />Save
                 </button>
-                <button ng-disabled="controller.Undo.length == 0" ng-click="controller.undoAction('Undo','Redo')" ng-attr-title="{{controller.undoTitle('Undo')}}">
-                    <img src="app/assets/undo.png" />Undo
-                </button>
-                <button ng-disabled="controller.Redo.length == 0" ng-click="controller.undoAction('Redo','Undo')" ng-attr-title="{{controller.undoTitle('Redo')}}">
-                    <img src="app/assets/redo.png" />Redo
-                </button>
                 <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && !controller.trip.tripDetail.isRemoved" 
-						ng-click="controller.save(false,true)" ng-attr-title="Delete this trip">
+						ng-click="controller.save(false,true)" title="Delete this trip">
                     <img src="app/assets/cross.png" />Delete
                 </button>
                 <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && controller.trip.tripDetail.isRemoved" 
-						ng-click="controller.save(false,false)" ng-attr-title="Un-delete this trip">
+						ng-click="controller.save(false,false)" title="Un-delete this trip">
                     <img src="app/assets/tick.png" />Un-delete
                 </button>
                 <img ng-show="controller.savestate == 'Saving'" src="app/assets/waiting.gif" />

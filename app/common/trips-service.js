@@ -185,6 +185,8 @@
                         if (ValidateResponse(response)) {
                             lastResponseMessage = response.data.result ? response.data.result : undefined;
                             return getTrip(tripId, editId);
+                        } else {
+                            console.log(response.data);
                         }
                     });
             };

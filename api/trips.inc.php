@@ -30,7 +30,7 @@ function GetTrips($con,$where) {
 			e.id as eventid,
 			t.date,
 			t.closeDate,
-			(case when t.closeDate >= now() and isRemoved = 0 then 1 else 0 end) isOpen,
+			(case when t.closeDate >= now() and t.isRemoved = 0 then 1 else 0 end) isOpen,
 			COALESCE(t.length, 
 				(case e.triplength when 1 then 'Day'
 				                   when 2 then 'Weekend' else '3+ Days' end)) as length,
@@ -40,8 +40,8 @@ function GetTrips($con,$where) {
 			COALESCE(t.title, e.title) as title,
 			COALESCE(t.status,'') as status,
 			COALESCE(t.mapHtml,'') as mapHtml,
-			isAdHoc,
-			isRemoved,
+			t.isAdHoc,
+			t.isRemoved,
 			e.text
 		FROM      ctcweb9_trip.trips t 
 		LEFT JOIN ctcweb9_newsletter.events e on e.id = t.eventid

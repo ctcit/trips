@@ -3,11 +3,12 @@
 
     angular.module('tripSignupApp').directive('showDetail', [function () {
 
-        var controller = ['$sce', 'metadataService', 'changeService',
-            function ($sce, metadataService, changeService) {
+        var controller = ['metadataService', 'changeService',
+            function (metadataService, changeService) {
 
                 var showDetailController = this;
 
+                showDetailController.showmap = true;
                 showDetailController.tripClass = function tripClass(prop) {
                     if (!showDetailController.originalTripDetail) {
                         return "";
@@ -23,12 +24,6 @@
                         $(this).attr('rows', $(this).val().split('\n').length);
                     });
                 };
-				
-				showDetailController.getMapHtml = function() {
-					return $sce.trustAsHtml(showDetailController.tripDetail.mapHtml);
-				};
-
-
             }];
 
         return {

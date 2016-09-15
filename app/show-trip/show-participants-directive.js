@@ -7,7 +7,6 @@
             function (configService, currentUserService, membersService, metadataService, changeService, Participant) {
 
                 var showParticipantsController = this;
-
                 var currentUserId = currentUserService.userId();
 
                 showParticipantsController.members = membersService.getMembers();
@@ -123,7 +122,9 @@
                 participants: '=',
                 nonmembers: '=',
                 originalParticipants: '=',
-                update: '&'
+                update: '&',
+                save: '&',
+                isDirty: '&'
             },
             controller: controller,
             controllerAs: 'showParticipantsController',

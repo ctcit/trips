@@ -117,6 +117,17 @@ button.closed {
     border: none;
 }
 
+button{
+    font-size: 14px;
+}
+
+button[disabled=disabled] {
+    background-color: lightgray;
+    border-color: lightgray !important; 
+    color: gray;
+}
+
+
 @media screen and (min-width: 992px) {
     .mobile-only {
         display: none !important;

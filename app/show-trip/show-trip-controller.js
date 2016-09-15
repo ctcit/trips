@@ -19,15 +19,9 @@
             controller.loading = true;
             controller.savestate = "Loading...";
             controller.originalState = null;
-            controller.lastState = null;
 
             changeService.highlights = {};
 			
-			$scope.$on("$destroy", function(){
-				tripsService.closeEditSession(controller.editId);
-			});
-
-
             //-----------------------------------
 
             tripsService.getTrip(controller.tripId)
@@ -53,14 +47,10 @@
                         .then(function () {
 
                             controller.tripeditable = controller.tripeditable || tripsService.tripeditable();
-
-                            var state = new State(controller.trip);
-                            controller.originalState = angular.copy(state);
-                            controller.lastState = angular.copy(state);
-                            controller.reset();
-
+                            controller.originalState = angular.copy(new State(controller.trip));
                             controller.loading = false;
                             controller.savestate = "";
+                            globalShowTripController = controller;
 
                             $timeout(function () { controller.editRefresh(); }, 0);
                         })
@@ -86,15 +76,13 @@
                     });
             };
 
-
             function generateWarnings(trip, editSession) {
                 var i;
                 controller.warnings.length = 0;
 
                 if (trip.tripDetail.isRemoved) {
                     controller.warnings.push('This trip is DELETED. Contact the leader for more information.');
-                }
-                else if (!trip.tripDetail.isOpen) {
+                } else if (!trip.tripDetail.isOpen) {
                     controller.warnings.push('This trip is CLOSED. Contact the leader for more information.');
                 }
 
@@ -110,47 +98,10 @@
                 });
             }
 
-            //---------------------------------------
-            // State management
-
-            controller.Undo = [];
-            controller.Redo = [];
-
-            controller.undoTitle = function undoTitle(undo) {
-                return !controller.trip || controller[undo].length == 0 
-						? "" 
-						: changeService.changeDescription(new Change(calculateDiffs(new State(controller.trip), this[undo][this[undo].length - 1])[0], undo));
-            }
-
-            controller.undoAction = function undoAction(undo, redo) {
-                var poppedState = controller[undo].pop();
-                controller[redo].push(angular.copy(new State(controller.trip)));
-
-                for (var prop in metadataService.getTripsMetadata()) {
-                    controller.trip.tripDetail[prop] = poppedState.tripDetail[prop];
-                }
-                controller.trip.participants = angular.copy(poppedState.participants);
-            }
-
-            controller.reset = function reset() {
-                controller.Undo = [];
-                controller.Redo = [];
-            }
-
             controller.update = function () {
-                if (controller.trip.tripDetail) {
-					var state = new State(controller.trip);
-					var diffs = calculateDiffs(state, controller.lastState);
-					
-					if (diffs.length > 0) {
-						controller.Undo.push(controller.lastState);
-						controller.lastState = angular.copy(state);
-						controller.Redo.length = 0;
-					}
-                }
+                controller.savestate = "";
             };
-
-
+  
             //-----------------------------------
             // Save trip
 
@@ -158,16 +109,40 @@
                 return configService.showDebugUpdate() && controller.trip.tripDetail ? JSON.stringify(controller.trip.tripDetail.Diffs(controller.originalState)) : '';
             };
 
-            controller.saveEnabled = function () {
+            controller.isDirty = function isDirty() {
                 return controller.trip && calculateDiffs(new State(controller.trip), controller.originalState).length > 0;
             };
+            
+            controller.isDirtyMessage = function () {
+                var state = new State(controller.trip);
+                var changes = calculateDiffs(state, controller.originalState).length;
+                return "You have made " + changes + " change" + (changes > 1 ? "s" : "") + " to this trip.";
+            }            
 
-            controller.save = function (includeEmail, remove) {
-				
+            controller.isDirtyReset = function () {
+                controller.trip = null;
+            };
+            
+            $window.onbeforeunload = function () {
+                if (controller.isDirty()) {
+            		return controller.isDirtyMessage();
+            	}
+            }
+
+            $window.onunload = function () {
+                tripsService.closeEditSession(controller.editId);
+            };
+
+			$scope.$on("$destroy", function(){
+				tripsService.closeEditSession(controller.editId);
+			});
+            
+            controller.save = function save(includeEmail, remove) {
+			
 				if (remove === true || remove === false)
 				{
 					controller.trip.tripDetail.isRemoved = remove;
-				}
+                }
 				
                 var state = new State(controller.trip);
                 var diffs = calculateDiffs(state, controller.originalState);
@@ -176,7 +151,7 @@
                     diffs.splice(0, 0, controller.email);
                 }
 
-                // Weed out superfluous diffs
+                // Weed out superfluous diffs, where the participant data is the same as the member data 
                 for (var i = 0; i < diffs.length; i++) {
                     var diff = diffs[i];
                     var participants = controller.trip.participants;
@@ -197,6 +172,8 @@
                                     controller.savestate = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
                                     controller.trip = trip;
                                     controller.editSession = editSession;
+                                    controller.originalState = angular.copy(new State(controller.trip));
+
                                     $timeout();
                                 })
                     }, function (data, status) {
@@ -204,21 +181,7 @@
                         $timeout();
                 });
             };
-
-            //-----------------------------------
-
-            $window.onbeforeunload = function () {
-                if (controller.saveEnabled()) {
-                    var state = new State(controller.trip);
-                    var changes = calculateDiffs(state, controller.originalState).length;
-            		return "You have made " + changes + " change" + (changes > 1 ? "s" : "") + " to this trip.";
-            	}
-            }
-
-            $window.onunload = function () {
-                tripsService.closeEditSession(controller.editId);
-            };
-
+            
             //-----------------------------------
 
             function calculateDiffs(currentState, refState) {
