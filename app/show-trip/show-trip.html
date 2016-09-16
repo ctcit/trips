@@ -39,7 +39,9 @@
                                participants="controller.trip.participants"
                                nonmembers="controller.trip.nonmembers"
                                original-participants="controller.originalState.participants"
-                               update="controller.update()">
+                               update="controller.update()"
+                               save ="controller.save()"
+                               is-dirty ="controller.isDirty()">
             </show-participants>
 
             <show-trip-email showtripemail="controller.showtripemail"
