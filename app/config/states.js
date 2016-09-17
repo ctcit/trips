@@ -22,8 +22,7 @@
                 url: '/trip/showtrip/:tripId',
                 views: {
                     'main-content': {
-                        templateUrl: 'app/show-trip/show-trip.html',
-                        controller: 'showTripController'
+                        templateUrl: 'app/show-trip/show-trip.html'
                     }
                 }
             })
@@ -31,8 +30,7 @@
                 url: '/trip/showalltrips',
                 views: {
                     'main-content': {
-                        templateUrl: 'app/show-all-trips/show-all-trips.html',
-                        controller: 'showAllTripsController'
+                        templateUrl: 'app/show-all-trips/show-all-trips.html'
                     }
                 }
             })
