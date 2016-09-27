@@ -120,8 +120,11 @@ function SqlResultArray($con,$sql,$keycol='')
 function SqlResultScalar($con,$sql)
 {
     $array = SqlResultArray($con,$sql);
+    if (!is_array($values) && !is_object($values)) {
+      return null;
+    }
     foreach ($array[0] as $scalar) {
-        return $scalar;
+      return $scalar;
     }
 }
 
