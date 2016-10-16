@@ -1,7 +1,7 @@
 <?php
 
 // make sure that characters above 0x7F don't trip us up
-mysql_query("SET CHARACTER SET utf8",$con);
+mysqli_query($con, "SET CHARACTER SET utf8");
 
 function GetMetadata($con) {
 	$metadata = array(

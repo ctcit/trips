@@ -5,7 +5,7 @@ require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
 // make sure that characters above 0x7F don't screw up json_encode()
-mysql_query("SET CHARACTER SET utf8",$con);
+mysqli_query($con, "SET CHARACTER SET utf8");
 
 $action   	= strval($_GET["action"]);
 $tripid   	= intval($_GET["tripid"]);
@@ -120,7 +120,7 @@ if ($action == "gettrips") {
 			SqlExecOrDie($con,"
 					INSERT ctcweb9_trip.edit(tripid,memberid,`read`,`current`)
 					VALUES($tripid,$userid,utc_timestamp(),utc_timestamp())");
-			$editid = mysql_insert_id($con);
+			$editid = ((is_null($___mysqli_res = mysqli_insert_id($con))) ? false : $___mysqli_res);
 		}
 		
 	} else {

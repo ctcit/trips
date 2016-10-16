@@ -27,7 +27,7 @@ $user = JFactory::getUser();
 $config = JFactory::getConfig();
 
 
-$con        = mysql_connect("localhost",   $config->get("user"), $config->get("password"));
+$con        = ($GLOBALS["___mysqli_ston"] = mysqli_connect("localhost",    $config->get("user"),  $config->get("password")));
 // N.B. userid here is the JOOMLA id NOT the db id. The common ground here is username.
 $username   = array("id"=>$user->id,"name"=>$user->username);
 
@@ -99,21 +99,21 @@ function SqlVal($value) {
 
 function SqlResultArray($con,$sql,$keycol='')
 {
-    $cursor = mysql_query($sql,$con);
+    $cursor = mysqli_query($con, $sql);
 
     if (!$cursor) {
-        die("Invalid query: ".mysql_error($con)."\n$sql");
+        die("Invalid query: ".((is_object($con)) ? mysqli_error($con) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false))."\n$sql");
     }
 
     $array = array();
-    while (($row = mysql_fetch_array($cursor,MYSQL_ASSOC))) {
+    while (($row = mysqli_fetch_array($cursor, MYSQLI_ASSOC))) {
         if ($keycol == '') {
             $array []= $row;
         } else {
             $array[$row[$keycol]] = $row;
         }
     }
-    mysql_free_result($cursor);
+    ((mysqli_free_result($cursor) || (is_object($cursor) && (get_class($cursor) == "mysqli_result"))) ? true : false);
     return $array;
 }
 
@@ -127,11 +127,11 @@ function SqlResultScalar($con,$sql)
 
 function SqlExecOrDie($con,$sql)
 {
-    if (!mysql_query($sql,$con)) {
-        die("Invalid query: ".mysql_error($con)."\n$sql");
+    if (!mysqli_query($con, $sql)) {
+        die("Invalid query: ".((is_object($con)) ? mysqli_error($con) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false))."\n$sql");
     }
 
-    return mysql_affected_rows($con);
+    return mysqli_affected_rows($con);
 }
 
 class Colors {
