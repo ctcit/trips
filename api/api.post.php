@@ -5,7 +5,7 @@ require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
 // make sure that characters above 0x7F don't screw up json_encode()
-mysql_query("SET CHARACTER SET utf8",$con);
+mysqli_query($con, "SET CHARACTER SET utf8");
 
 $logondetails	= GetLogonDetails($con,$username);
 $metadata	= GetMetadata($con);
@@ -95,7 +95,7 @@ foreach ($diffs as &$diff) {
 		INSERT ctcweb9_trip.changehistory(tripid,memberid,timestamp,".implode(",",array_keys($insert)).")
 		VALUES(	$tripid,$userid,UTC_TIMESTAMP(),".implode(",",$insert).")");
 		
-	$diff["id"] = mysql_insert_id($con);	
+	$diff["id"] = ((is_null($___mysqli_res = mysqli_insert_id($con))) ? false : $___mysqli_res);	
 	$stat = substr($action,0,6);
 	$stats[$stat] = (++$statcounts[$stat])." $stat(s)";
 }
