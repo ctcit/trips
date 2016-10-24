@@ -17,6 +17,10 @@
 						ng-click="controller.save(false,false)" title="Un-delete this trip">
                     <img src="app/assets/tick.png" />Un-delete
                 </button>
+                <button ng-show='controller.tripeditable && !controller.trip.tripDetail.isRemoved'
+                        ng-click="controller.print()" title="Prepare trip list for printing">
+                    <img src="app/assets/print.png">Print
+                </button>
                 <img ng-show="controller.savestate == 'Saving'" src="app/assets/waiting.gif" />
                 <span ng-bind="controller.savestate"></span>
                 <span ng-bind="controller.diffString()"></span>

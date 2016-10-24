@@ -3,10 +3,16 @@
     "use strict";
 
     angular.module('tripSignupApp').controller("showTripController",
-        ['$scope', '$window', '$q', '$timeout', '$stateParams', 'site', 'configService', 'membersService', 'metadataService', 
-		 'currentUserService', 'tripsService', 'sessionStateService', 'changeService', 'State', 'TripDetail', 'TripEmail', 'Participant', 'Change',
-        function ($scope, $window, $q, $timeout, $stateParams, site, configService, membersService, metadataService, 
-				  currentUserService, tripsService, sessionStateService, changeService, State, TripDetail, TripEmail, Participant, Change) {
+        ['$scope', '$window', '$q', '$timeout', '$stateParams', 'site',
+                 'configService', 'membersService', 'metadataService', 
+		 'changeService', 'currentUserService', 'tripsService', 
+                 'sessionStateService', 'State', 'TripDetail', 'TripEmail',
+                 'Participant', 'Change', 'TriplistSheet',
+        function ($scope, $window, $q, $timeout, $stateParams, site,
+                    configService, membersService, metadataService, 
+                    changeService, currentUserService, tripsService,
+                    sessionStateService, State, TripDetail, TripEmail,
+                    Participant, Change, TriplistSheet) {
 
             var controller = this;
 
@@ -156,6 +162,33 @@
                         controller.savestate = "FAILED " + data + " " + status;
                         $timeout();
                 });
+            };
+            
+            // We "print" by writing the data into a copy of the master
+            // trip list spreadsheet on CTC's GoogleDrive, then opening
+            // the sheet in a new window.
+            controller.print = function print() {
+                var spreadsheet = new TriplistSheet(),
+                    title = controller.trip.tripDetail.title,
+                    d = controller.trip.tripDetail.date,
+                    date = d.getDay() + '/' + d.getMonth() + '/' + d.getFullYear(),
+                    length = controller.trip.tripDetail.length.split(' ')[0],
+                    leader,
+                    members = [],
+                    notes = [];
+                controller.trip.participants.forEach(function (participant) {
+                    if (participant.name !== undefined && !participant.isRemoved) {
+                        if (participant.status) {
+                            notes.push(participant.name + ': ' + participant.status);
+                        }
+                        if (participant.isLeader) {
+                            leader = participant.name;
+                        } else {
+                            members.push(participant);
+                        }
+                    };
+                });
+                spreadsheet.build(title, date, length, leader, members, notes);
             };
             
             //-----------------------------------
