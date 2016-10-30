@@ -3,16 +3,16 @@
     "use strict";
 
     angular.module('tripSignupApp').controller("showTripController",
-        ['$scope', '$window', '$q', '$timeout', '$stateParams', 'site',
-                 'configService', 'membersService', 'metadataService', 
-		 'changeService', 'currentUserService', 'tripsService', 
+        ['$scope', '$window', '$q', '$timeout', '$stateParams', '$http', 'site',
+                 'configService', 'membersService', 'metadataService',
+		 'changeService', 'currentUserService', 'tripsService',
                  'sessionStateService', 'State', 'TripDetail', 'TripEmail',
-                 'Participant', 'Change', 'TriplistSheet',
-        function ($scope, $window, $q, $timeout, $stateParams, site,
-                    configService, membersService, metadataService, 
+                 'Participant', 'Change',
+        function ($scope, $window, $q, $timeout, $stateParams, $http, site,
+                    configService, membersService, metadataService,
                     changeService, currentUserService, tripsService,
                     sessionStateService, State, TripDetail, TripEmail,
-                    Participant, Change, TriplistSheet) {
+                    Participant, Change) {
 
             var controller = this;
 
@@ -27,7 +27,7 @@
             sessionStateService.setTrip(null);
 
             changeService.highlights = {};
-			
+
             //-----------------------------------
 
             tripsService.getTrip(controller.tripId)
@@ -59,7 +59,7 @@
 
                             $timeout(function () { controller.editRefresh(); }, 0);
                         })
-                    
+
     	        });
 
 
@@ -108,7 +108,7 @@
             controller.update = function () {
                 controller.savestate = "";
             };
-  
+
             //-----------------------------------
             // Save trip
 
@@ -119,10 +119,10 @@
             controller.isDirty = function isDirty() {
                 return sessionStateService.isDirty();
             };
-            
+
             controller.isDirtyMessage = function () {
                 return sessionStateService.isDirtyMessage();
-            }            
+            }
 
             $window.onbeforeunload = function () {
                 if (sessionStateService.isDirty()) {
@@ -137,9 +137,9 @@
 			$scope.$on("$destroy", function(){
 				tripsService.closeEditSession(controller.editId);
 			});
-            
+
             controller.save = function save(includeEmail, remove) {
-			
+
 				if (remove === true || remove === false)
 				{
 					controller.trip.tripDetail.isRemoved = remove;
@@ -163,36 +163,63 @@
                         $timeout();
                 });
             };
-            
-            // We "print" by writing the data into a copy of the master
-            // trip list spreadsheet on CTC's GoogleDrive, then opening
-            // the sheet in a new window.
+
+            // We "print" by sending all the current trip info to an
+            // out-of-angular page 'printabletriplist.php', in a new window.
             controller.print = function print() {
-                var spreadsheet = new TriplistSheet(),
-                    title = controller.trip.tripDetail.title,
+                var title = controller.trip.tripDetail.title,
                     d = controller.trip.tripDetail.date,
-                    date = d.getDay() + '/' + d.getMonth() + '/' + d.getFullYear(),
+                    date = d.getDay() + ' ' + d.getMonthName() + ' ' + d.getFullYear(),
                     length = controller.trip.tripDetail.length.split(' ')[0],
-                    leader,
-                    members = [],
-                    notes = [];
+                    form,
+                    participantNum = 0,
+                    noteNum = 0;
+
+                function addField(field, value, count=undefined) {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    if (count !== undefined) {
+                        input.name = field + '[' + count + ']';
+                    } else {
+                        input.name = field;
+                    }
+                    input.value = value;
+                    form.appendChild(input);
+                }
+
+                form = document.createElement('form');
+                form.setAttribute("method", "post");
+                form.setAttribute("action", site.printabletriplisturl);
+                form.setAttribute("target", "_blank");
+                addField('title', title);
+                addField('date', date);
+                addField('length', length);
+
                 controller.trip.participants.forEach(function (participant) {
                     if (participant.name !== undefined && !participant.isRemoved) {
                         if (participant.status) {
-                            notes.push(participant.name + ': ' + participant.status);
+                            addField('note', participant.name + ': ' + participant.status, noteNum);
+                            noteNum += 1;
                         }
                         if (participant.isLeader) {
-                            leader = participant.name;
-                        } else {
-                            members.push(participant);
+                            addField('leadername', participant.name);
                         }
+                        addField('name', participant.name, participantNum);
+                        addField('email', participant.email, participantNum);
+                        addField('phone', participant.phone, participantNum);
+                        addField('hasCar', participant.isVehicleProvider ? "Y" : "", participantNum);
+                        participantNum += 1;
                     };
                 });
-                spreadsheet.build(title, date, length, leader, members, notes);
+
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+
             };
-            
+
             //-----------------------------------
 
         }]).animation('.slide', AnimationSlide);
-	
+
 }());

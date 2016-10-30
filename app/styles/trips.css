@@ -127,6 +127,47 @@ button[disabled=disabled] {
     color: gray;
 }
 
+/* Printable trip list */
+h3 {
+    padding-top: 20px;
+}
+table.triplistparams {
+    width: 100%;
+}
+table.triplistparams td {
+    font-size: larger;
+    background-color: white;
+    border: None;
+}
+td.paramlabel {
+    width: 7%;
+    font-weight: bold;
+}
+table.participants {
+    width: 100%;
+    background-color: white !important;
+}
+table.participants td, th {
+    background-color: white;
+    height: 30px;
+    vertical-align: middle;
+    padding-left: 6px;
+}
+th.namecol {
+    width: 35%;
+}
+
+th.emailcol {
+    width: 30%;
+}
+
+th.phonecol {
+    width: 20%;
+}
+
+th.carcol {
+    width: 4%;
+}
 
 @media screen and (min-width: 992px) {
     .mobile-only {
