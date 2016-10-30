@@ -12,9 +12,9 @@
         var full_url = window.location.href;
 		var pathMatcher = new RegExp('(.*?)/(tripsignup[^/]*)');
 		var bits = pathMatcher.exec(full_url);
-		
+
 		site_url = 'invalidurl';
-			
+
         if (bits != null) {
             site_url = bits[1];
 			site_api = bits[2] + '/api';
@@ -31,8 +31,9 @@
             url: site_url,
             getresturl:  site_url + '/' + site_api + '/api.get.php',
             postresturl: site_url + '/' + site_api + '/api.post.php',
-            newtrippostresturl: site_url + '/' + site_api + '/api.newtrip.post.php'
-		});
+            newtrippostresturl: site_url + '/' + site_api + '/api.newtrip.post.php',
+            printabletriplisturl: site_url + '/tripsignup/printabletriplist.php'
+        });
 
 }());
 
