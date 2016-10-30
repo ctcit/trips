@@ -43,9 +43,11 @@
             ?>
     </table>
     <h3>Notes</h3>
-    <?php foreach ($_POST['note'] as $note) {
-        echo $note;
-        echo "\n<br>";
+    <?php if (!empty($_POST['note'])) {
+        foreach ($_POST['note'] as $note) {
+            echo $note;
+            echo "\n<br>";
+        }
     }
     ?>
 
