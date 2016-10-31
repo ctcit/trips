@@ -6,9 +6,11 @@
     <link rel="stylesheet" href="app/styles/trips.css">
 </head>
 <body>
-    <!--! ?php var_dump($_POST)?-->
+    <main class='printabletriplist'>
     <h1>Christchurch Tramping Club Trip List</h1>
     <h2><?php
+    define('LINES_AVAILABLE', 36);
+    define('LINES_OVERHEAD', 10);
     function input($key, $index=null) {
         // Return the sanitised POST variable with the given key.
         // If the value is an array and a specific index is required, set
@@ -25,6 +27,10 @@
             }
         }
     }
+
+    $names = input('name', 'ALL');
+    $notes = input('note', 'ALL');
+    $numberplates = input('numberplate', 'ALL');
 
     echo input('title');
     ?></h2>
@@ -46,7 +52,7 @@
         </tr>
         <?php
             $i = 0;
-            foreach (input('name', 'ALL') as $name) { ?>
+            foreach ($names as $name) { ?>
         <tr>
             <td><?php echo $name?></td>
             <td><?php echo input("email", $i)?></td>
@@ -57,20 +63,35 @@
             $i += 1;
             }
 
-            for ($i = 0; $i < 10; $i++) {  // Add 10 blank lines
+            $blank_lines = LINES_AVAILABLE - LINES_OVERHEAD - count($names);
+            if (count($notes) > 0 || count($numberplates) > 0) {
+                $blank_lines -= 1 + min(count($notes), 1);
+            }
+            for ($i = 0; $i < $blank_lines; $i++) {  // Fill page with extra blank lines
                 echo "<tr><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td><td>&nbsp;</td></tr>\n";
             }
             ?>
     </table>
-    <h3>Notes</h3>
-    <?php if (!empty($_POST['note'])) {
-        foreach (input('note', 'ALL') as $note) {
-            echo $note;
-            echo "\n<br>";
-        }
-    }
-    ?>
-
+    <table class='footertable'>
+        <tr>
+            <th class="notecolheader">Notes</th>
+            <th class="numberplateheader">Number plates</th>
+        </tr>
+        <tr>
+            <td>
+        <?php
+            foreach ($notes as $note) {
+                echo $note;
+                echo "\n<br>";
+            }
+            ?>
+            </td>
+            <td>
+            <?php echo implode("&nbsp;&nbsp;", $numberplates) ?>
+            </td>
+        </tr>
+    </table>
+    </main>
 </body>
 </html>
 

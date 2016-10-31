@@ -36,7 +36,7 @@ input, textarea, select {
 
     input[type=checkbox] {
         width: 30px;
-    }
+    }to
 
     input[ng-model='participant.vehiclerego'] {
         width: 60px;
@@ -129,14 +129,16 @@ button[disabled=disabled] {
 
 /* Printable trip list */
 h3 {
-    padding-top: 20px;
+    padding-top: 15px;
+}
+.printabletriplist td, th {
+    background-color: white;
 }
 table.triplistparams {
     width: 100%;
 }
 table.triplistparams td {
     font-size: larger;
-    background-color: white;
     border: None;
 }
 td.paramlabel {
@@ -145,11 +147,9 @@ td.paramlabel {
 }
 table.participants {
     width: 100%;
-    background-color: white !important;
 }
 table.participants td, th {
-    background-color: white;
-    height: 30px;
+    height: 25px;
     vertical-align: middle;
     padding-left: 6px;
 }
@@ -167,6 +167,14 @@ th.phonecol {
 
 th.carcol {
     width: 4%;
+}
+
+table.footertable {
+    width: 100%;
+}
+table.footertable th {
+    font-weight: bold;
+    width: 50%;
 }
 
 @media screen and (min-width: 992px) {

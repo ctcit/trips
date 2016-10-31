@@ -172,9 +172,10 @@
                     month = d.toLocaleString("en-nz", { month: "long" }),
                     date = d.getDay() + ' ' + month + ' ' + d.getFullYear(),
                     length = controller.trip.tripDetail.length.split(' ')[0],
-                    form,
+                    form = document.createElement('form'),
                     participantNum = 0,
-                    noteNum = 0;
+                    noteNum = 0,
+                    hasCar;
 
                 function addField(field, value, count=undefined) {
                     var input = document.createElement('input');
@@ -188,7 +189,6 @@
                     form.appendChild(input);
                 }
 
-                form = document.createElement('form');
                 form.setAttribute("method", "post");
                 form.setAttribute("action", site.printabletriplisturl);
                 form.setAttribute("target", "_blank");
@@ -208,7 +208,11 @@
                         addField('name', participant.name, participantNum);
                         addField('email', participant.email, participantNum);
                         addField('phone', participant.phone, participantNum);
-                        addField('hasCar', participant.isVehicleProvider ? "Y" : "", participantNum);
+                        hasCar = participant.isVehicleProvider ? "Y" : "";
+                        addField('hasCar', hasCar, participantNum);
+                        if (hasCar) {
+                            addField('numberplate', participant.name + ': ' + participant.vehicleRego, participantNum);
+                        }
                         participantNum += 1;
                     };
                 });
