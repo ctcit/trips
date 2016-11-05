@@ -24,6 +24,10 @@
                 });
                 showParticipantsController.visibleParticipants += showParticipantsController.tripIsOpen || showParticipantsController.tripeditable ? 1 : 0;
 
+                showParticipantsController.toggle = function toggle() {
+                    showParticipantsController.showparticipants = !showParticipantsController.showparticipants;
+                }
+
 
                 showParticipantsController.signMeUp = function signMeUp() {
                     for (var i = 0; i < showParticipantsController.participants.length; i++) {

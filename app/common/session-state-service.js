@@ -80,7 +80,7 @@
                     for (diff.line in currentState.participants) {
                         for (diff.column in participantsMetadata) {
                             diff.before = refState.participants[diff.line] ? ToSql(refState.participants[diff.line][diff.column], participantsMetadata[diff.column]) : null;
-                            diff.after = ToSql(currentState.participants[diff.line][diff.column], participantsMetadata[diff.column]);
+                            diff.after = currentState.participants[diff.line] ? ToSql(currentState.participants[diff.line][diff.column], participantsMetadata[diff.column]) : null;
                             if (diff.before != diff.after) {
                                 diff.action = currentState.participants[diff.line].isNew ? "insertparticipant" : "updateparticipant";
                                 diffs.push(angular.copy(diff));
@@ -100,6 +100,7 @@
                 diffString: diffString,
                 isDirty: isDirty,
                 isDirtyMessage: isDirtyMessage,
+                isDirtyReset: isDirtyReset,
                 diffs: diffs
             }
         }]
