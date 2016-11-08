@@ -177,7 +177,7 @@
                     noteNum = 0,
                     hasCar;
 
-                function addField(field, value, count=undefined) {
+                function addField(field, value, count) {
                     var input = document.createElement('input');
                     input.type = 'hidden';
                     if (count !== undefined) {
