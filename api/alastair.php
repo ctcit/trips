@@ -120,13 +120,12 @@ function SqlResultArray($con,$sql,$keycol='')
 function SqlResultScalar($con,$sql)
 {
     $array = SqlResultArray($con,$sql);
-    if (!is_array($array) && !is_object($array)) {
+    if (!is_array($array) || count($array) != 1 || !is_scalar($array[0])) {
       return null;
     }
-    foreach ($array[0] as $scalar) {
-      return $scalar;
-    }
+    return $array[0];
 }
+
 
 function SqlExecOrDie($con,$sql)
 {
