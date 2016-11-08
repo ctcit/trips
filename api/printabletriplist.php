@@ -7,6 +7,7 @@
 </head>
 <body>
     <main class='printabletriplist'>
+<?php  var_dump($_POST); ?>
     <h1>Christchurch Tramping Club Trip List</h1>
     <h2><?php
     define('LINES_AVAILABLE', 36);
