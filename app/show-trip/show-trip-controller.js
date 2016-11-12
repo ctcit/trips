@@ -110,6 +110,17 @@
             };
 
             //-----------------------------------
+            // Trip changes
+
+            controller.originalTrip = function () {
+                return sessionStateService.originalTrip();
+            };
+
+            controller.originalState = function () {
+                return sessionStateService.originalState();
+            };
+
+            //-----------------------------------
             // Save trip
 
             controller.diffString = function () {
@@ -163,6 +174,9 @@
                         $timeout();
                 });
             };
+
+            //-----------------------------------
+            // Print trip
 
             // We "print" by sending all the current trip info to an
             // out-of-angular page 'printabletriplist.php', in a new window.

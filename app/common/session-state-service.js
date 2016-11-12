@@ -97,6 +97,9 @@
             return {
                 setTrip: setTrip,
 
+                originalTrip: function() { return _originalTrip; },
+                originalState: function() { return _originalState; },
+
                 diffString: diffString,
                 isDirty: isDirty,
                 isDirtyMessage: isDirtyMessage,
