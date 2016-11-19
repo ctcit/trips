@@ -3,11 +3,10 @@
 <head>
     <meta charset="utf-8">
     <title>CTC Trip List</title>
-    <link rel="stylesheet" href="app/styles/trips.css">
+    <link rel="stylesheet" href="../app/styles/trips.css">
 </head>
 <body>
     <main class='printabletriplist'>
-<?php  var_dump($_POST); ?>
     <h1>Christchurch Tramping Club Trip List</h1>
     <h2><?php
     define('LINES_AVAILABLE', 36);
