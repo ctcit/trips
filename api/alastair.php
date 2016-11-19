@@ -102,7 +102,7 @@ function SqlResultArray($con,$sql,$keycol='')
     $cursor = mysqli_query($con, $sql);
 
     if (!$cursor) {
-        die("Invalid query: ".((is_object($con)) ? mysqli_error($con) : (($___mysqli_res = mysqli_connect_error()) ? $___mysqli_res : false))."\n$sql");
+        die("Invalid query: ".  mysqli_error($con) ."\n$sql");
     }
 
     $array = array();
@@ -113,17 +113,17 @@ function SqlResultArray($con,$sql,$keycol='')
             $array[$row[$keycol]] = $row;
         }
     }
-    ((mysqli_free_result($cursor) || (is_object($cursor) && (get_class($cursor) == "mysqli_result"))) ? true : false);
+    mysqli_free_result($cursor);
     return $array;
 }
 
-function SqlResultScalar($con,$sql)
-{
-    $array = SqlResultArray($con,$sql);
-    if (!is_array($array) || count($array) != 1 || !is_scalar($array[0])) {
-      return null;
+function SqlResultScalar($con, $sql) {
+    $array = SqlResultArray($con, $sql);
+    if (!is_array($array) || count($array) != 1) {
+        return null;
     }
-    return $array[0];
+    $values = array_values($array[0]); // Get rid of the keys
+    return is_scalar($values[0]) ? $values[0] : null;
 }
 
 
