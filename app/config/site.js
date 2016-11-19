@@ -32,9 +32,8 @@
             getresturl:  site_url + '/' + site_api + '/api.get.php',
             postresturl: site_url + '/' + site_api + '/api.post.php',
             newtrippostresturl: site_url + '/' + site_api + '/api.newtrip.post.php',
-            printabletriplisturl: site_url + '/tripsignup/api/printabletriplist.php'
+            printabletriplisturl: site_url + '/' + site_api + '/printabletriplist.php'
         });
-
 }());
 
 

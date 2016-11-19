@@ -33,7 +33,7 @@
             <show-detail showdetail="controller.showdetail"
                          tripeditable="controller.tripeditable"
                          trip-detail="controller.trip.tripDetail"
-                         original-trip-detail="controller.originalState.tripDetail"
+                         original-trip-detail="controller.originalState().tripDetail"
                          update="controller.update()">
             </show-detail>
 
@@ -42,7 +42,7 @@
                                trip-is-open="controller.trip.tripDetail.isOpen"
                                participants="controller.trip.participants"
                                nonmembers="controller.trip.nonmembers"
-                               original-participants="controller.originalState.participants"
+                               original-participants="controller.originalState().participants"
                                update="controller.update()"
                                save ="controller.save()"
                                is-dirty ="controller.isDirty()">
