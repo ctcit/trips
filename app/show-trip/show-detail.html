@@ -67,7 +67,7 @@
                 </td>
             </tr>
             <tr>
-                <th><label for="status">Status</label></th>
+                <th><label for="status">Notes</label></th>
                 <td>
                     <textarea ng-disabled="!showDetailController.tripeditable" ng-change="showDetailController.update()" 
 							ng-model="showDetailController.tripDetail.status"
@@ -76,9 +76,16 @@
 							ng-focus="showDetailController.textAreaFocus('status')"></textarea>
                 </td>
             </tr>
+            <tr ng-show="!showDetailController.tripDetail.isAdHoc" >
+                <th>Description</th>
+                <td ng-bind="showDetailController.tripDetail.text"></td>
+            </tr>
             <tr>
                 <th><label for="status">Map</label></th>
-                <td>
+                <td ng-class="showDetailController.tripClass('mapHtml')">
+                    <button ng-show="(showDetailController.tripDetail.mapHtml || '') != ''"
+                            ng-click="showDetailController.showmap = !showDetailController.showmap"
+                            ng-class="showDetailController.showmap ? 'open' : 'closed'"></button>
 					<button ng-click="showDetailController.showmaphtml = !showDetailController.showmaphtml">{{showDetailController.showmaphtml ? 'Hide Edit' : 'Edit'}}</button>
 					<div class="slide" ng-show="showDetailController.showmaphtml">
 						<div>To get map:</div>
@@ -88,13 +95,13 @@
 							<li>Click on <b>Share Map</b></li>
 							<li>Check <b>Embed map in web page</b></li>
 							<li>Copy the relevant text</li>
-							<li>Paste it here:</li>
+							<li>Paste it below:</li>
 						</ol>
 						<textarea type="text" ng-disabled="!showDetailController.tripeditable" 
 								ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.mapHtml"
 								ng-class="showDetailController.tripClass('mapHtml')" id="mapHtml" rows="4"></textarea>
 					</div>
-					<div ng-bind-html="showDetailController.getMapHtml()"></div>
+					<div  class="slide" ng-show="showDetailController.showmap" ng-bind-html="showDetailController.tripDetail.mapHtml | unsafe"></div>
                 </td>
             </tr>
         </table>

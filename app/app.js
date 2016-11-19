@@ -51,16 +51,27 @@
         return $sce.trustAsHtml;
     });
 
-    // This is meant to prevent caching of old view code, but doesn't
-    // always work.
-    tripSignupApp.run(function($rootScope, $templateCache) {
-       $rootScope.$on('$viewContentLoaded', function() {
-          $templateCache.removeAll();
-       });
-    });
+    tripSignupApp.run(
+        ["$rootScope", "$templateCache", "sessionStateService", 
+            function ($rootScope, $templateCache, sessionStateService) {
+            // This is meant to prevent caching of old view code, but doesn't
+            // always work.
+            $rootScope.$on('$viewContentLoaded', function() {
+                $templateCache.removeAll();
+            });
+            $rootScope.$on('$stateChangeStart', function(evt, to, toParams, from, fromParams) {
+                if (from.name == 'trip.showTrip' && sessionStateService.isDirty()) {
+                    if (confirm(sessionStateService.isDirtyMessage() + " Do you want to exit?")) {
+                        sessionStateService.isDirtyReset();
+                    } else {
+                        evt.preventDefault();
+                    }
+                }
+            });
+        }]
+    );
     
     tripSignupApp.run(function ($state) {
         $state.go('trip');
     });
-
 }());

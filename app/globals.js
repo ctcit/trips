@@ -11,15 +11,15 @@ function Initialize(obj, source, metadata) {
     for (prop in metadata) {
         obj[prop] =
             metadata[prop].Type == "tinyint(1)" ? (obj[prop] == true) :
-            metadata[prop].Type == "date" ? (obj[prop] == null ? null : LocalDate(obj[prop])) :
-                                (obj[prop] == null ? "" : obj[prop].toString());
+            metadata[prop].Type == "date" ?       (obj[prop] == null ? null : LocalDate(obj[prop])) :
+                                                  (obj[prop] == null ? "" : obj[prop].toString());
     }
 }
 
 function ToSql(value, metadata)
 {
-	return	metadata.Type == "tinyint(1)" ?	(value ? 1 : 0) :
-		metadata.Type == "date" ?	(UtcDate(value).toISOString().substr(0,10)) : value;
+    return  metadata.Type == "tinyint(1)" ? (value ? 1 : 0) :
+            metadata.Type == "date" ?   (UtcDate(value).toISOString().substr(0,10)) : value;
 }
 
 function LocalDate(value) {
@@ -31,22 +31,22 @@ function LocalDate(value) {
 
 function UtcDate(value)
 {
-	value = new Date(value);
-	value.setMinutes(value.getMinutes()-value.getTimezoneOffset());
-	return value;
+    value = new Date(value);
+    value.setMinutes(value.getMinutes()-value.getTimezoneOffset());
+    return value;
 }
 
 function AnimationSlide() {
-	return {
-		beforeAddClass: function(element, className, done) {
-			if(className === 'ng-hide') {
-				element.slideUp(done);
-			}
-		},
-		removeClass: function(element, className, done) {
-			if(className === 'ng-hide') {
-				element.hide().slideDown(done);
-			}
-		}
-	}
+    return {
+        beforeAddClass: function(element, className, done) {
+            if(className === 'ng-hide') {
+                element.slideUp(done);
+            }
+        },
+        removeClass: function(element, className, done) {
+            if(className === 'ng-hide') {
+                element.hide().slideDown(done);
+            }
+        }
+    }
 }

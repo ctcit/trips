@@ -7,13 +7,13 @@ require_once( 'trips.inc.php' );
 // make sure that characters above 0x7F don't screw up json_encode()
 mysqli_query($con, "SET CHARACTER SET utf8");
 
-$action   	= strval($_GET["action"]);
-$tripid   	= intval($_GET["tripid"]);
-$editid   	= intval($_GET["editid"]);
-$logondetails	= GetLogonDetails($con,$username /*,$tripid == null ? "redirect=trips" : "tripid=$tripid&redirect=trips/ShowTrip.html"*/);
-$userid 	= intval($logondetails["userid"]);
-$config 	= new ReflectionClass("TripConfig");
-$metadata	= GetMetadata($con);
+$action   		= strval($_GET["action"]);
+$tripid   		= intval($_GET["tripid"]);
+$editid   		= intval($_GET["editid"]);
+$logondetails	= GetLogonDetails($con,$username);
+$userid 		= intval($logondetails["userid"]);
+$config 		= new ReflectionClass("TripConfig");
+$metadata		= GetMetadata($con);
 
 if ($action == "gettrips") {
 	$where = "COALESCE(t.date, e.date) > DATE_ADD(now(),INTERVAL -7 DAY)";
@@ -35,8 +35,11 @@ if ($action == "gettrips") {
 		SELECT tripid, 'Leader'      as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isleader = 1","tripid");
 			
 	$result = array("action" => $action,"config" => $config->getConstants(), "userid" => $userid, "metadata" => $metadata);
-	$result["groups"] = array(array("name"=>"My Trips","isMyTrips"=>true),array("name"=>"Open Trips"),array("name"=>"Closed Trips"));
-	foreach ($trips as $trip)
+	$result["groups"][0] = array("name"=>"My Trips","isMyTrips"=>true);
+	$result["groups"][1] = array("name"=>"Open Trips");
+	$result["groups"][2] = array("name"=>"Closed Trips");
+	
+	foreach ($trips as &$trip)
 	{
 		$tripleaders = array();
 		foreach ($leaders as $leader)
@@ -48,11 +51,13 @@ if ($action == "gettrips") {
 		
 		$trip["leader"] = implode(", ",$tripleaders);
 		
-		if (array_key_exists($trip["tripid"],$roles)) {
+		if (array_key_exists($trip["tripid"],$roles) && $trip["isRemoved"] == 0) {
 			$trip["role"] = $roles[$trip["tripid"]]["role"];
 			$result["groups"][0]["trips"] []= $trip;
+		} else if ($trip["isOpen"]) {
+			$result["groups"][1]["trips"] []= $trip;
 		} else {
-			$result["groups"][$trip["isOpen"] ? 1 : 2]["trips"] []= $trip;
+			$result["groups"][2]["trips"] []= $trip;
 		}
 	}
 } else if ($action == "gettrip") {

@@ -173,8 +173,6 @@
                 return $q.when(userId);
             }
 
-
-
             function getEditSession() {
                 return $q.when(editSession);
             }
@@ -187,17 +185,22 @@
                         if (ValidateResponse(response)) {
                             lastResponseMessage = response.data.result ? response.data.result : undefined;
                             return getTrip(tripId, editId);
+                        } else {
+                            console.log(response.data);
                         }
                     });
             };
 
+			function newTrip(){
+				return $http.post(site.newtrippostresturl + "?action=newtrip");
+			};
 
             //---------------------------------
 
             function closeEditSession(editId) {
                 return $http.get(site.getresturl + "?action=editend&editid=" + editSession.editId);
             };
-
+			
             //---------------------------------
 
             function ValidateResponse(response) {
@@ -221,6 +224,7 @@
                 getTripEdits: getTripEdits,
 
                 putTrip: putTrip,
+				newTrip: newTrip,
 
                 closeEditSession: closeEditSession,
 

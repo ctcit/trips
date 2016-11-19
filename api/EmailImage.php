@@ -161,7 +161,7 @@ foreach ($tables as &$table)
 			$x = $cell["x"];
 			
 			foreach ($cell["values"] as $value) {
-				$style = array("color" => "black", "background" => "white", "font-weight" => "");
+				$style = array("color" => "black", "background-color" => "white", "font-weight" => "");
 				
 				foreach (explode(" ",$cell["selector"]) as $selector) {
 					if (array_key_exists($selector,$css)) {
@@ -171,7 +171,9 @@ foreach ($tables as &$table)
 					}
 				}
 				
-				imagefilledrectangle($image,$x,$y,$x+$cell["sizex"],$y+$cell["sizey"],GetColor($image, $style["background"]));
+				imagefilledrectangle($image,
+                                        $x,$y,$x+$cell["sizex"],$y+$cell["sizey"],
+                                        GetColor($image, $style["background-color"]));
 				
 				if ($cell["type"] == "tinyint(1)") {
 					$icon = $value ? $checkbox1 : $checkbox0;

@@ -3,10 +3,16 @@
     "use strict";
 
     angular.module('tripSignupApp').controller("showTripController",
-        ['$scope', '$window', '$q', '$timeout', '$stateParams', 'site', 'configService', 'membersService', 'metadataService', 
-		 'currentUserService', 'tripsService', 'changeService', 'State', 'TripDetail', 'TripEmail', 'Participant', 'Change',
-        function ($scope, $window, $q, $timeout, $stateParams, site, configService, membersService, metadataService, 
-				  currentUserService, tripsService, changeService, State, TripDetail, TripEmail, Participant, Change) {
+        ['$scope', '$window', '$q', '$timeout', '$stateParams', '$http', 'site',
+                 'configService', 'membersService', 'metadataService',
+		 'changeService', 'currentUserService', 'tripsService',
+                 'sessionStateService', 'State', 'TripDetail', 'TripEmail',
+                 'Participant', 'Change',
+        function ($scope, $window, $q, $timeout, $stateParams, $http, site,
+                    configService, membersService, metadataService,
+                    changeService, currentUserService, tripsService,
+                    sessionStateService, State, TripDetail, TripEmail,
+                    Participant, Change) {
 
             var controller = this;
 
@@ -18,15 +24,9 @@
 
             controller.loading = true;
             controller.savestate = "Loading...";
-            controller.originalState = null;
-            controller.lastState = null;
+            sessionStateService.setTrip(null);
 
             changeService.highlights = {};
-			
-			$scope.$on("$destroy", function(){
-				tripsService.closeEditSession(controller.editId);
-			});
-
 
             //-----------------------------------
 
@@ -53,18 +53,13 @@
                         .then(function () {
 
                             controller.tripeditable = controller.tripeditable || tripsService.tripeditable();
-
-                            var state = new State(controller.trip);
-                            controller.originalState = angular.copy(state);
-                            controller.lastState = angular.copy(state);
-                            controller.reset();
-
+                            sessionStateService.setTrip(controller.trip);
                             controller.loading = false;
                             controller.savestate = "";
 
                             $timeout(function () { controller.editRefresh(); }, 0);
                         })
-                    
+
     	        });
 
 
@@ -77,21 +72,24 @@
 
             controller.editRefresh = function () {
 
-                tripsService.getTripEdits(controller.tripId, controller.editSession.editId)
-                    .then(function () {
-                        generateWarnings(controller.trip, controller.editSession);
+                if (controller.editSession && controller.editSession.editId) {
+                    tripsService.getTripEdits(controller.tripId, controller.editSession.editId)
+                        .then(function () {
+                            generateWarnings(controller.trip, controller.editSession);
 
-                        $timeout(); // force a digest cycle
-                        $timeout(function () { controller.editRefresh(); }, configService.editRefreshInSec() * 1000); // schedule next refresh
-                    });
+                            $timeout(); // force a digest cycle
+                            $timeout(function () { controller.editRefresh(); }, configService.editRefreshInSec() * 1000); // schedule next refresh
+                        });
+                }
             };
-
 
             function generateWarnings(trip, editSession) {
                 var i;
                 controller.warnings.length = 0;
 
-                if (!trip.tripDetail.isOpen) {
+                if (trip.tripDetail.isRemoved) {
+                    controller.warnings.push('This trip is DELETED. Contact the leader for more information.');
+                } else if (!trip.tripDetail.isOpen) {
                     controller.warnings.push('This trip is CLOSED. Contact the leader for more information.');
                 }
 
@@ -107,74 +105,49 @@
                 });
             }
 
-            //---------------------------------------
-            // State management
-
-            controller.Undo = [];
-            controller.Redo = [];
-
-            controller.undoTitle = function undoTitle(undo) {
-                return !controller.trip || controller[undo].length == 0 ? "" : changeService.changeDescription(new Change(calculateDiffs(new State(controller.trip), this[undo][this[undo].length - 1])[0], undo));
-            }
-
-            controller.undoAction = function undoAction(undo, redo) {
-                var poppedState = controller[undo].pop();
-                controller[redo].push(angular.copy(new State(controller.trip)));
-
-                for (var prop in metadataService.getTripsMetadata()) {
-                    controller.trip.tripDetail[prop] = poppedState.tripDetail[prop];
-                }
-                controller.trip.participants = angular.copy(poppedState.participants);
-            }
-
-            controller.reset = function reset() {
-                controller.Undo = [];
-                controller.Redo = [];
-            }
-
             controller.update = function () {
-                var state = new State(controller.trip);
-                if (controller.trip.tripDetail && calculateDiffs(state, controller.lastState).length > 0) {
-                    controller.Undo.push(controller.lastState);
-                    controller.lastState = angular.copy(state);
-                    controller.Redo.length = 0;
-                }
+                controller.savestate = "";
             };
-
 
             //-----------------------------------
             // Save trip
 
             controller.diffString = function () {
-                return configService.showDebugUpdate() && controller.trip.tripDetail ? JSON.stringify(controller.trip.tripDetail.Diffs(controller.originalState)) : '';
+                return sessionStateService.diffString();
             };
 
-            controller.saveEnabled = function () {
-                return controller.trip && calculateDiffs(new State(controller.trip), controller.originalState).length > 0;
+            controller.isDirty = function isDirty() {
+                return sessionStateService.isDirty();
             };
 
-            controller.save = function (includeEmail) {
-                var state = new State(controller.trip);
-                var diffs = calculateDiffs(state, controller.originalState);
+            controller.isDirtyMessage = function () {
+                return sessionStateService.isDirtyMessage();
+            }
 
-                if (includeEmail) {
-                    diffs.splice(0, 0, controller.email);
-                }
+            $window.onbeforeunload = function () {
+                if (sessionStateService.isDirty()) {
+                    return sessionStateService.isDirtyMessage();
+            	}
+            }
 
-                // Weed out superfluous diffs
-                for (var i = 0; i < diffs.length; i++) {
-                    var diff = diffs[i];
-                    var participants = controller.trip.participants;
+            $window.onunload = function () {
+                tripsService.closeEditSession(controller.editId);
+            };
 
-                    if (diff.line != null && participants[diff.line].isNew) {
-                        var member = membersService.getMember(participants[diff.line].memberid);
-                        if (member && member[diff.column] && member[diff.column] == diff.after) {
-                            diffs.splice(i--, 1);
-                        }
-                    }
-                }
+			$scope.$on("$destroy", function(){
+				tripsService.closeEditSession(controller.editId);
+			});
 
-                controller.savestate = "Saving";
+            controller.save = function save(includeEmail, remove) {
+
+				if (remove === true || remove === false)
+				{
+					controller.trip.tripDetail.isRemoved = remove;
+				}
+
+				var diffs = sessionStateService.diffs(includeEmail, controller.email);
+
+				controller.savestate = "Saving";
                 tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
                     .then(function (trip) {
                         return tripsService.getEditSession()
@@ -182,6 +155,7 @@
                                     controller.savestate = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
                                     controller.trip = trip;
                                     controller.editSession = editSession;
+                                    sessionStateService.setTrip(controller.trip);
                                     $timeout();
                                 })
                     }, function (data, status) {
@@ -190,56 +164,67 @@
                 });
             };
 
-            //-----------------------------------
+            // We "print" by sending all the current trip info to an
+            // out-of-angular page 'printabletriplist.php', in a new window.
+            controller.print = function print() {
+                var title = controller.trip.tripDetail.title,
+                    d = controller.trip.tripDetail.date,
+                    month = d.toLocaleString("en-nz", { month: "long" }),
+                    date = d.getDay() + ' ' + month + ' ' + d.getFullYear(),
+                    length = controller.trip.tripDetail.length.split(' ')[0],
+                    form = document.createElement('form'),
+                    participantNum = 0,
+                    noteNum = 0,
+                    hasCar;
 
-            $window.onbeforeunload = function () {
-                if (controller.saveEnabled()) {
-                    var state = new State(controller.trip);
-                    var changes = calculateDiffs(state, controller.originalState).length;
-            		return "You have made " + changes + " change" + (changes > 1 ? "s" : "") + " to this trip.";
-            	}
-            }
+                function addField(field, value, count) {
+                    var input = document.createElement('input');
+                    input.type = 'hidden';
+                    if (count !== undefined) {
+                        input.name = field + '[' + count + ']';
+                    } else {
+                        input.name = field;
+                    }
+                    input.value = value;
+                    form.appendChild(input);
+                }
 
-            $window.onunload = function () {
-                tripsService.closeEditSession(controller.editId);
+                form.setAttribute("method", "post");
+                form.setAttribute("action", site.printabletriplisturl);
+                form.setAttribute("target", "_blank");
+                addField('title', title);
+                addField('date', date);
+                addField('length', length);
+
+                controller.trip.participants.forEach(function (participant) {
+                    if (participant.name !== undefined && !participant.isRemoved) {
+                        if (participant.status) {
+                            addField('note', participant.name + ': ' + participant.status, noteNum);
+                            noteNum += 1;
+                        }
+                        if (participant.isLeader) {
+                            addField('leadername', participant.name);
+                        }
+                        addField('name', participant.name, participantNum);
+                        addField('email', participant.email, participantNum);
+                        addField('phone', participant.phone, participantNum);
+                        hasCar = participant.isVehicleProvider ? "Y" : "";
+                        addField('hasCar', hasCar, participantNum);
+                        if (hasCar) {
+                            addField('numberplate', participant.name + ': ' + participant.vehicleRego, participantNum);
+                        }
+                        participantNum += 1;
+                    };
+                });
+
+                document.body.appendChild(form);
+                form.submit();
+                document.body.removeChild(form);
+
             };
 
             //-----------------------------------
 
-            function calculateDiffs(currentState, refState) {
-                var diffs = [];
-
-                if (currentState && refState) {
-                    var diff = {};
-
-                    var tripsMetadata = metadataService.getTripsMetadata();
-                    for (diff.column in tripsMetadata) {
-                        diff.before = ToSql(refState.tripDetail[diff.column], tripsMetadata[diff.column]);
-                        diff.after = ToSql(currentState.tripDetail[diff.column], tripsMetadata[diff.column]);
-                        if (diff.before != diff.after) {
-                            diff.action = "updatetrip";
-                            diffs.push(angular.copy(diff));
-                        }
-                    }
-
-                    var participantsMetadata = metadataService.getParticipantsMetadata();
-                    for (diff.line in currentState.participants) {
-                        for (diff.column in participantsMetadata) {
-                            diff.before = refState.participants[diff.line] ? ToSql(refState.participants[diff.line][diff.column], participantsMetadata[diff.column]) : null;
-                            diff.after = ToSql(currentState.participants[diff.line][diff.column], participantsMetadata[diff.column]);
-                            if (diff.before != diff.after) {
-                                diff.action = currentState.participants[diff.line].isNew ? "insertparticipant" : "updateparticipant";
-                                diffs.push(angular.copy(diff));
-                            }
-                        }
-                    }
-                }
-
-                return diffs;
-            }
-
-            //-----------------------------------
-
         }]).animation('.slide', AnimationSlide);
-	
+
 }());

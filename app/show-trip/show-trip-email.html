@@ -9,19 +9,19 @@
             <tr>
                 <th>Subject</th>
                 <td>
-					<input type="text" ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.subject" name="emailsubject" required />
-					<div ng-show="tripForm.emailsubject.$error.required">required</div>
-				</td>
+                        <input type="text" ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.subject" name="emailsubject" required />
+                        <div ng-show="tripForm.emailsubject.$error.required">required</div>
+                </td>
             </tr>
             <tr>
                 <th>Body</th>
                 <td>
-					<textarea ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.body" name="emailbody" required></textarea>
+                    <textarea ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.body" name="emailbody" required></textarea>
                     <div ng-show="tripForm.emailbody.$error.required">required</div>
-				</td>
+		</td>
             </tr>
             <tr>
-				<td></td>
+		<td></td>
                 <td>
                     <button ng-disabled="!showTripEmailController.tripeditable || tripForm.emailsubject.$error.required || tripForm.emailbody.$error.required"
                             ng-click="showTripEmailController.save(true)">

@@ -10,7 +10,7 @@ td, th {
     border: solid 1px silver;
     vertical-align: top;
     text-align: left;
-	background: #dddddd;
+	background-color: #dddddd;
 }
 
 th {
@@ -36,7 +36,7 @@ input, textarea, select {
 
     input[type=checkbox] {
         width: 30px;
-    }
+    }to
 
     input[ng-model='participant.vehiclerego'] {
         width: 60px;
@@ -57,31 +57,31 @@ input, textarea, select {
 }
 
 .updated {
-    background: yellow;
+    background-color: yellow;
 }
 
 .inserted {
-    background: greenyellow;
+    background-color: greenyellow;
 }
 
 .highlight1 {
-    background: pink;
+    background-color: pink;
 }
 
 .highlight2 {
-    background: cyan;
+    background-color: cyan;
 }
 
 .highlight3 {
-    background: lime;
+    background-color: lime;
 }
 
 .highlight4 {
-    background: orange;
+    background-color: orange;
 }
 
 .highlight5 {
-    background: silver;
+    background-color: silver;
 }
 
 .isRemoved {
@@ -96,7 +96,7 @@ div[ng-show*='$error'], .error {
 }
 
 .oddrow {
-    background: #F0F0FF;
+    background-color: #F0F0FF;
 }
 
 .section-icon {
@@ -115,6 +115,66 @@ button.closed {
     height: 20px;
     background: url("../assets/closed.png");
     border: none;
+}
+
+button{
+    font-size: 14px;
+}
+
+button[disabled=disabled] {
+    background-color: lightgray;
+    border-color: lightgray !important; 
+    color: gray;
+}
+
+/* Printable trip list */
+h3 {
+    padding-top: 15px;
+}
+.printabletriplist td, th {
+    background-color: white;
+}
+table.triplistparams {
+    width: 100%;
+}
+table.triplistparams td {
+    font-size: larger;
+    border: None;
+}
+td.paramlabel {
+    width: 7%;
+    font-weight: bold;
+}
+table.participants {
+    width: 100%;
+}
+table.participants td, th {
+    height: 25px;
+    vertical-align: middle;
+    padding-left: 6px;
+}
+th.namecol {
+    width: 35%;
+}
+
+th.emailcol {
+    width: 30%;
+}
+
+th.phonecol {
+    width: 20%;
+}
+
+th.carcol {
+    width: 4%;
+}
+
+table.footertable {
+    width: 100%;
+}
+table.footertable th {
+    font-weight: bold;
+    width: 50%;
 }
 
 @media screen and (min-width: 992px) {

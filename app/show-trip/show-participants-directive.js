@@ -7,7 +7,6 @@
             function (configService, currentUserService, membersService, metadataService, changeService, Participant) {
 
                 var showParticipantsController = this;
-
                 var currentUserId = currentUserService.userId();
 
                 showParticipantsController.members = membersService.getMembers();
@@ -24,6 +23,10 @@
                     }
                 });
                 showParticipantsController.visibleParticipants += showParticipantsController.tripIsOpen || showParticipantsController.tripeditable ? 1 : 0;
+
+                showParticipantsController.toggle = function toggle() {
+                    showParticipantsController.showparticipants = !showParticipantsController.showparticipants;
+                }
 
 
                 showParticipantsController.signMeUp = function signMeUp() {
@@ -123,7 +126,9 @@
                 participants: '=',
                 nonmembers: '=',
                 originalParticipants: '=',
-                update: '&'
+                update: '&',
+                save: '&',
+                isDirty: '&'
             },
             controller: controller,
             controllerAs: 'showParticipantsController',

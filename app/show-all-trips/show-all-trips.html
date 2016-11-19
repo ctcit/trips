@@ -1,5 +1,12 @@
 ﻿<form name="tripsForm"  ng-controller="showAllTripsController as controller" novalidate>
     <div class="container">
+        <div class="noprint">
+            <div>
+                <button ng-click="controller.newTrip()">
+                    <img src="app/assets/newtrip.png" />New Trip
+                </button>
+            </div>
+        </div>
         <div ng-repeat="group in controller.groups">
             <h2 ng-click="group.showdetail = !group.showdetail">
                 <button ng-class="group.showdetail ? 'open' : 'closed'"></button>
@@ -18,17 +25,18 @@
                     </tr>
                     <tbody ng-repeat="trip in group.trips">
                         <tr>
-                            <td ng-class-odd="'oddrow'" style="white-space: nowrap" ng-click="trip.showdetail = !trip.showdetail">
+                            <td ng-class-odd="'oddrow'" style="white-space: nowrap" ng-click="trip.showdetail = !trip.showdetail" 
+								ng-class="trip.isRemoved ? 'isRemoved' : ''">
                                 <button ng-class="trip.showdetail ? 'open' : 'closed'" class="mobile-only"></button>
                                 {{trip.Date()}}
                             </td>
-                            <td ng-click="trip.showdetail = !trip.showdetail" ng-class-odd="'oddrow'">{{trip.length}}</td>
-                            <td ng-class-odd="'oddrow'">
-                                <!--<a ui-sref="trip.showTrip({tripId: trip.tripid })">{{trip.title}}</a>-->
+                            <td ng-click="trip.showdetail = !trip.showdetail" ng-class-odd="'oddrow'" 
+								ng-class="trip.isRemoved ? 'isRemoved' : ''">{{trip.length}}</td>
+                            <td ng-class-odd="'oddrow'" ng-class="trip.isRemoved ? 'isRemoved' : ''">
                                 <nav-to-state type="a" name="trip.showTrip" params="{ tripId: {{trip.tripid}} }"><span ng-bind-html='trip.title | unsafe'><span></nav-to-state>
                             </td>
-                            <td class="desktop-only" ng-class-odd="'oddrow'">{{trip.grade}}</td>
-                            <td class="desktop-only" ng-class-odd="'oddrow'">{{trip.leader}}</td>
+                            <td class="desktop-only" ng-class-odd="'oddrow'" ng-class="trip.isRemoved ? 'isRemoved' : ''">{{trip.grade}}</td>
+                            <td class="desktop-only" ng-class-odd="'oddrow'" ng-class="trip.isRemoved ? 'isRemoved' : ''">{{trip.leader}}</td>
                             <td class="desktop-only" ng-class-odd="'oddrow'" ng-show="group.isMyTrips">{{trip.role}}</td>
                         </tr>
                         <tr class="mobile-only">

@@ -10,11 +10,22 @@
 
             controller.groups = [];
 
-            tripsService.getTripGroups()
-                .then(function (groups) {
-                    controller.groups = groups;
-                    controller.groups[1].showdetail = controller.groups[0].trips.length == 0;
-                });
+			controller.reload = function () {
+				tripsService.getTripGroups()
+					.then(function (groups) {
+						controller.groups = groups;
+						controller.groups[1].showdetail = controller.groups[0].trips.length == 0;
+					});
+			};
+				
+            controller.newTrip = function () {
+				tripsService.newTrip()
+                    .then(function () {
+						controller.reload();
+						});
+			};
+			
+			controller.reload();
 
         }]).animation('.slide', AnimationSlide);
 }());

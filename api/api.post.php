@@ -16,7 +16,7 @@ $userid		= $logondetails["userid"];
 $trips 		= GetTrips($con,"t.id = $tripid");
 $subject	= "RE: ".$trips[0]["title"]." on ".$trips[0]["date"];
 $bodyparts	= array("email"=>"","diff"=>"");
-$where		= array("tripid = $tripid"=>1,"isRemoved = 0"=>1,"isEmailPending = 0 and memberid <> $userid"=>1);
+$where		= array("p.tripid = $tripid"=>1,"p.isRemoved = 0"=>1,"p.isEmailPending = 0"=>1,"p.memberid <> $userid"=>1);
 $cols		= array("guid","action","column","line","before","after","subject","body");
 $stats		= array();
 $statcounts	= array("diff"=>0,"diff"=>0,"email"=>0);
@@ -49,7 +49,8 @@ foreach ($diffs as &$diff) {
 		}
 		
 		$bodyparts["email"] = "<p>".htmlentities($body)."</p>";
-		unset($where["isEmailPending = 0 and memberid <> $userid"]);
+		unset($where["p.isEmailPending = 0"]);
+		unset($where["p.memberid <> $userid"]);
 		break;
 		
 	case "updatetrip":
@@ -73,7 +74,7 @@ foreach ($diffs as &$diff) {
 		$bodyparts["diff"] = "<p>This trip list has just been updated</p>";
 		
 		if($diff["action"] == "insertparticipant") {
-			unset($where["memberid <> $userid"]);
+			unset($where["p.memberid <> $userid"]);
 			if (!array_key_exists($line,$newlines)) {
 				$newlines[$line] = ++$nextline;
 			}
@@ -99,7 +100,8 @@ foreach ($diffs as &$diff) {
 	$stats[$stat] = (++$statcounts[$stat])." $stat(s)";
 }
 
-$recipients = GetParticipants($con,implode(" and ",array_keys($where)));	
+$wheresql = implode(" and ",array_keys($where));
+$recipients = GetParticipants($con,$wheresql);	
 $guid = str_replace("-","",$guid);
 $changeid = $diffs[0]["id"];
 $emailaudit = array();
@@ -125,7 +127,7 @@ foreach ($recipients as $recipient) {
 
 $emailauditsql = SqlVal("Email recipients: ".implode(", ",$emailaudit));
 SqlExecOrDie($con,"UPDATE ctcweb9_trip.changehistory SET emailAudit = $emailauditsql WHERE id = $changeid");
-SqlExecOrDie($con,"UPDATE ctcweb9_trip.participants SET isEmailPending = 1 WHERE ".implode(" and ",array_keys($where)));
+SqlExecOrDie($con,"UPDATE ctcweb9_trip.participants SET isEmailPending = 1 WHERE ".str_replace("p.","",$wheresql));
 	
 header('Content-Type: application/json');
 echo json_encode(array("result"=>implode(", ",$stats)));

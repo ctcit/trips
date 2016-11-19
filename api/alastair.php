@@ -120,10 +120,12 @@ function SqlResultArray($con,$sql,$keycol='')
 function SqlResultScalar($con,$sql)
 {
     $array = SqlResultArray($con,$sql);
-    foreach ($array[0] as $scalar) {
-        return $scalar;
+    if (!is_array($array) || count($array) != 1 || !is_scalar($array[0])) {
+      return null;
     }
+    return $array[0];
 }
+
 
 function SqlExecOrDie($con,$sql)
 {
@@ -172,9 +174,10 @@ function GetColor($image,$color1,$color2="")
     $rgb1 = Colors::$colormap[strtolower($color1)];
     $rgb2 = Colors::$colormap[strtolower($color2 == "" ? $color1 : $color2)];
 
-    return imagecolorallocate($image,   ((($rgb1 >> 16) & 0xFF)+(($rgb2 >> 16) & 0xFF))/2,
-                        ((($rgb1 >>  8) & 0xFF)+(($rgb2 >>  8) & 0xFF))/2,
-                        ((($rgb1 >>  0) & 0xFF)+(($rgb2 >>  0) & 0xFF))/2);
+    return imagecolorallocate($image,
+		((($rgb1 >> 16) & 0xFF)+(($rgb2 >> 16) & 0xFF))/2,
+        ((($rgb1 >>  8) & 0xFF)+(($rgb2 >>  8) & 0xFF))/2,
+        ((($rgb1 >>  0) & 0xFF)+(($rgb2 >>  0) & 0xFF))/2);
 }
 
 
