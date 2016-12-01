@@ -184,7 +184,7 @@
                 var title = controller.trip.tripDetail.title,
                     d = controller.trip.tripDetail.date,
                     month = d.toLocaleString("en-nz", { month: "long" }),
-                    date = d.getDay() + ' ' + month + ' ' + d.getFullYear(),
+                    date = d.getDate() + ' ' + month + ' ' + d.getFullYear(),
                     length = controller.trip.tripDetail.length.split(' ')[0],
                     form = document.createElement('form'),
                     participantNum = 0,
@@ -232,8 +232,10 @@
                 });
 
                 document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
+                setTimeout(function() { // Put the form submission at end of queue
+                    form.submit();
+                    document.body.removeChild(form);
+                }, 1000);
 
             };
 
