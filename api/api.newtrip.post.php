@@ -9,11 +9,11 @@ $userid = $logondetails['userid'];
 $title = $logondetails['firstname']." ".$logondetails['lastname']."'s new trip";
 
 SqlExecOrDie($con,
-	"INSERT ctcweb9_trip.trips(title,length,date,closedate,isAdHoc) 
+	"INSERT ".TripConfig::TripDB.".trips(title,length,date,closedate,isAdHoc) 
 		values(".SqlVal($title).",'Day', DATE_ADD(now(), INTERVAL 1 DAY), DATE_ADD(now(), INTERVAL 1 DAY),1)");
 $tripid = ((is_null($___mysqli_res = mysqli_insert_id($con))) ? false : $___mysqli_res);
 SqlExecOrDie($con,
-	"INSERT ctcweb9_trip.participants(tripid,line,memberid,isLeader) 
+	"INSERT ".TripConfig::TripDB.".participants(tripid,line,memberid,isLeader) 
 		values($tripid,0,$userid,1)");
 
 header('Content-Type: application/json');

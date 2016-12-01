@@ -8,6 +8,9 @@ class TripConfig
 	const ShowDebugUpdate = false;
 	const AdditionalLines = 5;
 	const EditRefreshInSec = 30;
+	const CtcDB = "ctcweb9_ctc";
+	const TripDB = "ctcweb9_trip";
+	const NewsletterDB = "ctcweb9_newsletter";
 }
 
 ?>

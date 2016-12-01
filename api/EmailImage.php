@@ -8,21 +8,21 @@ $memberid 	= intval($_GET["memberid"]);
 $changeid     	= intval($_GET["changeid"]);
 $guid	 	= strval($_GET["guid"]);
 $tables = array();
-$change = SqlResultArray($con,"SELECT guid, timestamp, tripid FROM ctcweb9_trip.changehistory WHERE id = $changeid");
+$change = SqlResultArray($con,"SELECT guid, timestamp, tripid FROM ".TripConfig::TripDB.".changehistory WHERE id = $changeid");
 			
 // validate the parameters
 if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace("-","",$guid)) {
 	
 	$tripid   = $change[0]["tripid"];
 	$updates = SqlResultArray($con,"	SELECT concat(`column`,coalesce(`line`,'')) as `key`
-						FROM ctcweb9_trip.changehistory
+						FROM ".TripConfig::TripDB.".changehistory
 						WHERE tripid = $tripid and id >= $changeid and action = 'update'","key");
 	$inserts = SqlResultArray($con,"	SELECT `line` as `key`
-						FROM ctcweb9_trip.changehistory
+						FROM ".TripConfig::TripDB.".changehistory
 						WHERE tripid = $tripid and id >= $changeid and action = 'insert'","key");
 		
 	// we assume that the user now knows about this trip
-	SqlExecOrDie($con,"	UPDATE ctcweb9_trip.participants 
+	SqlExecOrDie($con,"	UPDATE ".TripConfig::TripDB.".participants 
 				SET isEmailPending = 0 
 				WHERE tripid = $tripid and memberid = $memberid");
 	

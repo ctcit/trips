@@ -21,7 +21,7 @@ $cols		= array("guid","action","column","line","before","after","subject","body"
 $stats		= array();
 $statcounts	= array("diff"=>0,"diff"=>0,"email"=>0);
 $guid		= MakeGuid();
-$nextline	= SqlResultScalar($con,"select max(line) from ctcweb9_trip.participants where tripid = $tripid");
+$nextline	= SqlResultScalar($con,"select max(line) from ".TripConfig::TripDB.".participants where tripid = $tripid");
 $newlines       = array();
 
 if (count($diffs) == 0 || count($trips) == 0) {
@@ -61,7 +61,7 @@ foreach ($diffs as &$diff) {
 		
 		$bodyparts["diff"] = "<p>This trip list has just been updated</p>";
 		SqlExecOrDie($con,"
-			UPDATE ctcweb9_trip.trips 
+			UPDATE ".TripConfig::TripDB.".trips 
 			SET `$column` = ".$insert["`after`"]." WHERE id = $tripid");
 		break;
 		
@@ -82,7 +82,7 @@ foreach ($diffs as &$diff) {
 		}
 		
 		SqlExecOrDie($con,"
-			INSERT ctcweb9_trip.participants(tripid,line,`$column`) 
+			INSERT ".TripConfig::TripDB.".participants(tripid,line,`$column`) 
 			VALUES($tripid,$line,".$insert["`after`"].") 
 			ON DUPLICATE KEY UPDATE `$column` = ".$insert["`after`"]);
 		break;
@@ -92,7 +92,7 @@ foreach ($diffs as &$diff) {
 	}
 	
 	SqlExecOrDie($con,"
-		INSERT ctcweb9_trip.changehistory(tripid,memberid,timestamp,".implode(",",array_keys($insert)).")
+		INSERT ".TripConfig::TripDB.".changehistory(tripid,memberid,timestamp,".implode(",",array_keys($insert)).")
 		VALUES(	$tripid,$userid,UTC_TIMESTAMP(),".implode(",",$insert).")");
 		
 	$diff["id"] = ((is_null($___mysqli_res = mysqli_insert_id($con))) ? false : $___mysqli_res);	
@@ -126,8 +126,8 @@ foreach ($recipients as $recipient) {
 } 
 
 $emailauditsql = SqlVal("Email recipients: ".implode(", ",$emailaudit));
-SqlExecOrDie($con,"UPDATE ctcweb9_trip.changehistory SET emailAudit = $emailauditsql WHERE id = $changeid");
-SqlExecOrDie($con,"UPDATE ctcweb9_trip.participants SET isEmailPending = 1 WHERE ".str_replace("p.","",$wheresql));
+SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".changehistory SET emailAudit = $emailauditsql WHERE id = $changeid");
+SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".participants SET isEmailPending = 1 WHERE ".str_replace("p.","",$wheresql));
 	
 header('Content-Type: application/json');
 echo json_encode(array("result"=>implode(", ",$stats)));

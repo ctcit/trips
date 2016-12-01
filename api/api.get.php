@@ -21,18 +21,20 @@ if ($action == "gettrips") {
 	$leaders = SqlResultArray($con,"
 		SELECT t.id as tripid, 
 			COALESCE(p.name,concat(trim(m.firstname),' ',trim(m.lastname))) as name
-		FROM      ctcweb9_trip.trips t 
-		JOIN      ctcweb9_trip.participants p ON p.tripid = t.id and p.isleader = 1
-		LEFT JOIN ctcweb9_newsletter.events e ON e.id = t.eventid
-		LEFT JOIN ctcweb9_ctc.members       m ON m.id = p.memberid
+		FROM      ".TripConfig::TripDB.".trips t 
+		JOIN      ".TripConfig::TripDB.".participants p ON p.tripid = t.id and p.isleader = 1
+		LEFT JOIN ".TripConfig::NewsletterDB.".events e ON e.id = t.eventid
+		LEFT JOIN ".TripConfig::CtcDB.".members       m ON m.id = p.memberid
 		WHERE $where
 		order by tripid");
 	$roles = SqlResultArray($con,"
-		SELECT tripid, 'Editor'      as role FROM ctcweb9_trip.changehistory WHERE memberid = $userid
+		SELECT tripid, 'Editor'      as role FROM ".TripConfig::TripDB.".changehistory WHERE memberid = $userid
 		UNION
-		SELECT tripid, 'Participant' as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isleader = 0
+		SELECT tripid, 'Participant' as role FROM ".TripConfig::TripDB.".participants WHERE memberid = $userid and isleader = 0 
 		UNION
-		SELECT tripid, 'Leader'      as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isleader = 1","tripid");
+		SELECT tripid, 'Leader'      as role FROM ".TripConfig::TripDB.".participants WHERE memberid = $userid and isleader = 1
+		UNION
+		SELECT tripid, 'Removed' 	 as role FROM ".TripConfig::TripDB.".participants WHERE memberid = $userid and isremoved = 1","tripid");
 			
 	$result = array("action" => $action,"config" => $config->getConstants(), "userid" => $userid, "metadata" => $metadata);
 	$result["groups"][0] = array("name"=>"My Trips","isMyTrips"=>true);
@@ -51,7 +53,7 @@ if ($action == "gettrips") {
 		
 		$trip["leader"] = implode(", ",$tripleaders);
 		
-		if (array_key_exists($trip["tripid"],$roles) && $trip["isRemoved"] == 0) {
+		if (array_key_exists($trip["tripid"],$roles) && $trip["isRemoved"] == 0 && $roles[$trip["tripid"]]["role"] != "Removed") {
 			$trip["role"] = $roles[$trip["tripid"]]["role"];
 			$result["groups"][0]["trips"] []= $trip;
 		} else if ($trip["isOpen"]) {
@@ -69,7 +71,7 @@ if ($action == "gettrips") {
 	$result = array("action" => $action,"config" => $config->getConstants(), "userid" => $userid, "metadata" => $metadata, "changes" => array());
 	$changes = SqlResultArray($con,"
 			SELECT	id,line,memberid,`timestamp`,`action`,`column`,`before`,`after`,`subject`,`body`,`emailAudit`,`guid`
-			FROM ctcweb9_trip.changehistory
+			FROM ".TripConfig::TripDB.".changehistory
 			WHERE tripid = $tripid
 			ORDER BY id desc");
 	$guids = array();		
@@ -94,12 +96,12 @@ if ($action == "gettrips") {
 					(CASE m.mobilephone WHEN '' THEN null ELSE m.mobilephone end), 
 					(CASE m.workphone WHEN '' THEN null ELSE m.workphone end)) as phone,
 				q.role			
-			FROM ctcweb9_ctc.members             m
-			JOIN ctcweb9_ctc.memberships         ms  on ms.id = m.membershipid 
+			FROM ".TripConfig::CtcDB.".members             m
+			JOIN ".TripConfig::CtcDB.".memberships         ms  on ms.id = m.membershipid 
 			LEFT JOIN 
 				(SELECT mr.memberid, max(r.role) as role
-				FROM	ctcweb9_ctc.members_roles  mr
-				JOIN 	ctcweb9_ctc.roles          r   on r.id = mr.roleid and r.role in (".TripConfig::EditorRoles.")
+				FROM	".TripConfig::CtcDB.".members_roles  mr
+				JOIN 	".TripConfig::CtcDB.".roles          r   on r.id = mr.roleid and r.role in (".TripConfig::EditorRoles.")
 		                GROUP BY mr.memberid) 	     q   on q.memberid = m.id
 			WHERE ms.statusAdmin = 'Active'
 			ORDER BY name");	
@@ -111,26 +113,26 @@ if ($action == "gettrips") {
 	}
 			
 	// we assume that the user now knows about this trip
-	SqlExecOrDie($con,"	UPDATE ctcweb9_trip.participants 
+	SqlExecOrDie($con,"	UPDATE ".TripConfig::TripDB.".participants 
 				SET isEmailPending = 0 
 				WHERE tripid = $tripid and memberid = $userid");
 				
 	if ($editid == null) {
 		$editid = SqlResultScalar($con,"
 					SELECT id
-					FROM ctcweb9_trip.edit
+					FROM ".TripConfig::TripDB.".edit
 					WHERE tripid=$tripid and memberid=$userid and `read` > DATE_ADD(utc_timestamp(),INTERVAL -10 SECOND)");
 					
 		if ($editid == null) {
 			SqlExecOrDie($con,"
-					INSERT ctcweb9_trip.edit(tripid,memberid,`read`,`current`)
+					INSERT ".TripConfig::TripDB.".edit(tripid,memberid,`read`,`current`)
 					VALUES($tripid,$userid,utc_timestamp(),utc_timestamp())");
 			$editid = ((is_null($___mysqli_res = mysqli_insert_id($con))) ? false : $___mysqli_res);
 		}
 		
 	} else {
 		SqlExecOrDie($con,"
-					UPDATE ctcweb9_trip.edit 
+					UPDATE ".TripConfig::TripDB.".edit 
 					SET `current` = utc_timestamp(),
 					    `read` = utc_timestamp() 
 					WHERE id=$editid");
@@ -139,19 +141,19 @@ if ($action == "gettrips") {
 	$result["editid"] = $editid;
 	
 } else if ($action == "editrefresh") {
-	SqlExecOrDie($con,"UPDATE ctcweb9_trip.edit SET `current` = utc_timestamp() WHERE id=$editid");
+	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".edit SET `current` = utc_timestamp() WHERE id=$editid");
 	
 	$result = array("action" => $action);
 	$result["edits"] = SqlResultArray($con,"select memberid, id
-						from ctcweb9_trip.edit
+						from ".TripConfig::TripDB.".edit
 						where tripid = $tripid 
 						and `current` >  DATE_ADD(utc_timestamp(),INTERVAL ".(TripConfig::EditRefreshInSec*-2)." SECOND)");
 	$result["modifications"] = SqlResultArray($con,"Select h.memberid, h.timestamp
-							from ctcweb9_trip.changehistory h
-							join ctcweb9_trip.edit e on h.timestamp > e.read 
+							from ".TripConfig::TripDB.".changehistory h
+							join ".TripConfig::TripDB.".edit e on h.timestamp > e.read 
 							where h.tripid = $tripid and e.id = $editid");
 } else if ($action == "editend") {
-	SqlExecOrDie($con,"DELETE FROM ctcweb9_trip.edit WHERE id=$editid or `current` < DATE_ADD(utc_timestamp(),INTERVAL -1 DAY)");
+	SqlExecOrDie($con,"DELETE FROM ".TripConfig::TripDB.".edit WHERE id=$editid or `current` < DATE_ADD(utc_timestamp(),INTERVAL -1 DAY)");
 	$result = array("action" => $action);
 } else {
 	die("invalid action - '$action'");

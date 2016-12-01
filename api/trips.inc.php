@@ -5,8 +5,8 @@ mysqli_query($con, "SET CHARACTER SET utf8");
 
 function GetMetadata($con) {
 	$metadata = array(
-		"trips"=>SqlResultArray($con,"show full columns from ctcweb9_trip.trips","Field"),
-		"participants"=>SqlResultArray($con,"show full columns from ctcweb9_trip.participants","Field"));
+		"trips"        => SqlResultArray($con,"show full columns from ".TripConfig::TripDB.".trips","Field"),
+		"participants" => SqlResultArray($con,"show full columns from ".TripConfig::TripDB.".participants","Field"));
 		
 	foreach($metadata as &$table) {
 		foreach($table as &$col) {
@@ -43,8 +43,8 @@ function GetTrips($con,$where) {
 			t.isAdHoc,
 			t.isRemoved,
 			e.text
-		FROM      ctcweb9_trip.trips t 
-		LEFT JOIN ctcweb9_newsletter.events e on e.id = t.eventid
+		FROM      ".TripConfig::TripDB.".trips t 
+		LEFT JOIN ".TripConfig::NewsletterDB.".events e on e.id = t.eventid
 		WHERE $where
 		ORDER BY t.date");
 }
@@ -65,11 +65,11 @@ function GetParticipants($con,$where) {
 			p.isVehicleProvider,
 			COALESCE(p.vehiclerego,'') as vehicleRego,
 			COALESCE(p.status,'') as status
-		FROM      ctcweb9_trip.trips         t 
-		JOIN      ctcweb9_trip.participants  p  ON p.tripid = t.id
-		LEFT JOIN ctcweb9_newsletter.events  e  ON e.id = t.eventid
-		LEFT JOIN ctcweb9_ctc.members        m  ON m.id = p.memberid
-		LEFT JOIN ctcweb9_ctc.memberships    ms ON ms.id = m.membershipid 
+		FROM      ".TripConfig::TripDB.".trips         t 
+		JOIN      ".TripConfig::TripDB.".participants  p  ON p.tripid = t.id
+		LEFT JOIN ".TripConfig::NewsletterDB.".events  e  ON e.id = t.eventid
+		LEFT JOIN ".TripConfig::CtcDB.".members        m  ON m.id = p.memberid
+		LEFT JOIN ".TripConfig::CtcDB.".memberships    ms ON ms.id = m.membershipid 
 		WHERE $where
 		ORDER BY e.date desc, line
 		LOCK IN SHARE MODE");
