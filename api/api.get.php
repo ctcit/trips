@@ -30,9 +30,11 @@ if ($action == "gettrips") {
 	$roles = SqlResultArray($con,"
 		SELECT tripid, 'Editor'      as role FROM ctcweb9_trip.changehistory WHERE memberid = $userid
 		UNION
-		SELECT tripid, 'Participant' as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isleader = 0
+		SELECT tripid, 'Participant' as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isleader = 0 
 		UNION
-		SELECT tripid, 'Leader'      as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isleader = 1","tripid");
+		SELECT tripid, 'Leader'      as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isleader = 1
+		UNION
+		SELECT tripid, 'Removed' 	 as role FROM ctcweb9_trip.participants WHERE memberid = $userid and isremoved = 1","tripid");
 			
 	$result = array("action" => $action,"config" => $config->getConstants(), "userid" => $userid, "metadata" => $metadata);
 	$result["groups"][0] = array("name"=>"My Trips","isMyTrips"=>true);
@@ -51,7 +53,7 @@ if ($action == "gettrips") {
 		
 		$trip["leader"] = implode(", ",$tripleaders);
 		
-		if (array_key_exists($trip["tripid"],$roles) && $trip["isRemoved"] == 0) {
+		if (array_key_exists($trip["tripid"],$roles) && $trip["isRemoved"] == 0 && $roles[$trip["tripid"]]["role"] != "Removed") {
 			$trip["role"] = $roles[$trip["tripid"]]["role"];
 			$result["groups"][0]["trips"] []= $trip;
 		} else if ($trip["isOpen"]) {
