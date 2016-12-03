@@ -232,10 +232,8 @@
                 });
 
                 document.body.appendChild(form);
-                setTimeout(function() { // Put the form submission at end of queue
-                    form.submit();
-                    document.body.removeChild(form);
-                }, 1000);
+                form.submit();
+                document.body.removeChild(form);
 
             };
 
