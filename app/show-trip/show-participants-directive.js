@@ -14,8 +14,20 @@
                 showParticipantsController.nonmembersByName = {};
                 showParticipantsController.nonmembers.forEach(function (nonmember) {
                     showParticipantsController.nonmembersByName[nonmember.name] = nonmember;
-                })
+                });
 
+                // The "Full" list
+                showParticipantsController.nonMembersAndMembers = 
+                    showParticipantsController.nonmembers.map(function(item) { 
+                        item.group = "Non-members";
+                        return item;
+                    })
+                    .concat([{ name: "(Someone else)", group: "Non-members" }])
+                    .concat(showParticipantsController.members.map(function(item) { 
+                        item.group = "Members";
+                        return item;
+                    }));
+                
                 showParticipantsController.visibleParticipants = 0;
                 showParticipantsController.participants.forEach(function (participant) {
                     if (!participant.isNew && participant.line >= showParticipantsController.visibleParticipants) {
