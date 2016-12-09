@@ -3,10 +3,10 @@
     'use strict';
 
     angular.module('tripSignupApp').factory('configService',
-        ['tripsService',
-        function (tripsService) {
+        ['$q', '$http', 'site',
+        function ($q, $http, site) {
 
-            var _config = {};
+            var _config = undefined;
 
             //{ 
             //    "EditorRoles": "'Webmaster','Overnight Trip Organiser','Day Trip Organiser','Club Captain'", 
@@ -19,19 +19,23 @@
             
             //---------------------------------
 
-            function initConfig() {
+            function load() {
 
-                return tripsService.getConfig()
-                    .then(function (config) {
-                        _config = config;
-                        return _config;
+                return _config ? $q.when(_config) : $http.get(site.restUrl('config', 'get'))
+                    .then(function (response) {
+                        if (ValidateResponse(response)) {
+                            _config = response.data.config;
+                            return _config;
+                        }
                     });
             }
 
             //---------------------------------
 
             return {
-                initConfig: initConfig,
+                load: load,
+
+                config: function () { return _config; },
 
                 showDebugUpdate: function () { return _config && _config.ShowDebugUpdate; } ,
 

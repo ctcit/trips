@@ -3,21 +3,23 @@
     'use strict';
 
     angular.module('tripSignupApp').factory('metadataService',
-        ['tripsService',
-        function (tripsService) {
+        ['$q', '$http', 'site', 
+        function ($q, $http, site) {
 
             //---------------------------------
 
-            var _metadata = [];
+            var _metadata = undefined;
 
             //---------------------------------
 
-            function initMetadata() {
+            function load() {
 
-                return tripsService.getMetadata()
-                    .then(function (metadata) {
-                        _metadata = metadata;
-                        return metadata;
+                return _metadata ? $q.when(_metadata) : $http.get(site.restUrl('metadata', 'get'))
+                    .then(function (response) {
+                        if (ValidateResponse(response)) {
+                            _metadata = response.data.metadata;
+                            return _metadata;
+                        }
                     });
             }
 
@@ -37,7 +39,7 @@
             //---------------------------------
 
             return {
-                initMetadata: initMetadata,
+                load: load,
 
                 getTripsMetadata: getTripsMetadata,
                 getParticipantsMetadata: getParticipantsMetadata,

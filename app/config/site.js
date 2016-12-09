@@ -26,14 +26,19 @@
     console.log("Setting site url to " + site_url);
     console.log("Setting site api to " + site_api);
 
-    angular.module('tripSignupApp').constant('site',
-        {
-            url: site_url,
-            getresturl:  site_url + '/' + site_api + '/api.get.php',
-            postresturl: site_url + '/' + site_api + '/api.post.php',
-            newtrippostresturl: site_url + '/' + site_api + '/api.newtrip.post.php',
-            printabletriplisturl: site_url + '/' + site_api + '/printabletriplist.php'
-        });
+    angular.module('tripSignupApp').factory('site',
+        [ 
+        function () {
+
+            return {
+                url: site_url,
+
+                restUrl: function restUrl(method, verb) {
+                    return site_url + '/' + site_api + '/api.{{method}}.{{verb}}.php'.replace('{{method}}', method).replace('{{verb}}', verb);
+                }
+
+            };
+        }]);
 }());
 
 

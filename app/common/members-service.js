@@ -3,27 +3,29 @@
     'use strict';
 
     angular.module('tripSignupApp').factory('membersService',
-        ['tripsService', 
-        function (tripsService) {
+        ['$q', '$http', 'site', 
+        function ($q, $http, site) {
 
             //---------------------------------
 
             var _membersById = {};
             var _membersByName = {};
-            var _members = [];
+            var _members = undefined;
 
             //---------------------------------
 
-            function initMembers() {
-
-                return tripsService.getMembers()
-                    .then(function (members) {
-                        _members = members;
-                        _membersById = {};
-                        _membersByName = {};
-                        for (var i in members) {
-                            _membersById[_members[i].id] = _members[i];
-                            _membersByName[_members[i].name] = _members[i];
+            function load() {
+                return _members ? $q.when(_members) : $http.get(site.restUrl('members', 'get'))
+                    .then(function (response) {
+                        if (ValidateResponse(response)) {
+                            var members = response.data.members;
+                            _members = members;
+                            _membersById = {};
+                            _membersByName = {};
+                            for (var i in members) {
+                                _membersById[_members[i].id] = _members[i];
+                                _membersByName[_members[i].name] = _members[i];
+                            }
                         }
                         return members;
                     });
@@ -44,7 +46,7 @@
             //---------------------------------
 
             return {
-                initMembers: initMembers,
+                load: load,
 
                 getMembers: getMembers,
                 getMember: getMember,

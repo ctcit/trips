@@ -30,38 +30,35 @@
 
             //-----------------------------------
 
-            tripsService.getTrip(controller.tripId)
-    	        .then(function(trip) {
+            $q.all([
+                configService.load(),
+                metadataService.load(),
+                membersService.load()
+                    .then(function() {
+                        return currentUserService.load();
+                    })
+            ])
+            .then(function() {
+                tripsService.getTrip(controller.tripId)
+                    .then(function(trip) {
 
-    	            controller.trip = trip;
+                        controller.trip = trip;
 
-    	            $q.all([
-    	                configService.initConfig(),
-
-    	                metadataService.initMetadata(),
-
-    	                membersService.initMembers()
-                            .then(function() {
-                                return currentUserService.initCurrentUser();
-                            }),
-
-    	                tripsService.getEditSession()
+                        return tripsService.getEditSession()
                             .then(function (editSession) {
                                 controller.editSession = editSession;
                             })
-                    ])
-                        .then(function () {
+                            .then(function () {
 
-                            controller.tripeditable = controller.tripeditable || tripsService.tripeditable();
-                            sessionStateService.setTrip(controller.trip);
-                            controller.loading = false;
-                            controller.savestate = "";
+                                controller.tripeditable = controller.tripeditable || tripsService.tripeditable();
+                                sessionStateService.setTrip(controller.trip);
+                                controller.loading = false;
+                                controller.savestate = "";
 
-                            $timeout(function () { controller.editRefresh(); }, 0);
-                        })
-
-    	        });
-
+                                $timeout(function () { controller.editRefresh(); }, 0);
+                            })
+                    });
+                });
 
 
             //-----------------------------------
@@ -204,7 +201,7 @@
                 }
 
                 form.setAttribute("method", "post");
-                form.setAttribute("action", site.printabletriplisturl);
+                form.setAttribute("action", site.restUrl('printabletriplist', 'get'));
                 form.setAttribute("target", "_blank");
                 addField('title', title);
                 addField('date', date);

@@ -3,8 +3,8 @@
     "use strict";
 
     angular.module('tripSignupApp').controller("showAllTripsController",
-        ['$scope', '$timeout', 'site', 'tripsService', 'Group',
-        function ($scope, $timeout, site, tripsService, Group) {
+        ['$scope', '$q', '$timeout', 'site', 'configService', 'metadataService', 'tripsService', 'Group',
+        function ($scope, $q, $timeout, site, configService, metadataService, tripsService, Group) {
 
             var controller = this;
 
@@ -25,7 +25,13 @@
 						});
 			};
 			
-			controller.reload();
+            $q.all([
+                configService.load(),
+                metadataService.load()
+            ])
+            .then(function() {			
+				controller.reload();
+			});
 
         }]).animation('.slide', AnimationSlide);
 }());

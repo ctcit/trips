@@ -7,7 +7,7 @@
             function (configService, currentUserService, membersService, metadataService, changeService, Participant) {
 
                 var showParticipantsController = this;
-                var currentUserId = currentUserService.userId();
+                var currentUserId = currentUserService.getUserId();
 
                 showParticipantsController.members = membersService.getMembers();
 
@@ -45,7 +45,7 @@
                     for (var i = 0; i < showParticipantsController.participants.length; i++) {
                         var participant = showParticipantsController.participants[i];
                         if (participant.isNew && (participant.name || "") == "") {
-                            var currentUser = currentUserService.user();
+                            var currentUser = currentUserService.getUser();
                             participant.memberid = currentUser.id;
                             participant.name = currentUser.name;
                             participant.email = currentUser.email;
@@ -58,7 +58,7 @@
                 }
 
                 showParticipantsController.ImSignedUp = function ImSignedUp() {
-                    var currentUser = currentUserService.user();
+                    var currentUser = currentUserService.getUser();
                     return showParticipantsController.participants.some(function(participant) {
                         return participant.memberid == currentUser.id;
                     })

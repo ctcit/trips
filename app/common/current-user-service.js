@@ -3,18 +3,20 @@
     'use strict';
 
     angular.module('tripSignupApp').factory('currentUserService',
-        ['tripsService', 'membersService',
-        function (tripsService, membersService) {
+        ['$q', '$http', 'site', 'membersService',
+        function ($q, $http, site, membersService) {
 
             var _userId = undefined;
 
             //---------------------------------
 
-            function initCurrentUser() {
+            function load() {
 
-                return tripsService.getUserId()
-                    .then(function (userId) {
-                        _userId = userId;
+                return _userId != undefined ? $q.when(user()) : $http.get(site.restUrl('currentuser', 'get'))
+                    .then(function (response) {
+                        if (ValidateResponse(response)) {
+                            _userId = response.data.userid;
+                        }
                         return user();
                     });
             }
@@ -26,11 +28,11 @@
             //---------------------------------
 
             return {
-                initCurrentUser: initCurrentUser,
+                load: load,
 
-                userId: function () { return _userId; },
+                getUserId: function () { return _userId; },
 
-                user: user
+                getUser: user,
 
             }
         }]

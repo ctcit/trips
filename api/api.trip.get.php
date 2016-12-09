@@ -12,17 +12,17 @@ $editid   		= intval($_GET["editid"]);
 $logondetails	= GetLogonDetails($con,$username);
 $userid 		= intval($logondetails["userid"]);
 $trips 			= GetTrips($con,"t.id = $tripid");
-$result 		= array("userid" => $userid, "changes" => array());
+$result 		= array();
 
 if (count($trips) == 0) {
 	die("trip $tripid not found");
 }	
 
-$changes = SqlResultArray($con,"
-		SELECT	id,line,memberid,`timestamp`,`action`,`column`,`before`,`after`,`subject`,`body`,`emailAudit`,`guid`
-		FROM ".TripConfig::TripDB.".changehistory
-		WHERE tripid = $tripid
-		ORDER BY id desc");
+// $changes = SqlResultArray($con,"
+// 		SELECT	id,line,memberid,`timestamp`,`action`,`column`,`before`,`after`,`subject`,`body`,`emailAudit`,`guid`
+// 		FROM ".TripConfig::TripDB.".changehistory
+// 		WHERE tripid = $tripid
+// 		ORDER BY id desc");
 
 $result["trip"] = $trips[0];
 $result["participants"] = GetParticipants($con,"t.id = $tripid");		

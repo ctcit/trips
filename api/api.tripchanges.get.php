@@ -9,6 +9,8 @@ mysqli_query($con, "SET CHARACTER SET utf8");
 
 $tripid   		= intval($_GET["tripid"]);
 $logondetails	= GetLogonDetails($con,$username);
+$result 		= array("changes" => array());
+
 $changes 		= SqlResultArray($con,"
 		SELECT	id,line,memberid,`timestamp`,`action`,`column`,`before`,`after`,`subject`,`body`,`emailAudit`,`guid`
 		FROM ".TripConfig::TripDB.".changehistory
