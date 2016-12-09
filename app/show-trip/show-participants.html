@@ -44,21 +44,13 @@
                     <td ng-class="showParticipantsController.participantClass(participant,'name')">
                         <select ng-if="participant.nameui == '(Members)'"
                                 ng-change="showParticipantsController.participantUpdateName(participant)" ng-model="participant.name"
+                                ng-options="item.name as item.name for item in ::showParticipantsController.members"
                                 ng-class="showParticipantsController.participantClass(participant,'name')">
-                            <option></option>
-                            <option ng-repeat="member in ::showParticipantsController.members track by member.id">{{::member}}</option>
                         </select>
                         <select ng-if="participant.nameui == '(Full)'"
                                 ng-change="showParticipantsController.participantUpdateName(participant)" ng-model="participant.name"
+                                ng-options="item.name as item.name group by item.group for item in ::showParticipantsController.nonMembersAndMembers"
                                 ng-class="showParticipantsController.participantClass(participant,'name')">
-                            <option></option>
-                            <optgroup label="Non Members">
-                                <option ng-repeat="nonmember in showParticipantsController.nonmembers">{{nonmember.name}}</option>
-                                <option>(Someone else)</option>
-                            </optgroup>
-                            <optgroup label="Members">
-                                <option ng-repeat="member in ::showParticipantsController.members track by member.id">{{::member.name}}</option>
-                            </optgroup>
                         </select>
                         <input ng-if="participant.nameui == '(Readonly)'"
                                ng-disabled="true"
