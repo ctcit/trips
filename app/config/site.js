@@ -33,6 +33,11 @@
             return {
                 url: site_url,
 
+                set: function(url, api) {
+                    site_url = url;
+                    site_api = api;
+                },
+                
                 restUrl: function restUrl(method, verb) {
                     return site_url + '/' + site_api + '/api.{{method}}.{{verb}}.php'.replace('{{method}}', method).replace('{{verb}}', verb);
                 }

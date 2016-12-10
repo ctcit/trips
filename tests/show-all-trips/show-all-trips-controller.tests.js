@@ -20,6 +20,7 @@ describe('showAllTripsController: ', function () {
 
         $httpBackend = _$httpBackend_;
         site = _site_;
+        site.set('www.ctc.org.nz/tripsignup', 'api');
     }));
 
 
@@ -30,7 +31,13 @@ describe('showAllTripsController: ', function () {
             .whenGET(/app\/.*\.html/).respond(200, ''); // workaround for unexpected requests of views
 
         $httpBackend
-            .when('GET', site.getresturl + "?action=gettrips")
+            .when('GET', site.restUrl('config', 'get'))
+            .respond(getMockGetConfigResponse());
+        $httpBackend
+            .when('GET', site.restUrl('metadata', 'get'))
+            .respond(getMockGetMetadataResponse());
+        $httpBackend
+            .when('GET', site.restUrl('trips', 'get'))
             .respond(getMockGetTripsResponse());
 
         controller = createController();
@@ -75,9 +82,8 @@ describe('showAllTripsController: ', function () {
 
     //----------------------------------------------
 
-    function getMockGetTripsResponse() {
+    function getMockGetConfigResponse() {
         return {
-            "action": "gettrips",
             "config": {
                 "EditorRoles": "'Webmaster','Overnight Trip Organiser','Day Trip Organiser','Club Captain'",
                 "EmailFilter": "\/^editor@yahoo\\.com\\.au$\/",
@@ -85,8 +91,12 @@ describe('showAllTripsController: ', function () {
                 "ShowDebugUpdate": false,
                 "AdditionalLines": 5,
                 "EditRefreshInSec": 30
-            },
-            "userid": 111,
+            }
+        };
+    }
+
+    function getMockGetMetadataResponse() {
+        return {
             "metadata": {
                 "trips": {
                     "id": {
@@ -382,7 +392,12 @@ describe('showAllTripsController: ', function () {
                         "Display": "Status"
                     }
                 }
-            },
+            }
+        };
+    }
+
+    function getMockGetTripsResponse() {
+        return {
             "groups": [
               {
                   "name": "My Trips",

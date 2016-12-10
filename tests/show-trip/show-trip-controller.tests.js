@@ -22,6 +22,7 @@ describe('showTripController: ', function () {
 
         $httpBackend = _$httpBackend_;
         site = _site_;
+        site.set('www.ctc.org.nz/tripsignup', 'api');
     }));
 
 
@@ -32,8 +33,26 @@ describe('showTripController: ', function () {
             .whenGET(/app\/.*\.html/).respond(200, ''); // workaround for unexpected requests of views
 
         $httpBackend
-            .when('GET', site.getresturl + "?action=gettrip&tripid=" + TRIPID /* "&editid=" */)
+            .when('GET', site.restUrl('config', 'get'))
+            .respond(getMockGetConfigResponse());
+        $httpBackend
+            .when('GET', site.restUrl('metadata', 'get'))
+            .respond(getMockGetMetadataResponse());
+        $httpBackend
+            .when('GET', site.restUrl('members', 'get'))
+            .respond(getMockGetMembersResponse());
+        $httpBackend
+            .when('GET', site.restUrl('currentuser', 'get'))
+            .respond(getMockGetCurrentUserResponse());
+        $httpBackend
+            .when('GET', site.restUrl('trip', 'get') + "?tripid=" + TRIPID /* "&editid=" */)
             .respond(getMockGetTripResponse());
+        $httpBackend
+            .when('GET', site.restUrl('tripchanges', 'get') + "?tripid=" + TRIPID)
+            .respond(getMockGetTripChangesResponse());
+        $httpBackend
+            .when('GET', site.restUrl('nonmembers', 'get'))
+            .respond(getMockGetNonmembersResponse());
 
         controller = createController();
         $httpBackend.flush();
@@ -95,9 +114,8 @@ describe('showTripController: ', function () {
 
     //----------------------------------------------
 
-    function getMockGetTripResponse() {
+    function getMockGetConfigResponse() {
         return {
-            "action": "gettrip",
             "config": {
                 "EditorRoles": "'Webmaster','Overnight Trip Organiser','Day Trip Organiser','Club Captain'",
                 "EmailFilter": "\/^editor@yahoo\\.com\\.au$\/",
@@ -105,8 +123,18 @@ describe('showTripController: ', function () {
                 "ShowDebugUpdate": false,
                 "AdditionalLines": 5,
                 "EditRefreshInSec": 30
-            },
-            "userid": 520,
+            }
+        };
+    }
+
+    function getMockGetCurrentUserResponse() {
+        return {
+            "userid": 520
+        };
+    }
+
+    function getMockGetMetadataResponse() {
+        return {
             "metadata": {
                 "trips": {
                     "id": {
@@ -402,7 +430,12 @@ describe('showTripController: ', function () {
                         "Display": "Status"
                     }
                 }
-            },
+            }
+        };
+    }
+
+    function getMockGetTripChangesResponse() {
+        return {
             "changes": [[{
                 "id": "49",
                 "line": "4",
@@ -1039,7 +1072,12 @@ describe('showTripController: ', function () {
                 "subject": null,
                 "body": null,
                 "emailAudit": "Email recipients: J H (jh@gmail.com FILTERED)"
-            }]],
+            }]]
+        };
+    }
+
+    function getMockGetTripResponse() {
+        return {
             "trip": {
                 "tripid": "69",
                 "eventid": "2714",
@@ -1150,6 +1188,12 @@ describe('showTripController: ', function () {
                 "vehicleRego": "",
                 "status": ""
             }],
+            "editid": 1470
+        };
+    }
+
+    function getMockGetMembersResponse() {
+        return {
             "members": [{
                 "id": "2129",
                 "name": "A B",
@@ -1219,15 +1263,19 @@ describe('showTripController: ', function () {
                 "email": "jh@gmail.com",
                 "phone": "022 033 3333",
                 "role": null
-            }],
+            }]
+        };
+    }
+
+    function getMockGetNonmembersResponse() {
+        return {
             "nonmembers": {
                 "ABC": {
                     "name": "ABC",
                     "email": "abc@xyzzeeeezz.com",
                     "phone": "123 456789"
                 }
-            },
-            "editid": 1470
+            }
         };
     }
 
