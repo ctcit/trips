@@ -1,4 +1,4 @@
-﻿<div>
+﻿<div ng-form="tripEmailForm">
     <h4 class="noprint" ng-click="showTripEmailController.showtripemail = !showTripEmailController.showtripemail">
         <button ng-class="showTripEmailController.showtripemail? 'open' : 'closed'"></button>
         Trip Email
@@ -10,21 +10,21 @@
                 <th>Subject</th>
                 <td>
                         <input type="text" ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.subject" name="emailsubject" required />
-                        <div ng-show="tripForm.emailsubject.$error.required">required</div>
+                        <div ng-show="tripEmailForm.emailsubject.$error.required">required</div>
                 </td>
             </tr>
             <tr>
                 <th>Body</th>
                 <td>
                     <textarea ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.body" name="emailbody" required></textarea>
-                    <div ng-show="tripForm.emailbody.$error.required">required</div>
+                    <div ng-show="tripEmailForm.emailbody.$error.required">required</div>
 		</td>
             </tr>
             <tr>
 		<td></td>
                 <td>
-                    <button ng-disabled="!showTripEmailController.tripeditable || tripForm.emailsubject.$error.required || tripForm.emailbody.$error.required"
-                            ng-click="showTripEmailController.save(true)">
+                    <button ng-disabled="!showTripEmailController.tripeditable || tripEmailForm.emailsubject.$error.required || tripEmailForm.emailbody.$error.required"
+                            ng-click="showTripEmailController.save()(true)">
                         <img src="app/assets/send.png" />Send
                     </button>
                     <img ng-show="showTripEmailController.savestate == 'Sending'" src="app/assets/waiting.gif" /><span ng-bind="showTripEmailController.savestate"></span>

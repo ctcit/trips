@@ -153,10 +153,10 @@
 					controller.trip.tripDetail.isRemoved = remove;
 				}
 
-				var diffs = sessionStateService.diffs(includeEmail, controller.email);
+				var diffs = sessionStateService.diffs();
 
 				controller.savestate = "Saving";
-                tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
+                tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs, includeEmail ? controller.trip.tripEmail : null)
                     .then(function (trip) {
                         return tripsService.getEditSession()
                                 .then(function (editSession) {

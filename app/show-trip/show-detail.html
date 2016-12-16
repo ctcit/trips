@@ -14,7 +14,7 @@
                 <th><label for="title">Title</label></th>
                 <td>
                     <input type="text" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.title"
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.title"
                            ng-class="showDetailController.tripClass('title')" id="title" />
                 </td>
             </tr>
@@ -22,7 +22,7 @@
                 <th><label for="date">Date</label></th>
                 <td>
                     <input type="date" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.date"
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.date"
                            ng-class="showDetailController.tripClass('date')" id="date" />
                 </td>
             </tr>
@@ -30,7 +30,7 @@
                 <th><label for="length">Length</label></th>
                 <td>
                     <input type="text" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.length"
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.length"
                            ng-class="showDetailController.tripClass('length')" id="length" />
                 </td>
             </tr>
@@ -38,7 +38,7 @@
                 <th><label for="closeDate">Close Date</label></th>
                 <td>
                     <input type="date" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.closeDate"
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.closeDate"
                            ng-class="showDetailController.tripClass('closeDate')" id="closeDate" />
                 </td>
             </tr>
@@ -46,7 +46,7 @@
                 <th><label for="departurePoint">Departure Point</label></th>
                 <td>
                     <input type="text" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.departurePoint"
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.departurePoint"
                            ng-class="showDetailController.tripClass('departurePoint')" id="departurePoint" />
                 </td>
             </tr>
@@ -54,7 +54,7 @@
                 <th><label for="cost">Cost</label></th>
                 <td>
                     <input type="text" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.cost"
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.cost"
                            ng-class="showDetailController.tripClass('cost')" id="cost" />
                 </td>
             </tr>
@@ -62,14 +62,14 @@
                 <th><label for="grade">Grade</label></th>
                 <td>
                     <input type="text" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.grade"
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.grade"
                            ng-class="showDetailController.tripClass('grade')" id="grade" />
                 </td>
             </tr>
             <tr>
                 <th><label for="status">Notes</label></th>
                 <td>
-                    <textarea ng-disabled="!showDetailController.tripeditable" ng-change="showDetailController.update()" 
+                    <textarea ng-disabled="!showDetailController.tripeditable" ng-change="showDetailController.update()()" 
 							ng-model="showDetailController.tripDetail.status"
                             ng-class="showDetailController.tripClass('status')" id="status"
                             ng-attr-rows="{{showDetailController.tripDetail.status.split('\n').length}}" 
@@ -98,7 +98,7 @@
 							<li>Paste it below:</li>
 						</ol>
 						<textarea type="text" ng-disabled="!showDetailController.tripeditable" 
-								ng-change="showDetailController.update()" ng-model="showDetailController.tripDetail.mapHtml"
+								ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.mapHtml"
 								ng-class="showDetailController.tripClass('mapHtml')" id="mapHtml" rows="4"></textarea>
 					</div>
 					<div  class="slide" ng-show="showDetailController.showmap" ng-bind-html="showDetailController.tripDetail.mapHtml | unsafe"></div>

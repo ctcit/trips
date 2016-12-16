@@ -34,7 +34,7 @@
                          tripeditable="controller.tripeditable"
                          trip-detail="controller.trip.tripDetail"
                          original-trip-detail="controller.originalState().tripDetail"
-                         update="controller.update()">
+                         update="controller.update">
             </show-detail>
 
             <show-participants showparticipants="controller.showparticipants"
@@ -43,16 +43,16 @@
                                participants="controller.trip.participants"
                                nonmembers="controller.trip.nonmembers"
                                original-participants="controller.originalState().participants"
-                               update="controller.update()"
-                               save ="controller.save()"
-                               is-dirty ="controller.isDirty()">
+                               update="controller.update"
+                               save="controller.save"
+                               is-dirty="controller.isDirty">
             </show-participants>
 
             <show-trip-email showtripemail="controller.showtripemail"
                              email="controller.trip.tripEmail"
                              tripeditable="controller.tripeditable"
                              savestate="controller.savestate"
-                             trip-form="controller.tripForm">
+                             save="controller.save">
             </show-trip-email>
 
             <show-history showhistory="controller.showhistory"

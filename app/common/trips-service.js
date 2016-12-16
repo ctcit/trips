@@ -153,7 +153,13 @@
 
             //---------------------------------
 
-            function putTrip(tripId, editId, diffs) {
+            function putTrip(tripId, editId, diffs, email) {
+
+                // yuk - email should be a separate api call
+                if (email) {
+                    diffs.splice(0, 0, email);
+                }
+
                 return $http.post(site.restUrl('trip', 'post'), { tripid: tripId, diffs: diffs })
                     .then(function (response) {
                         if (ValidateResponse(response)) {

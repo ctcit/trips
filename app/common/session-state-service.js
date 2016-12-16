@@ -35,14 +35,10 @@
                 _originalState = null;
             };
 
-            function diffs(includeEmail, email) {
+            function diffs() {
 
                 var state = new State(_trip);
                 var diffs = calculateDiffs(state, _originalState);
-
-                if (includeEmail) {
-                    diffs.splice(0, 0, email);
-                }
 
                 // Weed out superfluous diffs, where the participant data is the same as the member data 
                 for (var i = 0; i < diffs.length; i++) {
