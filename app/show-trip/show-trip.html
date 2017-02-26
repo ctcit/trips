@@ -21,8 +21,8 @@
                         ng-click="controller.print()" title="Prepare trip list for printing">
                     <img src="app/assets/print.png">Print
                 </button>
-                <img ng-show="controller.savestate == 'Saving'" src="app/assets/waiting.gif" />
-                <span ng-bind="controller.savestate"></span>
+                <img ng-show="controller.saveState == 'Saving'" src="app/assets/waiting.gif" />
+                <span ng-bind="controller.saveState"></span>
                 <span ng-bind="controller.diffString()"></span>
             </div>
             <div class="error" style="white-space: nowrap" ng-repeat="warning in controller.warnings" ng-bind="warning">
@@ -45,14 +45,15 @@
                                original-participants="controller.originalState().participants"
                                update="controller.update"
                                save="controller.save"
+                               save-state="controller.saveState"
                                is-dirty="controller.isDirty">
             </show-participants>
 
             <show-trip-email showtripemail="controller.showtripemail"
                              email="controller.trip.tripEmail"
                              tripeditable="controller.tripeditable"
-                             savestate="controller.savestate"
-                             save="controller.save">
+                             email-state="controller.emailState"
+                             email-send="controller.emailSend">
             </show-trip-email>
 
             <show-history showhistory="controller.showhistory"

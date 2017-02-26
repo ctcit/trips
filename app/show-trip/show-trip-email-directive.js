@@ -17,8 +17,8 @@
                 showtripemail: '=',
                 email: '=',
                 tripeditable: '=',
-                savestate: '=',
-                save: '&'
+                emailState: '=',
+                emailSend: '&'
             },
             controller: controller,
             controllerAs: 'showTripEmailController',

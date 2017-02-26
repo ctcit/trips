@@ -23,7 +23,7 @@
             controller.editSession = null;
 
             controller.loading = true;
-            controller.savestate = "Loading...";
+            controller.saveState = "Loading...";
             sessionStateService.setTrip(null);
 
             changeService.highlights = {};
@@ -53,7 +53,7 @@
                                 controller.tripeditable = controller.tripeditable || tripsService.tripeditable();
                                 sessionStateService.setTrip(controller.trip);
                                 controller.loading = false;
-                                controller.savestate = "";
+                                controller.saveState = "";
 
                                 $timeout(function () { controller.editRefresh(); }, 0);
                             })
@@ -70,7 +70,7 @@
             controller.editRefresh = function () {
 
                 if (controller.editSession && controller.editSession.editId) {
-                    tripsService.getTripEdits(controller.tripId, controller.editSession.editId)
+                    tripsService.getTripEdits(controller.tripId, controller.editSession.editId, controller.isDirty() ? 1 : 0)
                         .then(function () {
                             generateWarnings(controller.trip, controller.editSession);
 
@@ -92,7 +92,9 @@
 
                 editSession.edits.forEach(function (edit) {
 					if (edit.id != editSession.editId) {
-						controller.warnings.push('This is also being edited by ' + membersService.getMember(edit.memberid).name);
+						controller.warnings.push('This is also being ' +
+							(parseInt(edit.isdirty) ? 'edited' : 'looked at') +
+							' by ' + membersService.getMember(edit.memberid).name);
 					}
                 });
 
@@ -103,7 +105,7 @@
             }
 
             controller.update = function () {
-                controller.savestate = "";
+                controller.saveState = "";
             };
 
             //-----------------------------------
@@ -155,23 +157,35 @@
 
 				var diffs = sessionStateService.diffs();
 
-				controller.savestate = "Saving";
+				controller.saveState = "Saving";
                 tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs, includeEmail ? controller.trip.tripEmail : null)
                     .then(function (trip) {
                         return tripsService.getEditSession()
                                 .then(function (editSession) {
-                                    controller.savestate = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
+                                    controller.saveState = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
                                     controller.trip = trip;
                                     controller.editSession = editSession;
                                     sessionStateService.setTrip(controller.trip);
                                     $timeout();
                                 })
                     }, function (data, status) {
-                        controller.savestate = "FAILED " + data + " " + status;
+                        controller.saveState = "FAILED " + data + " " + status;
                         $timeout();
                 });
             };
 
+            controller.emailSend = function emailSend() {
+				controller.emailState = "Emailing";
+                tripsService.putEmail(controller.tripId, controller.trip.tripEmail.subject, controller.trip.tripEmail.body)
+                    .then(function () {
+                        controller.emailState = "Sent email";
+                        $timeout();
+                    }, function (data, status) {
+                        controller.emailState = "FAILED " + data + " " + status;
+                        $timeout();
+                });
+			};
+			
             //-----------------------------------
             // Print trip
 

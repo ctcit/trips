@@ -9,11 +9,12 @@ mysqli_query($con, "SET CHARACTER SET utf8");
 
 $tripid   		= intval($_GET["tripid"]);
 $editid   		= intval($_GET["editid"]);
+$isdirty   		= intval($_GET["isdirty"]);
 $logondetails	= GetLogonDetails($con,$username);
 
-SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".edit SET `current` = utc_timestamp() WHERE id=$editid");
+SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".edit SET `current` = utc_timestamp(), isdirty = $isdirty WHERE id=$editid");
 
-$result["edits"] = SqlResultArray($con,"select memberid, id
+$result["edits"] = SqlResultArray($con,"select memberid, id, isdirty
 					from ".TripConfig::TripDB.".edit
 					where tripid = $tripid 
 					and `current` >  DATE_ADD(utc_timestamp(),INTERVAL ".(TripConfig::EditRefreshInSec*-2)." SECOND)");

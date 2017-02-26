@@ -24,10 +24,10 @@
 		<td></td>
                 <td>
                     <button ng-disabled="!showTripEmailController.tripeditable || tripEmailForm.emailsubject.$error.required || tripEmailForm.emailbody.$error.required"
-                            ng-click="showTripEmailController.save()(true)">
+                            ng-click="showTripEmailController.emailSend()()">
                         <img src="app/assets/send.png" />Send
                     </button>
-                    <img ng-show="showTripEmailController.savestate == 'Sending'" src="app/assets/waiting.gif" /><span ng-bind="showTripEmailController.savestate"></span>
+                    <img ng-show="showTripEmailController.emailState == 'Emailing'" src="app/assets/waiting.gif" /><span ng-bind="showTripEmailController.emailState"></span>
                 </td>
             </tr>
         </table>

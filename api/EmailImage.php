@@ -4,8 +4,8 @@ require_once( 'alastair.php' );
 require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
-$memberid 	= intval($_GET["memberid"]);
-$changeid     	= intval($_GET["changeid"]);
+$memberid	= intval($_GET["memberid"]);
+$changeid	= intval($_GET["changeid"]);
 $guid	 	= strval($_GET["guid"]);
 $tables = array();
 $change = SqlResultArray($con,"SELECT guid, timestamp, tripid FROM ".TripConfig::TripDB.".changehistory WHERE id = $changeid");
@@ -34,7 +34,7 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 	$table = array();
 	foreach ($metadata["trips"] as $field => $col)
 	{
-		if ($col["Display"] != "") {
+		if ($col["Display"] != "" && $field != "mapHtml" && $field != "isRemoved") {
 			$table []= array("cells"=>array(
 				array("value"=>$col["Display"],"selector"=>"th"),
 				array("value"=>$trips[0][$field],"selector"=>array_key_exists($field,$updates)?".updated":"")));
@@ -45,7 +45,7 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 	// Add participant column headers
 	$table = array();
 	$line = array("cells"=>array());
-	foreach ($metadata["trip_participants"] as $field => &$col)
+	foreach ($metadata["participants"] as $field => &$col)
 	{
 		if ($field == "line" || $col["Display"] != "") {
 			$line["cells"] []= array("value"=>$col["Display"],"selector"=>"th");
@@ -57,7 +57,7 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 	foreach ($participants as $participant)
 	{
 		$line = array("isRemoved"=>$participant["isRemoved"]);
-		foreach ($metadata["trip_participants"] as $field => $col)
+		foreach ($metadata["participants"] as $field => $col)
 		{
 			if ($field == "line") {
 				$line["cells"] []= array("value"=>$participant[$field]+1,
@@ -65,8 +65,9 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 			} else if ($col["Display"] != "") {
 				$line["cells"] []= array("value"=>$participant[$field],
 							 "type"=>$col["Type"],
+							 "border"=>true,
 							 "selector"=>	(array_key_exists($participant["line"],$inserts)?".inserted":
-							 		(array_key_exists($field.$participant["line"],$updates)?".updated":"")));
+											(array_key_exists($field.$participant["line"],$updates)?".updated":"")));
 			}
 		}
 		
@@ -89,10 +90,10 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 }
 
 // measure the tables
-$css		= ParseCss(file_get_contents("/home1/ctcweb9/public_html/trips/trips.css"));
+$css		= ParseCss(file_get_contents("../app/styles/trips.css"));
 $lineheight	= $css[".imageCell"]["height"];
 $gap		= $css[".imageGap"]["height"];
-$fontfile	= "arial.ttf";
+$fontfile	= "../app/assets/arial.ttf";
 $fontsize	= $lineheight * 0.6;
 $sizey		= 0;
 $sizey		= 0;
@@ -133,14 +134,15 @@ foreach ($tables as &$table)
 		}
 		$sizex = max($sizex,$linesizex+$gap);
 		$sizey += $linesizey;
+		$line["sizey"] = $linesizey;
 	}
 	$sizey += $gap;
 }
 
 
-$checkbox0 = @imagecreatefrompng("checkbox0.png") or die("cannot create png image - checkbox0.png");
-$checkbox1 = @imagecreatefrompng("checkbox1.png") or die("cannot create png image - checkbox1.png");
-$removed = @imagecreatefrompng("removed.png") or die("cannot create png image - removed.png");
+$checkbox0 = @imagecreatefrompng("../app/assets/checkbox0.png") or die("cannot create png image - checkbox0.png");
+$checkbox1 = @imagecreatefrompng("../app/assets/checkbox1.png") or die("cannot create png image - checkbox1.png");
+$removed = @imagecreatefrompng("../app/assets/removed.png") or die("cannot create png image - removed.png");
 $image = @imagecreatetruecolor($sizex,$sizey) or die("cannot create image");
 $silver = GetColor($image, "silver");
 
@@ -187,6 +189,10 @@ foreach ($tables as &$table)
 				}
 				$y += $lineheight;
 			}
+			
+			if (array_key_exists("border",$cell)){
+				imagerectangle($image,$cell["x"],$line["y"],$cell["x"]+$cell["sizex"],$line["y"]+$line["sizey"],GetColor($image,"lightgray"));
+			}
 		}
 		
 		if ($line["isRemoved"]) {
@@ -196,6 +202,7 @@ foreach ($tables as &$table)
 				imagecopyresized($image,$icon,$x,$y,0,0,imagesx($icon),imagesy($icon),imagesx($icon),imagesy($icon));
 			}
 		}
+
 	}
 }
 	

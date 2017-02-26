@@ -12,6 +12,8 @@
                 ng-click="showParticipantsController.save()(false)">
             <img src="app/assets/save.png" />Save
         </button>
+		<span ng-show="showParticipantsController.isDirty()() && showParticipantsController.showparticipants" 
+                ng-bind="showParticipantsController.saveState"></span>
 		<img ng-if="(participant.name || '') != '' && !participant.isRemoved" ng-repeat="participant in showParticipantsController.participants" 
 			src="app/assets/participant.png" class="section-icon" />
     </h4>

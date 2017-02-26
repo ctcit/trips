@@ -132,8 +132,8 @@
                     });
             }
 
-            function getTripEdits(tripId, editId) {
-                var queryString = "?tripid=" + tripId + "&editid=" + editId;
+            function getTripEdits(tripId, editId, isDirty) {
+                var queryString = "?tripid=" + tripId + "&editid=" + editId + "&isdirty=" + isDirty;
 
                 return $http.get(site.restUrl('editrefresh', 'get') + queryString)
                     .then(function (response) {
@@ -169,6 +169,19 @@
                             console.log(response.data);
                         }
                     });
+            }
+
+            //---------------------------------
+
+            function putEmail(tripId, subject, body) {
+                return $http.post(site.restUrl('email', 'post'), { tripid: tripId, subject: subject, body: body })
+                    .then(function (response) {
+                        if (ValidateResponse(response)) {
+                            lastResponseMessage = response.data.result ? response.data.result : undefined;
+                        } else {
+                            console.log(response.data);
+                        }
+                    });
             };
 
 			function newTrip(){
@@ -194,6 +207,7 @@
 
                 putTrip: putTrip,
 				newTrip: newTrip,
+				putEmail: putEmail,
 
                 closeEditSession: closeEditSession,
 

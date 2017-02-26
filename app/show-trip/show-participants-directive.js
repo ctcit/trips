@@ -138,6 +138,7 @@
                 participants: '=',
                 nonmembers: '=',
                 originalParticipants: '=',
+                saveState: '=',
                 update: '&',
                 save: '&',
                 isDirty: '&'

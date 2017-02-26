@@ -8,25 +8,23 @@ require_once( 'trips.inc.php' );
 mysqli_query($con, "SET CHARACTER SET utf8");
 
 $logondetails	= GetLogonDetails($con,$username);
-$metadata	= GetMetadata($con);
-$post 		= json_decode(file_get_contents('php://input'),true);
-$tripid		= intval($post["tripid"]);
-$diffs		= $post["diffs"];
-$userid		= $logondetails["userid"];
-$trips 		= GetTrips($con,"t.id = $tripid");
-$subject	= "RE: ".$trips[0]["title"]." on ".$trips[0]["date"];
-$bodyparts	= array("email"=>"","diff"=>"");
-$where		= array("p.tripid = $tripid"=>1,"p.isRemoved = 0"=>1,"p.isEmailPending = 0"=>1,"p.memberid <> $userid"=>1);
-$cols		= array("guid","action","column","line","before","after","subject","body");
-$stats		= array();
-$statcounts	= array("diff"=>0,"diff"=>0,"email"=>0);
-$guid		= MakeGuid();
-$nextline	= SqlResultScalar($con,"select max(line) from ".TripConfig::TripDB.".participants where tripid = $tripid");
+$metadata		= GetMetadata($con);
+$post 			= json_decode(file_get_contents('php://input'),true);
+$tripid			= intval($post["tripid"]);
+$diffs			= $post["diffs"];
+$userid			= $logondetails["userid"];
+$trips 			= GetTrips($con,"t.id = $tripid");
+$subject		= "RE: ".$trips[0]["title"]." on ".$trips[0]["date"];
+$bodyparts		= array("email"=>"","diff"=>"");
+$where			= array("p.tripid = $tripid"=>1,"p.isRemoved = 0"=>1,"p.isEmailPending = 0"=>1,"p.memberid <> $userid"=>1);
+$cols			= array("guid","action","column","line","before","after","subject","body");
+$stats			= array();
+$statcounts		= array("diff"=>0,"diff"=>0,"email"=>0);
+$guid			= MakeGuid();
+$nextline		= SqlResultScalar($con,"select max(line) from ".TripConfig::TripDB.".participants where tripid = $tripid");
 $newlines       = array();
 
-if (count($diffs) == 0 || count($trips) == 0) {
-	die("invalid post ".json_encode($post));
-}
+(count($diffs) > 0 && count($trips) > 0) || die("invalid post ".json_encode($post));
 
 foreach ($diffs as &$diff) {
 	$action = strval($diff["action"]);
@@ -112,7 +110,7 @@ $headers = "MIME-Version: 1.0\r\n".
 foreach ($recipients as $recipient) {
 
 	$bodyparts["image"] = "<p><a href='".TripConfig::BaseUrl."/ShowTrip.php?tripid=$tripid'>
-		   		<img src='".TripConfig::BaseUrl."/EmailImage.php?changeid=$changeid&memberid=$recipient[memberid]&guid=$guid'
+		   		<img src='".TripConfig::EmailImageUrl."?changeid=$changeid&memberid=$recipient[memberid]&guid=$guid'
 	   				title='Click here to go to the trip list'/></a></p>"; 		
 	   			
 	if (preg_match(TripConfig::EmailFilter, $recipient["email"])) {

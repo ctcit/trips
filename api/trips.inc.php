@@ -73,6 +73,46 @@ function GetParticipants($con,$where) {
 		WHERE $where
 		ORDER BY e.date desc, line
 		LOCK IN SHARE MODE");
-}	
+}
+		
+function SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid) {
+	
+	$guid = str_replace("-","",$guid);
+	$memberids = array();
+	$emailaudit = array();
+	$headers = "MIME-Version: 1.0\r\n".
+			   "Content-type: text/html;charset=UTF-8\r\n".
+			   "From: <noreply@ctc.org.nz>\r\n";
+	$trip = GetTrips($con,"t.id = $tripid");
+	$imgtitle = "Click here to go to the ".htmlentities($trip[0]["title"])." trip list";
+	
+	foreach ($recipients as $recipient) {
+
+		$memberid = $recipient["memberid"];
+		$memberids []= $memberid;
+		$bodyparts["image"] = "
+			<p>
+				<a href='".TripConfig::BaseUrl."?goto=trip/showtrip/$tripid'>
+					<img src='".TripConfig::EmailImageUrl."?changeid=$changeid&memberid=$memberid&guid=$guid' title='$imgtitle'/>
+				</a>
+			</p>"; 		
+					
+		if (preg_match(TripConfig::EmailFilter, $recipient["email"])) {
+			$emailaudit []= "$recipient[name] ($recipient[email])";
+			if (!mail($recipient["email"], $subject, implode("",$bodyparts), $headers)) {
+				die("mail() failed");
+			}
+		} else {
+			$emailaudit []= "$recipient[name] ($recipient[email] FILTERED)";
+		}
+	} 
+	
+	$emailauditSql = SqlVal("Email recipients: ".implode(", ",$emailaudit));
+	$memberidsSql = implode(",",$memberids);
+	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".changehistory SET emailAudit = $emailauditSql WHERE id = $changeid");
+	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".participants  SET isEmailPending = 1 WHERE tripid = $tripid and memberid in ($memberidsSql)");
+}
+
+	
 			
 ?>
