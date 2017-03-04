@@ -18,7 +18,8 @@
                 email: '=',
                 tripeditable: '=',
                 emailState: '=',
-                emailSend: '&'
+                emailSend: '&',
+                isDirty: '&'
             },
             controller: controller,
             controllerAs: 'showTripEmailController',

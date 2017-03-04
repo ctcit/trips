@@ -23,11 +23,12 @@
             <tr>
 		<td></td>
                 <td>
-                    <button ng-disabled="!showTripEmailController.tripeditable || tripEmailForm.emailsubject.$error.required || tripEmailForm.emailbody.$error.required"
+                    <button ng-disabled="!showTripEmailController.tripeditable || showTripEmailController.isDirty()() || tripEmailForm.emailsubject.$error.required || tripEmailForm.emailbody.$error.required"
                             ng-click="showTripEmailController.emailSend()()">
                         <img src="app/assets/send.png" />Send
                     </button>
                     <img ng-show="showTripEmailController.emailState == 'Emailing'" src="app/assets/waiting.gif" /><span ng-bind="showTripEmailController.emailState"></span>
+                    <div ng-show="!showTripEmailController.tripeditable || showTripEmailController.isDirty()()">Trip changes must be saved before sending email</div>
                 </td>
             </tr>
         </table>

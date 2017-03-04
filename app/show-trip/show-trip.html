@@ -10,11 +10,11 @@
                     <img src="app/assets/save.png" />Save
                 </button>
                 <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && !controller.trip.tripDetail.isRemoved" 
-						ng-click="controller.save(false,true)" title="Delete this trip">
+						ng-click="controller.save(true)" title="Delete this trip">
                     <img src="app/assets/cross.png" />Delete
                 </button>
                 <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && controller.trip.tripDetail.isRemoved" 
-						ng-click="controller.save(false,false)" title="Un-delete this trip">
+						ng-click="controller.save(false)" title="Un-delete this trip">
                     <img src="app/assets/tick.png" />Un-delete
                 </button>
                 <button ng-show='controller.tripeditable && !controller.trip.tripDetail.isRemoved'
@@ -53,7 +53,8 @@
                              email="controller.trip.tripEmail"
                              tripeditable="controller.tripeditable"
                              email-state="controller.emailState"
-                             email-send="controller.emailSend">
+                             email-send="controller.emailSend"
+                             is-dirty="controller.isDirty">
             </show-trip-email>
 
             <show-history showhistory="controller.showhistory"

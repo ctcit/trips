@@ -148,7 +148,7 @@
 				tripsService.closeEditSession(controller.editId);
 			});
 
-            controller.save = function save(includeEmail, remove) {
+            controller.save = function save(remove) {
 
 				if (remove === true || remove === false)
 				{
@@ -158,16 +158,21 @@
 				var diffs = sessionStateService.diffs();
 
 				controller.saveState = "Saving";
-                tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs, includeEmail ? controller.trip.tripEmail : null)
-                    .then(function (trip) {
-                        return tripsService.getEditSession()
-                                .then(function (editSession) {
-                                    controller.saveState = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
-                                    controller.trip = trip;
-                                    controller.editSession = editSession;
-                                    sessionStateService.setTrip(controller.trip);
-                                    $timeout();
-                                })
+                tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
+                    .then(function () {
+                        return tripsService.getTrip(controller.tripId, controller.editSession.editId)
+                            .then(function(trip) {
+                                return tripsService.getEditSession()
+                                        .then(function (editSession) {
+                                            controller.saveState = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
+                                            trip.tripEmail = controller.trip.tripEmail; // don't lose email details
+                                            controller.trip = trip;
+                                            controller.editSession = editSession;
+                                            sessionStateService.setTrip(controller.trip);
+                                            $timeout();
+                                        })
+                            });
+
                     }, function (data, status) {
                         controller.saveState = "FAILED " + data + " " + status;
                         $timeout();
