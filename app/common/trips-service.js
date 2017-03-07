@@ -10,6 +10,7 @@
 
             var trip = undefined;
             var tripeditable = false;
+			var allowNewTrips = false;
 
             var editSession = undefined;
 
@@ -19,10 +20,14 @@
 
             function getTripGroups() {
 
+				allowNewTrips = membersService.getMembers().some(function (member) {
+					return member.id == currentUserService.getUserId() && member.role != null;
+				});
+
                 return $http.get(site.restUrl('trips', 'get'))
                     .then(function (response) {
 
-                        if (ValidateResponse(response)) {
+						if (ValidateResponse(response)) {
                             var data = response.data;
 
                             // resolve on this value
@@ -85,9 +90,9 @@
                                 }
                                 return false;
                             });
-                            tripeditable = tripeditable || participants.some(function (participant) {
+                            tripeditable = tripeditable || (participants && participants.some(function (participant) {
                                 return participant.memberid == currentUserService.getUserId() && participant.isLeader;
-                            })
+                            }));
                             participants.forEach(function (participant, i) {
                                 participant.nameui = (tripeditable ? "(Full)" : (participant.iseditable ? "(Members)" : "(Readonly)"));
                             })
@@ -153,12 +158,7 @@
 
             //---------------------------------
 
-            function putTrip(tripId, editId, diffs, email) {
-
-                // yuk - email should be a separate api call
-                if (email) {
-                    diffs.splice(0, 0, email);
-                }
+            function putTrip(tripId, editId, diffs) {
 
                 return $http.post(site.restUrl('trip', 'post'), { tripid: tripId, diffs: diffs })
                     .then(function (response) {
@@ -188,6 +188,13 @@
 				return $http.post(site.restUrl('newtrip', 'post'));
 			};
 
+			function newTrips(){
+				return $http.post(site.restUrl('newtrips', 'post'))
+						.then(function (response){
+							alert(response.data.result || response.data);
+						});
+			};
+
             //---------------------------------
 
             function closeEditSession(editId) {
@@ -201,12 +208,14 @@
 
                 getTrip: getTrip,
                 tripeditable: function () { return tripeditable; },
+                allowNewTrips: function () { return allowNewTrips; },
 
                 getEditSession: getEditSession,
                 getTripEdits: getTripEdits,
 
                 putTrip: putTrip,
 				newTrip: newTrip,
+				newTrips: newTrips,
 				putEmail: putEmail,
 
                 closeEditSession: closeEditSession,
