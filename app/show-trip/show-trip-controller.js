@@ -148,7 +148,7 @@
 				tripsService.closeEditSession(controller.editId);
 			});
 
-            controller.save = function save(includeEmail, remove) {
+            controller.save = function save(remove) {
 
 				if (remove === true || remove === false)
 				{
@@ -158,7 +158,7 @@
 				var diffs = sessionStateService.diffs();
 
 				controller.saveState = "Saving";
-                tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs, includeEmail ? controller.trip.tripEmail : null)
+                tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
                     .then(function (trip) {
                         return tripsService.getEditSession()
                                 .then(function (editSession) {
