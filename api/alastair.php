@@ -38,7 +38,7 @@ if (!$con)
 
 
 
-function GetLogonDetails($con,$username,$params="",$roleclause="1=1")
+function GetLogonDetails($con,$username,$roleclause="1=1")
 {
     $userrow = SqlResultArray($con,"
             SELECT primaryEmail,firstName,lastName,m.id
@@ -47,7 +47,7 @@ function GetLogonDetails($con,$username,$params="",$roleclause="1=1")
             LEFT JOIN ctcweb9_ctc.roles          r   on r.id = mr.roleid
             where loginname = ".SqlVal($username["name"])." and $roleclause");
 
-    if (count($userrow))
+	if (count($userrow))
     {
         return array(
             "userid"    => $userrow[0]["id"],

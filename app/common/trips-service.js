@@ -188,10 +188,7 @@
 			};
 
 			function newTrips(){
-				return $http.post(site.restUrl('newtrips', 'post'))
-						.then(function (response){
-							alert(response.data.result || response.data);
-						});
+				return $http.post(site.restUrl('newtrips', 'post'));
 			};
 
             //---------------------------------

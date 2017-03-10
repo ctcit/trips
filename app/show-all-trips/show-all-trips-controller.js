@@ -3,10 +3,13 @@
     "use strict";
 
     angular.module('tripSignupApp').controller("showAllTripsController",
-        ['$scope', '$q', '$timeout', 'site', 'configService', 'metadataService', 'tripsService', 'membersService', 'currentUserService', 'Group',
-        function ($scope, $q, $timeout, site, configService, metadataService, tripsService, membersService, currentUserService, Group) {
+        ['$scope', '$q', '$timeout', 'site', 'configService', 'metadataService', 'tripsService', 'Group',
+		'currentUserService', 'membersService',
+        function ($scope, $q, $timeout, site, configService, metadataService, tripsService, Group,
+		currentUserService,membersService) {
 
             var controller = this;
+			var allowNewTrips = false;
 
             controller.groups = [];
 
@@ -15,7 +18,6 @@
 					.then(function (groups) {
 						controller.groups = groups;
 						controller.groups[1].showdetail = controller.groups[0].trips.length == 0;
-						controller.allowNewTrips = tripsService.allowNewTrips();
 					});
 			};
 				
@@ -25,21 +27,27 @@
 						controller.reload();
 						});
 			};
-			
             controller.newTrips = function () {
 				tripsService.newTrips()
-                    .then(function () {
+                    .then(function (message) {
+						alert(message);
 						controller.reload();
 						});
 			};
-
+			controller.allowNewTrips = function(){
+				return allowNewTrips;
+			};
+			
             $q.all([
                 configService.load(),
                 metadataService.load(),
-				membersService.load(),
 				currentUserService.load(),
+				membersService.load()
             ])
             .then(function() {			
+				allowNewTrips = membersService.getMembers().some(function (member) {
+                    return member.id == currentUserService.getUserId() && member.role != null;
+                });
 				controller.reload();
 			});
 

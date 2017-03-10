@@ -5,7 +5,7 @@
     angular.module('tripSignupApp').controller("showTripController",
         ['$scope', '$window', '$q', '$timeout', '$stateParams', '$http', 'site',
                  'configService', 'membersService', 'metadataService',
-		 'changeService', 'currentUserService', 'tripsService',
+				 'changeService', 'currentUserService', 'tripsService',
                  'sessionStateService', 'State', 'TripDetail', 'TripEmail',
                  'Participant', 'Change',
         function ($scope, $window, $q, $timeout, $stateParams, $http, site,
@@ -127,7 +127,7 @@
             };
 
             controller.isDirty = function isDirty() {
-                return sessionStateService.isDirty();
+            	return sessionStateService.isDirty();
             };
 
             controller.isDirtyMessage = function () {
@@ -159,16 +159,20 @@
 
 				controller.saveState = "Saving";
                 tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
-                    .then(function (trip) {
-                        return tripsService.getEditSession()
-                                .then(function (editSession) {
-                                    controller.saveState = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
-                                    controller.trip = trip;
-                                    controller.editSession = editSession;
-                                    sessionStateService.setTrip(controller.trip);
-                                    $timeout();
-                                })
-                    }, function (data, status) {
+                     .then(function () {
+                         return tripsService.getTrip(controller.tripId, controller.editSession.editId)
+                             .then(function(trip) {
+                                 return tripsService.getEditSession()
+                                         .then(function (editSession) {
+                                             controller.saveState = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
+                                             trip.tripEmail = controller.trip.tripEmail; // don't lose email details
+                                             controller.trip = trip;
+                                             controller.editSession = editSession;
+                                             sessionStateService.setTrip(controller.trip);
+                                             $timeout();
+                                         })
+                             });
+                     }, function (data, status) {
                         controller.saveState = "FAILED " + data + " " + status;
                         $timeout();
                 });
