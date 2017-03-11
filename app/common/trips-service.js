@@ -183,13 +183,16 @@
                     });
             };
 
-			function newTrip(){
+			function newTrip() {
 				return $http.post(site.restUrl('newtrip', 'post'));
 			};
 
-			function newTrips(){
-				return $http.post(site.restUrl('newtrips', 'post'));
-			};
+			function newTrips() {
+				return $http.post(site.restUrl('newtrips', 'post'))
+                    .then(function (response) {
+                        return response.data;
+                    });			
+            };
 
             //---------------------------------
 
