@@ -18,8 +18,9 @@
                 email: '=',
                 tripeditable: '=',
                 emailState: '=',
-                emailSend: '&'
-            },
+                emailSend: '&',
+                isDirty: '&'
+			},
             controller: controller,
             controllerAs: 'showTripEmailController',
             templateUrl: 'app/show-trip/show-trip-email.html'

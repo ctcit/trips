@@ -4,9 +4,6 @@ require_once( 'alastair.php' );
 require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
-// make sure that characters above 0x7F don't screw up json_encode()
-mysqli_query($con, "SET CHARACTER SET utf8");
-
 $logondetails	= GetLogonDetails($con,$username);
 $metadata		= GetMetadata($con);
 $post 			= json_decode(file_get_contents('php://input'),true);
@@ -15,8 +12,8 @@ $diffs			= $post["diffs"];
 $userid			= $logondetails["userid"];
 $trips 			= GetTrips($con,"t.id = $tripid");
 $subject		= "RE: ".$trips[0]["title"]." on ".$trips[0]["date"];
-$bodyparts		= array("email"=>"","diff"=>"");
-$where			= array("p.tripid = $tripid"=>1,"p.isRemoved = 0"=>1,"p.isEmailPending = 0"=>1,"p.memberid <> $userid"=>1);
+$bodyparts		= array("greeting"=>"","diff"=>"");
+$where			= array("p.tripid = $tripid"=>1,"p.isRemoved = 0"=>1,"p.isEmailPending = 0"=>1,"COALESCE(p.memberid,0) <> $userid"=>1);
 $cols			= array("guid","action","column","line","before","after","subject","body");
 $stats			= array();
 $statcounts		= array("diff"=>0,"diff"=>0,"email"=>0);
@@ -39,18 +36,6 @@ foreach ($diffs as &$diff) {
 	
 	switch ($action)
 	{
-	case "email":
-		$subject = strval($diff["subject"]);
-		$body = strval($diff["body"]);
-		if ($subject == "" || $body == "") {
-			die("missing subject or body ".json_encode($post));
-		}
-		
-		$bodyparts["email"] = "<p>".htmlentities($body)."</p>";
-		unset($where["p.isEmailPending = 0"]);
-		unset($where["p.memberid <> $userid"]);
-		break;
-		
 	case "updatetrip":
 		
 		if (!array_key_exists($column,$metadata["trips"]) || $metadata["trips"][$column]["IsReadOnly"]) {
@@ -72,7 +57,7 @@ foreach ($diffs as &$diff) {
 		$bodyparts["diff"] = "<p>This trip list has just been updated</p>";
 		
 		if($diff["action"] == "insertparticipant") {
-			unset($where["p.memberid <> $userid"]);
+			unset($where["COALESCE(p.memberid,0) <> $userid"]);
 			if (!array_key_exists($line,$newlines)) {
 				$newlines[$line] = ++$nextline;
 			}
@@ -100,32 +85,9 @@ foreach ($diffs as &$diff) {
 
 $wheresql = implode(" and ",array_keys($where));
 $recipients = GetParticipants($con,$wheresql);	
-$guid = str_replace("-","",$guid);
 $changeid = $diffs[0]["id"];
-$emailaudit = array();
-$headers = "MIME-Version: 1.0\r\n".
-	   "Content-type: text/html;charset=UTF-8\r\n".
-	   "From: <noreply@ctc.org.nz>\r\n";
 
-foreach ($recipients as $recipient) {
-
-	$bodyparts["image"] = "<p><a href='".TripConfig::BaseUrl."/ShowTrip.php?tripid=$tripid'>
-		   		<img src='".TripConfig::EmailImageUrl."?changeid=$changeid&memberid=$recipient[memberid]&guid=$guid'
-	   				title='Click here to go to the trip list'/></a></p>"; 		
-	   			
-	if (preg_match(TripConfig::EmailFilter, $recipient["email"])) {
-		$emailaudit []= "$recipient[name] ($recipient[email])";
-		if (!mail($recipient["email"], $subject, implode("",$bodyparts), $headers)) {
-			die("mail() failed");
-		}
-	} else {
-		$emailaudit []= "$recipient[name] ($recipient[email] FILTERED)";
-	}
-} 
-
-$emailauditsql = SqlVal("Email recipients: ".implode(", ",$emailaudit));
-SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".changehistory SET emailAudit = $emailauditsql WHERE id = $changeid");
-SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".participants SET isEmailPending = 1 WHERE ".str_replace("p.","",$wheresql));
+SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid);
 	
 header('Content-Type: application/json');
 echo json_encode(array("result"=>implode(", ",$stats)));

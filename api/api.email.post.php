@@ -4,9 +4,6 @@ require_once( 'alastair.php' );
 require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
-// make sure that characters above 0x7F don't screw up json_encode()
-mysqli_query($con, "SET CHARACTER SET utf8");
-
 $logondetails	= GetLogonDetails($con,$username);
 $metadata		= GetMetadata($con);
 $userid			= $logondetails["userid"];
@@ -14,7 +11,7 @@ $post 			= json_decode(file_get_contents('php://input'),true);
 $tripid			= intval($post["tripid"]);
 $subject		= strval($post["subject"]);
 $body			= strval($post["body"]);
-$bodyparts		= array("email"=>"<p>".htmlentities($body)."</p>");
+$bodyparts		= array("greeting"=>"","email"=>"<p>".htmlentities($body)."</p>");
 $wheresql		= "p.tripid = $tripid and p.isRemoved = 0";
 $recipients 	= GetParticipants($con,$wheresql);	
 $guid			= MakeGuid();
