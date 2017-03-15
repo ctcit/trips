@@ -4,9 +4,12 @@
 
     angular.module('tripSignupApp').controller("showAllTripsController",
         ['$scope', '$q', '$timeout', 'site', 'configService', 'metadataService', 'tripsService', 'Group',
-        function ($scope, $q, $timeout, site, configService, metadataService, tripsService, Group) {
+		'currentUserService', 'membersService',
+        function ($scope, $q, $timeout, site, configService, metadataService, tripsService, Group,
+		currentUserService,membersService) {
 
             var controller = this;
+			var allowNewTrips = false;
 
             controller.groups = [];
 
@@ -24,12 +27,27 @@
 						controller.reload();
 						});
 			};
+            controller.newTrips = function () {
+				tripsService.newTrips()
+                    .then(function (message) {
+						alert(message);
+						controller.reload();
+						});
+			};
+			controller.allowNewTrips = function(){
+				return allowNewTrips;
+			};
 			
             $q.all([
                 configService.load(),
-                metadataService.load()
+                metadataService.load(),
+				currentUserService.load(),
+				membersService.load()
             ])
             .then(function() {			
+				allowNewTrips = membersService.getMembers().some(function (member) {
+                    return member.id == currentUserService.getUserId() && member.role != null;
+                });
 				controller.reload();
 			});
 

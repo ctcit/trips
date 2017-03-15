@@ -4,9 +4,30 @@ require_once( 'alastair.php' );
 require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
-$memberid	= intval($_GET["memberid"]);
-$changeid	= intval($_GET["changeid"]);
-$guid	 	= strval($_GET["guid"]);
+function Wrap($text,$linelimit){
+	$lines = explode("\n",$text);
+	$out = "";
+	for ($line = 0; $line < count($lines); $line++){
+		$out .= $line == 0 ? "" : "\n";
+		$words = explode(" ",$lines[$line]);
+		$start = strlen($out);
+		for ($word = 0; $word < count($words); $word++){
+			if ($word > 0 && strlen($out) - $start + strlen($words[$word]) > $linelimit){
+				$out .= "\n";
+				$start = strlen($out);
+			} else if ($word > 0 ){
+				$out .= " ";
+			}
+			$out .= $words[$word];
+		}
+	}
+	
+	return $out;
+}
+
+$participantid	= intval($_GET["participantid"]);
+$changeid		= intval($_GET["changeid"]);
+$guid	 		= strval($_GET["guid"]);
 $tables = array();
 $change = SqlResultArray($con,"SELECT guid, timestamp, tripid FROM ".TripConfig::TripDB.".changehistory WHERE id = $changeid");
 			
@@ -16,15 +37,15 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 	$tripid   = $change[0]["tripid"];
 	$updates = SqlResultArray($con,"	SELECT concat(`column`,coalesce(`line`,'')) as `key`
 						FROM ".TripConfig::TripDB.".changehistory
-						WHERE tripid = $tripid and id >= $changeid and action = 'update'","key");
+						WHERE tripid = $tripid and id >= $changeid and action like 'update%'","key");
 	$inserts = SqlResultArray($con,"	SELECT `line` as `key`
 						FROM ".TripConfig::TripDB.".changehistory
-						WHERE tripid = $tripid and id >= $changeid and action = 'insert'","key");
+						WHERE tripid = $tripid and id >= $changeid and action like 'insert%'","key");
 		
 	// we assume that the user now knows about this trip
 	SqlExecOrDie($con,"	UPDATE ".TripConfig::TripDB.".participants 
 				SET isEmailPending = 0 
-				WHERE tripid = $tripid and memberid = $memberid");
+				WHERE id = $participantid");
 	
 	$metadata = GetMetadata($con);
 	$trips = GetTrips($con,"t.id = $tripid");
@@ -36,8 +57,10 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 	{
 		if ($col["Display"] != "" && $field != "mapHtml" && $field != "isRemoved") {
 			$table []= array("cells"=>array(
-				array("value"=>$col["Display"],"selector"=>"th"),
-				array("value"=>$trips[0][$field],"selector"=>array_key_exists($field,$updates)?".updated":"")));
+				array("value"=>$col["Display"],
+					  "selector"=>"th"),
+				array("value"=>Wrap($trips[0][$field],80),
+					  "selector"=>array_key_exists($field,$updates)?".updated":"")));
 		}
 	}
 	$tables []= $table;
@@ -61,13 +84,13 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 		{
 			if ($field == "line") {
 				$line["cells"] []= array("value"=>$participant[$field]+1,
-							"selector"=>"th");
+										 "selector"=>"th");
 			} else if ($col["Display"] != "") {
-				$line["cells"] []= array("value"=>$participant[$field],
-							 "type"=>$col["Type"],
-							 "border"=>true,
-							 "selector"=>	(array_key_exists($participant["line"],$inserts)?".inserted":
-											(array_key_exists($field.$participant["line"],$updates)?".updated":"")));
+				$line["cells"] []= array("value"=>Wrap($participant[$field],20),
+										 "type"=>$col["Type"],
+										 "border"=>true,
+										 "selector"=>	(array_key_exists($participant["line"],$inserts)?".inserted":
+														(array_key_exists($field.$participant["line"],$updates)?".updated":"")));
 			}
 		}
 		

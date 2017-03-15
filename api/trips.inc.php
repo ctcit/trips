@@ -26,7 +26,8 @@ function GetMetadata($con) {
 
 function GetTrips($con,$where) {
 	return SqlResultArray($con,"
-		SELECT t.id as tripid, 
+		SELECT 
+			t.id as tripid, 
 			e.id as eventid,
 			t.date,
 			t.closeDate,
@@ -51,7 +52,9 @@ function GetTrips($con,$where) {
 		
 function GetParticipants($con,$where) {
 	return SqlResultArray($con,"
-		SELECT 	p.line,
+		SELECT 	
+			p.id as participantid,
+			p.line,
 			p.isRemoved,
 			p.memberid,
 			p.isLeader,
@@ -76,9 +79,9 @@ function GetParticipants($con,$where) {
 }
 		
 function SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid) {
-	
+		
 	$guid = str_replace("-","",$guid);
-	$memberids = array();
+	$participantids = array();
 	$emailaudit = array();
 	$headers = "MIME-Version: 1.0\r\n".
 			   "Content-type: text/html;charset=UTF-8\r\n".
@@ -88,12 +91,13 @@ function SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid)
 	
 	foreach ($recipients as $recipient) {
 
-		$memberid = $recipient["memberid"];
-		$memberids []= $memberid;
+		$participantid = $recipient["participantid"];
+		$participantids []= $participantid;
+		$bodyparts["greeting"] = "<p>Dear ".htmlentities($recipient["name"]).",</p>";
 		$bodyparts["image"] = "
 			<p>
 				<a href='".TripConfig::BaseUrl."?goto=trip/showtrip/$tripid'>
-					<img src='".TripConfig::EmailImageUrl."?changeid=$changeid&memberid=$memberid&guid=$guid' title='$imgtitle'/>
+					<img src='".TripConfig::EmailImageUrl."?changeid=$changeid&participantid=$participantid&guid=$guid' title='$imgtitle'/>
 				</a>
 			</p>"; 		
 					
@@ -108,11 +112,9 @@ function SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid)
 	} 
 	
 	$emailauditSql = SqlVal("Email recipients: ".implode(", ",$emailaudit));
-	$memberidsSql = implode(",",$memberids);
+	$participantidsSql = count($participantids) == 0 ? "-1" : implode(",",$participantids);
 	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".changehistory SET emailAudit = $emailauditSql WHERE id = $changeid");
-	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".participants  SET isEmailPending = 1 WHERE tripid = $tripid and memberid in ($memberidsSql)");
+	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".participants  SET isEmailPending = 1 WHERE id in ($participantidsSql)");
 }
-
-	
-			
+		
 ?>

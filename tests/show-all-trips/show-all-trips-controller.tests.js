@@ -5,12 +5,13 @@ describe('showAllTripsController: ', function () {
     var createController;
     var $httpBackend;
     var site;
+    var currentUserService;
 
     //mock Application to allow us to inject our own dependencies
     beforeEach(angular.mock.module('tripSignupApp'));
 
     //mock the controller for the same reason and include $rootScope and $controller
-    beforeEach(angular.mock.inject(function ($rootScope, $controller, _$httpBackend_, _site_) {
+    beforeEach(angular.mock.inject(function ($rootScope, $controller, _$httpBackend_, _site_, _currentUserService_) {
         //create an empty scope
         $scope = $rootScope.$new();
 
@@ -21,6 +22,8 @@ describe('showAllTripsController: ', function () {
         $httpBackend = _$httpBackend_;
         site = _site_;
         site.set('www.ctc.org.nz/tripsignup', 'api');
+
+        currentUserService = _currentUserService_;
     }));
 
 
@@ -37,11 +40,12 @@ describe('showAllTripsController: ', function () {
             .when('GET', site.restUrl('metadata', 'get'))
             .respond(getMockGetMetadataResponse());
         $httpBackend
+            .when('GET', site.restUrl('members', 'get'))
+            .respond(getMockGetMembersResponse());
+        $httpBackend
             .when('GET', site.restUrl('trips', 'get'))
             .respond(getMockGetTripsResponse());
 
-        controller = createController();
-        $httpBackend.flush();
     });
 
     afterEach(function () {
@@ -56,6 +60,12 @@ describe('showAllTripsController: ', function () {
 
     // tests start here
     it('should return the groups of all trips', function () {
+        $httpBackend
+            .when('GET', site.restUrl('currentuser', 'get'))
+            .respond(getMockGetCurrentUserResponse(520)); // Webmaster
+        controller = createController();
+        $httpBackend.flush();
+
         expect(controller.groups).toBeDefined();
         expect(controller.groups.length).toEqual(3);
 
@@ -79,6 +89,27 @@ describe('showAllTripsController: ', function () {
 
     });
 
+    it('should allow new trips for Webmaster', function () {
+        $httpBackend
+            .when('GET', site.restUrl('currentuser', 'get'))
+            .respond(getMockGetCurrentUserResponse(520)); // Webmaster
+        currentUserService.load(true);
+        controller = createController();
+        $httpBackend.flush();
+
+        expect(controller.allowNewTrips()).toEqual(true);
+    });
+
+    it('should NOT allow new trips for Non-Webmaster', function () {
+        $httpBackend
+            .when('GET', site.restUrl('currentuser', 'get'))
+            .respond(getMockGetCurrentUserResponse(260)); // Non-Webmaster
+        currentUserService.load(true);
+        controller = createController();
+        $httpBackend.flush();
+
+        expect(controller.allowNewTrips()).toEqual(false);
+    });
 
     //----------------------------------------------
 
@@ -92,6 +123,12 @@ describe('showAllTripsController: ', function () {
                 "AdditionalLines": 5,
                 "EditRefreshInSec": 30
             }
+        };
+    }
+
+    function getMockGetCurrentUserResponse(currentUserId) {
+        return {
+            "userid": currentUserId
         };
     }
 
@@ -504,6 +541,25 @@ describe('showAllTripsController: ', function () {
                   ]
               }
             ]
+        };
+    }
+
+    function getMockGetMembersResponse() {
+        return {
+            "members": [{
+                "id": "260",
+                "name": "A D",
+                "email": "ad@gmail.com",
+                "phone": "4432111",
+                "role": null
+            },
+            {
+                "id": "520",
+                "name": "B J",
+                "email": "bj@gmail.com",
+                "phone": "3334555",
+                "role": "Webmaster"
+            }]
         };
     }
 

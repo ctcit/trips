@@ -1,35 +1,45 @@
 ﻿<div ng-form="tripEmailForm">
-    <h4 class="noprint" ng-click="showTripEmailController.showtripemail = !showTripEmailController.showtripemail">
-        <button ng-class="showTripEmailController.showtripemail? 'open' : 'closed'"></button>
-        Trip Email
-		<img src="app/assets/email.png" class="section-icon" />
-    </h4>
-    <div class="noprint slide" ng-show="showTripEmailController.showtripemail">
-        <table class="table table-condensed">
-            <tr>
-                <th>Subject</th>
-                <td>
-                        <input type="text" ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.subject" name="emailsubject" required />
-                        <div ng-show="tripEmailForm.emailsubject.$error.required">required</div>
-                </td>
-            </tr>
-            <tr>
-                <th>Body</th>
-                <td>
-                    <textarea ng-disabled="!showTripEmailController.tripeditable" ng-model="showTripEmailController.email.body" name="emailbody" required></textarea>
-                    <div ng-show="tripEmailForm.emailbody.$error.required">required</div>
-		</td>
-            </tr>
-            <tr>
-		<td></td>
-                <td>
-                    <button ng-disabled="!showTripEmailController.tripeditable || tripEmailForm.emailsubject.$error.required || tripEmailForm.emailbody.$error.required"
-                            ng-click="showTripEmailController.emailSend()()">
-                        <img src="app/assets/send.png" />Send
-                    </button>
-                    <img ng-show="showTripEmailController.emailState == 'Emailing'" src="app/assets/waiting.gif" /><span ng-bind="showTripEmailController.emailState"></span>
-                </td>
-            </tr>
-        </table>
-    </div>
+  <h4 class="noprint" ng-click="showTripEmailController.showtripemail = !showTripEmailController.showtripemail">
+    <button ng-class="showTripEmailController.showtripemail? 'open' : 'closed'"></button>
+    Trip Email
+    <img src="app/assets/email.png" class="section-icon" />
+  </h4>
+  <div class="noprint slide" ng-show="showTripEmailController.showtripemail">
+    <table class="table table-condensed">
+      <colgroup>
+        <col style="width:15%"/>
+        <col style="width:85%"/>
+      </colgroup>
+      <tr>
+        <th>Subject</th>
+        <td>
+          <input type="text" ng-disabled="!showTripEmailController.tripeditable"
+                 ng-model="showTripEmailController.email.subject" name="emailsubject" required="" />
+          <div ng-show="tripEmailForm.emailsubject.$error.required">required</div>
+        </td>
+      </tr>
+      <tr>
+        <th>Body</th>
+        <td>
+          <textarea ng-disabled="!showTripEmailController.tripeditable"
+                    ng-model="showTripEmailController.email.body" name="emailbody" required=""></textarea>
+          <div ng-show="tripEmailForm.emailbody.$error.required">required</div>
+        </td>
+      </tr>
+      <tr>
+        <th></th>
+        <td>
+          <button ng-disabled="showTripEmailController.isDirty()() || !showTripEmailController.tripeditable || tripEmailForm.emailsubject.$error.required || tripEmailForm.emailbody.$error.required"
+                  ng-click="showTripEmailController.emailSend()()">
+            <img src="app/assets/send.png" />Send
+          </button>
+          <div ng-show="showTripEmailController.isDirty()() || !showTripEmailController.tripeditable">
+            Trip changes must be saved before sending email
+          </div>
+          <img ng-show="showTripEmailController.emailState == 'Emailing'" src="app/assets/waiting.gif" />
+          <span ng-bind="showTripEmailController.emailState"></span>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>

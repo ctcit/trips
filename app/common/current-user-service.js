@@ -10,9 +10,9 @@
 
             //---------------------------------
 
-            function load() {
+            function load(force) {
 
-                return _userId != undefined ? $q.when(user()) : $http.get(site.restUrl('currentuser', 'get'))
+                return _userId != undefined && !force ? $q.when(user()) : $http.get(site.restUrl('currentuser', 'get'))
                     .then(function (response) {
                         if (ValidateResponse(response)) {
                             _userId = response.data.userid;

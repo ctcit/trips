@@ -59,7 +59,8 @@
 
                 showParticipantsController.ImSignedUp = function ImSignedUp() {
                     var currentUser = currentUserService.getUser();
-                    return showParticipantsController.participants.some(function(participant) {
+                    return 	showParticipantsController.participants &&
+							showParticipantsController.participants.some(function(participant) {
                         return participant.memberid == currentUser.id;
                     })
                 }
