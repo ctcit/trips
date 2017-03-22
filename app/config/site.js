@@ -27,7 +27,7 @@
     console.log("Setting site api to " + site_api);
 
     angular.module('tripSignupApp').factory('site',
-        [ 
+        [
         function () {
 
             return {
@@ -37,12 +37,30 @@
                     site_url = url;
                     site_api = api;
                 },
-                
+
                 restUrl: function restUrl(method, verb) {
                     return site_url + '/' + site_api + '/api.{{method}}.{{verb}}.php'.replace('{{method}}', method).replace('{{verb}}', verb);
                 }
 
             };
+        }]);
+
+    // Disable caching of JSON requests (which screws the app when using IE).
+    // See http://stackoverflow.com/questions/16971831/better-way-to-prevent-ie-cache-in-angularjs
+    angular.module('tripSignupApp').config(['$httpProvider', function($httpProvider) {
+            //initialize get if not there
+            if (!$httpProvider.defaults.headers.get) {
+                $httpProvider.defaults.headers.get = {};
+            }
+
+            // Answer edited to include suggestions from comments
+            // because previous version of code introduced browser-related errors
+
+            //disable IE ajax request caching
+            $httpProvider.defaults.headers.get['If-Modified-Since'] = 'Mon, 26 Jul 1997 05:00:00 GMT';
+            // extra
+            $httpProvider.defaults.headers.get['Cache-Control'] = 'no-cache';
+            $httpProvider.defaults.headers.get['Pragma'] = 'no-cache';
         }]);
 }());
 
