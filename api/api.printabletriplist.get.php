@@ -9,7 +9,7 @@
     <main class='printabletriplist'>
     <h1>Christchurch Tramping Club Trip List</h1>
     <h2><?php
-    define('LINES_AVAILABLE', 36);
+    define('LINES_AVAILABLE', 32);
     define('LINES_OVERHEAD', 10);
     function input($key, $index=null) {
         // Return the sanitised POST variable with the given key.
