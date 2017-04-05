@@ -25,7 +25,13 @@
                 <tr>
                     <td colspan="3" ng-class="changesGroup[0].classname">
                         <div class="slide" ng-show="changesGroup[0].showdetail">
-                            <div ng-repeat="change in changesGroup">{{showHistoryController.changeDescription(change)}}<br />{{change.body}}</div>
+                            <div ng-repeat="change in changesGroup">
+                              {{showHistoryController.changeDescription(change)}}
+                              <br />
+                              {{change.body}}
+                              <br />
+                              {{change.emailAudit}}
+                            </div>
                         </div>
                     </td>
                 </tr>
