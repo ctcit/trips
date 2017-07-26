@@ -11,6 +11,13 @@
         <col style="width:85%"/>
       </colgroup>
       <tr>
+        <th>Recipients</th>
+        <td>
+          <span ng-repeat="participant in showTripEmailController.participants" ng-if="participant.isPrintable" 
+                ng-bind="participant.email + '; '"/>
+        </td>
+      </tr>
+      <tr>
         <th>Subject</th>
         <td>
           <input type="text" ng-disabled="!showTripEmailController.tripeditable"

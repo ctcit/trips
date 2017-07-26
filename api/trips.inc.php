@@ -78,32 +78,25 @@ function GetParticipants($con,$where) {
 		LOCK IN SHARE MODE");
 }
 		
-function SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid) {
+function SendEmail($con,$recipients,$subject,$body,$tripid,$changeid,$guid) {
 		
 	$guid = str_replace("-","",$guid);
-	$participantids = array();
 	$emailaudit = array();
 	$headers = "MIME-Version: 1.0\r\n".
 			   "Content-type: text/html;charset=UTF-8\r\n".
 			   "From: <noreply@ctc.org.nz>\r\n";
 	$trip = GetTrips($con,"t.id = $tripid");
-	$imgtitle = "Click here to go to the ".htmlentities($trip[0]["title"])." trip list";
+	$body["link"]   = TripConfig::EmailHasLink    ? GetTripLinkHtml($tripid)                     : "";
+	$body["detail"] = TripConfig::EmailHasDetails ? GetTripDetailsHtml($con, $tripid, $changeid) : "";
 	
 	foreach ($recipients as $recipient) {
 
 		$participantid = $recipient["participantid"];
-		$participantids []= $participantid;
 		$bodyparts["greeting"] = "<p>Dear ".htmlentities($recipient["name"]).",</p>";
-		$bodyparts["image"] = "
-			<p>
-				<a href='".TripConfig::BaseUrl."?goto=trip/showtrip/$tripid'>
-					<img src='".TripConfig::EmailImageUrl."?changeid=$changeid&participantid=$participantid&guid=$guid' title='$imgtitle'/>
-				</a>
-			</p>"; 		
 					
 		if (preg_match(TripConfig::EmailFilter, $recipient["email"])) {
 			$emailaudit []= "$recipient[name] ($recipient[email])";
-			if (!mail($recipient["email"], $subject, implode("",$bodyparts), $headers)) {
+			if (!mail($recipient["email"], $subject, implode("",$body), $headers)) {
 				die("mail() failed");
 			}
 		} else {
@@ -112,9 +105,78 @@ function SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid)
 	} 
 	
 	$emailauditSql = SqlVal("Email recipients: ".implode(", ",$emailaudit));
-	$participantidsSql = count($participantids) == 0 ? "-1" : implode(",",$participantids);
 	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".changehistory SET emailAudit = $emailauditSql WHERE id = $changeid");
-	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".participants  SET isEmailPending = 1 WHERE id in ($participantidsSql)");
 }
+
+function GetTripDetailsHtml($con, $tripid, $changeid)
+{
+	$updates		= SqlResultArray($con,
+					   "SELECT concat(`column`,coalesce(`line`,'')) as `key`
+						FROM ".TripConfig::TripDB.".changehistory
+						WHERE tripid = $tripid and id >= $changeid and action like 'update%'","key");
+	$inserts		= SqlResultArray($con,
+					   "SELECT `line` as `key`
+						FROM ".TripConfig::TripDB.".changehistory
+						WHERE tripid = $tripid and id >= $changeid and action like 'insert%'","key");
+	$metadata		= GetMetadata($con);
+	$trips			= GetTrips($con,"t.id = $tripid");
+	$participants	= GetParticipants($con,"t.id = $tripid");
+	$css			= ParseCss(file_get_contents("../app/styles/trips.css"));
+	$updated		= "background-color:".$css[".updated"]["background-color"];
+	$inserted		= "background-color:".$css[".inserted"]["background-color"];
+	$border			= "border: solid 1px black; border-collapse: collapse;";
+	$removed		= "text-decoration: line-through; ";
+
+	$header			= "";
+	foreach ($metadata["trips"] as $field => $col) {
+		if ($col["Display"] != "" && $field != "mapHtml" && $field != "isRemoved") {
+			$style = $border.(array_key_exists($field,$updates) ? $updated : "");
+			$header .= 
+				"<tr>
+					<th style='$style'>".htmlentities($col["Display"])."</th>
+					<td style='$style'>".htmlentities($trips[0][$field])."</td>
+				</tr>";
+		}
+	}
 		
+	$detail = "<tr>";
+	foreach ($metadata["participants"] as $field => $col) {
+		if ($field == "line" || $col["Display"] != "") {
+			$detail .= "<th style='$border'>".htmlentities($col["Display"])."</th>";
+		}
+	}
+	$detail .= "</tr>";
+
+	foreach ($participants as $participant) {
+		$detail .= "<tr>";
+		foreach ($metadata["participants"] as $field => $col) {
+			$style = $border.
+						($participant["isRemoved"] ? $removed : "").
+						(array_key_exists($participant["line"],$inserts) ? $inserted :
+						(array_key_exists($field.$participant["line"],$updates) ? $updated :""));
+
+			if ($field == "line") {
+				$detail .= "<td style='$style'>".($participant[$field]+1)."</td>";
+			} else if ($col["Display"] != "" && $col["Type"] == "tinyint(1)") {
+				$detail .= "<td style='$style'>".($participant[$field] == 1 ? "Yes" : "")."</td>";
+			} else if ($col["Display"] != "") {
+				$detail .= "<td style='$style'>".htmlentities($participant[$field])."</td>";
+			}
+		}
+		$detail .= "</tr>";
+	}
+
+	$legend = "<tr><th>Legend: </th><td style='$border $updated'> Updates </td><td style='$border $inserted'> Additions </td></tr>";
+
+	return "<h3>Current trip details:</h3>
+			<table style='$border'>$header</table><br/>
+			<table style='$border'>$detail</table><br/>
+			<table style='$border'>$legend</table>";
+}
+
+function GetTripLinkHtml($tripid)
+{
+	$url = TripConfig::BaseUrl."?goto=trip/showtrip/$tripid";
+	return "<p>Trip link: <a href='$url'>$url</a></p>";
+}
 ?>

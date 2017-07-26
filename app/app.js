@@ -7,6 +7,7 @@
       'ngRoute',
       'ngResource',
       'ui.router',
+      'ui.select',
       'ngAnimate'
     ]);
     

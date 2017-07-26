@@ -160,7 +160,10 @@
 
             function putTrip(tripId, editId, diffs) {
 
-                return $http.post(site.restUrl('trip', 'post'), { tripid: tripId, diffs: diffs })
+				var editinfo = "Edited by " + currentUserService.getUser().name + " at " +
+								(new Date().toISOString().replace(/(T|\.\d+Z)/g, ' '));
+
+                return $http.post(site.restUrl('trip', 'post'), { tripid: tripId, diffs: diffs, editinfo: editinfo })
                     .then(function (response) {
                         if (ValidateResponse(response)) {
                             lastResponseMessage = response.data.result ? response.data.result : undefined;
