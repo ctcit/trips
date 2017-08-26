@@ -61,6 +61,8 @@
                         <input ng-if="participant.nameui != '(Readonly)'"
                                type="text" ng-model="participant.name"
                                list="membernames"
+                               placeholder="Start typing a name..."
+                               ng-focus="showParticipantsControllerr.participantUpdateName(participant)" 
                                ng-change="showParticipantsController.participantUpdateName(participant)" 
                                ng-class="showParticipantsController.participantClass(participant,'name')"/>
                     </td>
@@ -171,6 +173,5 @@
         </table>
     </div>
     <datalist id="membernames">
-        <option ng-repeat="item in showParticipantsController.nonMembersAndMembers | orderBy:'name'" value="{{item.name}}"/>
     </datalist>
 </div>
