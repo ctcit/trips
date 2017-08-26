@@ -7,6 +7,7 @@
             function () {
 
                 var showTripEmailController = this;
+
             }];
 
         return {
@@ -17,6 +18,7 @@
                 showtripemail: '=',
                 email: '=',
                 tripeditable: '=',
+                participants: '=',
                 emailState: '=',
                 emailSend: '&',
                 isDirty: '&'

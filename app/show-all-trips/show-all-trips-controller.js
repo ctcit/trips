@@ -22,6 +22,10 @@
 			};
 				
             controller.newTrip = function () {
+				if (!confirm("Are you sure you want to make a new trip?")){
+					return;
+				}
+
 				tripsService.newTrip()
                     .then(function () {
 						controller.reload();

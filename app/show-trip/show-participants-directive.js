@@ -8,25 +8,22 @@
 
                 var showParticipantsController = this;
                 var currentUserId = currentUserService.getUserId();
+				var everyoneByName = {};
 
                 showParticipantsController.members = membersService.getMembers();
+				showParticipantsController.members.forEach(function (person) {
+                    everyoneByName[person.name.toUpperCase()] = person.name;
+				});
 
                 showParticipantsController.nonmembersByName = {};
-                showParticipantsController.nonmembers.forEach(function (nonmember) {
-                    showParticipantsController.nonmembersByName[nonmember.name] = nonmember;
+                showParticipantsController.nonmembers.filter(function (person) {return person.name != null}).forEach(function (person) {
+                    showParticipantsController.nonmembersByName[person.name] = person;
+                    everyoneByName[person.name.toUpperCase()] = person.name;
                 });
 
                 // The "Full" list
-                showParticipantsController.nonMembersAndMembers = 
-                    showParticipantsController.nonmembers.map(function(item) { 
-                        item.group = "Non-members";
-                        return item;
-                    })
-                    .concat([{ name: "(Someone else)", group: "Non-members" }])
-                    .concat(showParticipantsController.members.map(function(item) { 
-                        item.group = "Members";
-                        return item;
-                    }));
+                showParticipantsController.everyone = $.map(everyoneByName,function(person) { return person; });
+				showParticipantsController.everyone.sort();
                 
                 showParticipantsController.visibleParticipants = 0;
                 showParticipantsController.participants.forEach(function (participant) {
@@ -79,25 +76,30 @@
                 }
 
                 showParticipantsController.participantUpdateName = function participantUpdateName(participant) {
-                    var member = membersService.getMemberByName(participant.name);
+					var name = participant.name;
+                    var member = membersService.getMemberByName(name);
                     if (member) {
                         participant.memberid = member.id;
                         participant.email = member.email;
                         participant.phone = member.phone;
                         participant.lastname = participant.name;
                     } else {
-                        var nonmember = showParticipantsController.nonmembersByName[participant.name];
+                        var nonmember = showParticipantsController.nonmembersByName[name];
                         if (nonmember) {
                             participant.memberid = null;
                             participant.email = nonmember.email;
                             participant.phone = nonmember.phone;
-                        } else if (participant.name == "(Someone else)") {
-                            participant.memberid = null;
-                            participant.nameui = "(Someone else)";
-                            participant.name = participant.lastname;
                         } else {
                             participant.memberid = null;
-                        }
+
+							$("#membernames").html(showParticipantsController.everyone.filter(function(item){
+									return item && item.substr(0,name.length).toUpperCase() == name.toUpperCase();
+								}).filter(function(item, index){
+									return index < 10;
+								}).map(function(item){
+									return $('<option/>').attr('value',item);
+								}));
+						}
                     }
                     showParticipantsController.visibleParticipants = Math.max(participant.line + 2, showParticipantsController.visibleParticipants);
                     showParticipantsController.update();
@@ -126,6 +128,42 @@
                 };
 
 
+                function refreshResults($select){
+                    var search = $select.search,
+                    list = angular.copy($select.items),
+                    FLAG = -1;
+                    //remove last user input
+                    list = list.filter(function(item) { 
+                    return item.id !== FLAG; 
+                    });
+                
+                    if (!search) {
+                    //use the predefined list
+                    $select.items = list;
+                    }
+                    else {
+                    //manually add user input and set selection
+                    var userInputItem = {
+                        id: FLAG, 
+                        description: search
+                    };
+                    $select.items = [userInputItem].concat(list);
+                    $select.selected = userInputItem;
+                    }
+                }
+                    
+                function clear($event, $select){
+                    $event.stopPropagation(); 
+                    //to allow empty field, in order to force a selection remove the following line
+                    $select.selected = undefined;
+                    //reset search query
+                    $select.search = undefined;
+                    //focus and open dropdown
+                    $select.activate();
+                }
+                    
+
+
             }];
 
         return {
@@ -140,6 +178,7 @@
                 nonmembers: '=',
                 originalParticipants: '=',
                 saveState: '=',
+                printable: '=',
                 update: '&',
                 save: '&',
                 isDirty: '&'
