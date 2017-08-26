@@ -3,8 +3,8 @@
 class TripConfig
 {
 	const EditorRoles = "'Webmaster','Overnight Trip Organiser','Day Trip Organiser','Club Captain'";
-	const EmailFilter = "/^((alastairgbrown@yahoo\.com\.au)|(bruce\.s\.james@gmail\.com)|(nickedwrds@gmail\.com)|(trampgeek@gmail\.com)|(doug@forster\.net\.nz))$/";
-	const BaseUrl = "http://www.ctc.org.nz/index.php/current-trips-dev";
+	const EmailFilter = "/^.+@.+$/";
+	const BaseUrl = "http://www.ctc.org.nz/index.php/current-trips";
 	const EmailImageUrl = "http://www.ctc.org.nz/tripsignup.dev/api/EmailImage.php";
 	const EmailHasLink = true;
 	const EmailHasDetails = true;
