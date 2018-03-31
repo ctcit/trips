@@ -104,6 +104,14 @@
 					<div  class="slide" ng-show="showDetailController.showmap" ng-bind-html="showDetailController.tripDetail.mapHtml | unsafe"></div>
                 </td>
             </tr>
+            <tr>
+                <th><label for="maxParticipants">Maximum Participants</label></th>
+                <td>
+                    <input type="text" ng-disabled="!showDetailController.tripeditable" 
+						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.maxParticipants"
+                           ng-class="showDetailController.tripClass('maxParticipants')" id="maxParticipants" />
+                </td>
+            </tr>
         </table>
     </div>
 </div>

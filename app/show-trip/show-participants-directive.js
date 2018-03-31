@@ -37,6 +37,13 @@
                     showParticipantsController.showparticipants = !showParticipantsController.showparticipants;
                 }
 
+                // Wait list
+                var firstWaitListed = showParticipantsController.participants.find(function (participant) {
+                    return participant.isWaitListed;
+                });
+                if (firstWaitListed) {
+                    showParticipantsController.firstWaitListedLine = firstWaitListed.line;
+                }
 
                 showParticipantsController.signMeUp = function signMeUp() {
                     for (var i = 0; i < showParticipantsController.participants.length; i++) {
@@ -109,7 +116,10 @@
                     if (!showParticipantsController.originalParticipants) {
                         return "";
                     }
-                    var classname = (participant.isRemoved ? "isRemoved" : "") + " " + (changeService.highlights[prop + participant.line] || changeService.highlights[participant.line] || "");
+                    var classname = 
+                        (participant.isRemoved ? "isRemoved" : "") + " " + 
+                        (participant.isWaitListed ? "isWaitListed" : "") + " " + 
+                        (changeService.highlights[prop + participant.line] || changeService.highlights[participant.line] || "");
                     var originalParticipant = showParticipantsController.originalParticipants[participant.line];
                     if (participant.isNew) {
                         for (var p in metadataService.getParticipantsMetadata()) {

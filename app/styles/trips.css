@@ -90,6 +90,12 @@ background-repeat: repeat-x;
 background-position: center center;
 }
 
+.isWaitListed {
+    background-image: url("../assets/waitlisted.png");
+    background-repeat: repeat-x;
+    background-position: center center;
+    }
+    
 div[ng-show*='$error'], .error {
 font-weight: bold;
 color: red;

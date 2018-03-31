@@ -41,6 +41,9 @@
                 <th class="mobile-only">Status</th>
             </tr>
             <tbody ng-repeat="participant in showParticipantsController.participants | limitTo: showParticipantsController.visibleParticipants track by participant.line">
+                <tr ng-if="participant.line == showParticipantsController.firstWaitListedLine">
+                    <th>Wait List</th>
+                </tr>
                 <tr>
                     <th ng-class="showParticipantsController.participantClass(participant,'memberid')"
                         ng-click="participant.showdetail = !participant.showdetail">

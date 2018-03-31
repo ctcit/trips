@@ -68,7 +68,7 @@
                             var participants = data.participants ? data.participants.map(function (participant) {
                                 return new Participant(participant, metadataService.getParticipantsMetadata());
                             }) : [];
-                            // add additional particpant lines; also preserve participants in their original line position
+                            // add additional participant lines; also preserve participants in their original line position
                             var maxLine = participants
                                 .map(function (participant) { return participant.line; })
                                 .reduce(function (previous, current) { return Math.max(previous, current); }, 0);
@@ -81,6 +81,17 @@
                                 participants[participant.line] = participant;
                             })
 
+                            // handle trip.maxParticipants
+                            var tripCount = 0;
+                            for (var i = 0; i < participants.length; i++) {
+                                var isWaitListed = false;
+                                if (!participants[i].isRemoved)
+                                {
+                                    tripCount++;
+                                    isWaitListed = tripDetail.maxParticipants && tripCount > tripDetail.maxParticipants;
+                                }
+                                participants[i].isWaitListed = isWaitListed;
+                            }
 
                             tripeditable = false;
                             membersService.getMembers().some(function (member) {
