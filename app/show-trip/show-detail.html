@@ -108,7 +108,8 @@
                 <th><label for="maxParticipants">Maximum Participants</label></th>
                 <td>
                     <input type="text" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.maxParticipants"
+                           ng-change="showDetailController.update()()" 
+                           ng-model="showDetailController.tripDetail.maxParticipants"
                            ng-class="showDetailController.tripClass('maxParticipants')" id="maxParticipants" />
                 </td>
             </tr>

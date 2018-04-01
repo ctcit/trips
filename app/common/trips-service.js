@@ -81,18 +81,6 @@
                                 participants[participant.line] = participant;
                             })
 
-                            // handle trip.maxParticipants
-                            var tripCount = 0;
-                            for (var i = 0; i < participants.length; i++) {
-                                var isWaitListed = false;
-                                if (!participants[i].isRemoved)
-                                {
-                                    tripCount++;
-                                    isWaitListed = tripDetail.maxParticipants && tripCount > tripDetail.maxParticipants;
-                                }
-                                participants[i].isWaitListed = isWaitListed;
-                            }
-
                             tripeditable = false;
                             membersService.getMembers().some(function (member) {
                                 if (member.id == currentUserService.getUserId()) {

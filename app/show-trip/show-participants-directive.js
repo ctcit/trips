@@ -38,11 +38,22 @@
                 }
 
                 // Wait list
-                var firstWaitListed = showParticipantsController.participants.find(function (participant) {
-                    return participant.isWaitListed;
-                });
-                if (firstWaitListed) {
-                    showParticipantsController.firstWaitListedLine = firstWaitListed.line;
+                showParticipantsController.$onChanges = function(changesObj) {
+                    if (changesObj['maxParticipants']) {
+                        showParticipantsController.evaluateWaitList();
+                    }
+                }
+                                
+                showParticipantsController.evaluateWaitList = function() {
+                    var participantsCount = 0;
+                    var firstWaitListed = showParticipantsController.participants.find(function (participant) {
+                        if (!participant.isRemoved)
+                        {
+                            participantsCount++;
+                        }
+                        return showParticipantsController.maxParticipants && participantsCount > showParticipantsController.maxParticipants;
+                    });
+                    showParticipantsController.firstWaitListedLine = firstWaitListed && firstWaitListed.line;
                 }
 
                 showParticipantsController.signMeUp = function signMeUp() {
@@ -118,7 +129,7 @@
                     }
                     var classname = 
                         (participant.isRemoved ? "isRemoved" : "") + " " + 
-                        (participant.isWaitListed ? "isWaitListed" : "") + " " + 
+                        (participant.line >= showParticipantsController.firstWaitListedLine ? "isWaitListed" : "") + " " + 
                         (changeService.highlights[prop + participant.line] || changeService.highlights[participant.line] || "");
                     var originalParticipant = showParticipantsController.originalParticipants[participant.line];
                     if (participant.isNew) {
@@ -184,6 +195,7 @@
                 showparticipants: '=',
                 tripeditable: '=',
                 tripIsOpen: '=',
+                maxParticipants: '<',
                 participants: '=',
                 nonmembers: '=',
                 originalParticipants: '=',
