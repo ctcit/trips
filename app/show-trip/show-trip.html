@@ -6,20 +6,20 @@
                     <!--<button ui-sref="trip.showAllTrips">-->
                     <img src="app/assets/ctc.png" />All Trips
                 </nav-to-state>
-                <button ng-disabled="!controller.isDirty()" 
-						ng-click="controller.save()">
+                <button ng-disabled="!controller.isDirty()"
+                    ng-click="controller.save()">
                     <img src="app/assets/save.png" />Save
                 </button>
-                <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && !controller.trip.tripDetail.isRemoved" 
-						ng-click="controller.save(true)" title="Delete this trip">
+                <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && !controller.trip.tripDetail.isRemoved"
+                    ng-click="controller.save(true)" title="Delete this trip">
                     <img src="app/assets/cross.png" />Delete
                 </button>
-                <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && controller.trip.tripDetail.isRemoved" 
-						ng-click="controller.save(false)" title="Un-delete this trip">
+                <button ng-show="controller.tripeditable && controller.trip.tripDetail.isAdHoc && controller.trip.tripDetail.isRemoved"
+                    ng-click="controller.save(false)" title="Un-delete this trip">
                     <img src="app/assets/tick.png" />Un-delete
                 </button>
-                <button ng-show='controller.tripeditable && !controller.trip.tripDetail.isRemoved'
-                        ng-click="controller.print()" title="Prepare trip list for printing">
+                <button
+                    ng-click="controller.print()" title="Prepare trip list for printing">
                     <img src="app/assets/print.png">Print
                 </button>
                 <img ng-show="controller.saveState == 'Saving'" src="app/assets/waiting.gif" />
@@ -30,36 +30,46 @@
             </div>
         </div>
 
-        <div ng-if="!controller.loading">
+        <div ng-if="!controller.loading" class="print-only">
+            <show-print showdetail="controller.showprint"
+                trip-detail="controller.trip.tripDetail"
+                participants="controller.trip.participants"
+                printableblanklines="controller.printableblanklines">
+            </show-print>
+        </div>
+
+        <div ng-if="!controller.loading" class="noprint">
             <show-detail showdetail="controller.showdetail"
-                         tripeditable="controller.tripeditable"
-                         trip-detail="controller.trip.tripDetail"
-                         original-trip-detail="controller.originalState().tripDetail"
-                         update="controller.update">
+                tripeditable="controller.tripeditable"
+                trip-detail="controller.trip.tripDetail"
+                original-trip-detail="controller.originalState().tripDetail"
+                update="controller.update">
             </show-detail>
 
             <show-participants showparticipants="controller.showparticipants"
-                               tripeditable="controller.tripeditable"
-                               trip-is-open="controller.trip.tripDetail.isOpen"
-                               participants="controller.trip.participants"
-                               nonmembers="controller.trip.nonmembers"
-                               original-participants="controller.originalState().participants"
-                               update="controller.update"
-                               save="controller.save"
-                               save-state="controller.saveState"
-                               is-dirty="controller.isDirty">
+                tripeditable="controller.tripeditable"
+                trip-is-open="controller.trip.tripDetail.isOpen"
+                participants="controller.trip.participants"
+                nonmembers="controller.trip.nonmembers"
+                original-participants="controller.originalState().participants"
+                update="controller.update"
+                save="controller.save"
+                save-state="controller.saveState"
+                is-dirty="controller.isDirty"
+                printable="controller.printable">
             </show-participants>
 
             <show-trip-email showtripemail="controller.showtripemail"
-                             email="controller.trip.tripEmail"
-                             tripeditable="controller.tripeditable"
-                             email-state="controller.emailState"
-                             email-send="controller.emailSend"
-                             is-dirty="controller.isDirty">
+                email="controller.trip.tripEmail"
+                tripeditable="controller.tripeditable"
+                email-state="controller.emailState"
+                email-send="controller.emailSend"
+                participants="controller.trip.participants"
+                is-dirty="controller.isDirty">
             </show-trip-email>
 
             <show-history showhistory="controller.showhistory"
-                          changes="controller.editSession.changes">
+                changes="controller.editSession.changes">
             </show-history>
         </div>
 

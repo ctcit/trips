@@ -1,4 +1,4 @@
-﻿
+
 (function () {
     'use strict';
 
@@ -41,8 +41,9 @@
 
                 additionalLines: function () { return _config && _config.AdditionalLines; },
 
-                editRefreshInSec: function () { return _config && _config.EditRefreshInSec; }
+                editRefreshInSec: function () { return _config && _config.EditRefreshInSec; },
 
+                printLines: function () { return _config && _config.PrintLines; }
             }
         }]
     );

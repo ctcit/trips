@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     "use strict";
 
     angular.module('tripSignupApp').factory("Participant",
@@ -21,6 +21,7 @@
 
                 this.line = parseInt(this.line); // get this back as string - but simpler to deal with it as an number
                 this.lastname = this.name;
+
             }
 
             //angular.extend(Participant.prototype, {

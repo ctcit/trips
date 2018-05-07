@@ -2,6 +2,13 @@
 (function () {
     "use strict";
 
+	// inject this into the top level html so that the styles in trips.css 
+	// can ensure that unwanted elements don't display when printing
+	var csspath = window.location.href.split('#')[0].replace("index.html","app/styles/print.css");
+	if ($('head',window.parent.document).find("link[href='"+csspath+"']").length == 0){
+		$('head',window.parent.document).append("<link href='"+csspath +"' rel='stylesheet' type='text/css'>");
+	}
+
     angular.module('tripSignupApp').controller("showTripController",
         ['$scope', '$window', '$q', '$timeout', '$stateParams', '$http', 'site',
                  'configService', 'membersService', 'metadataService',
@@ -53,7 +60,7 @@
                                 controller.tripeditable = controller.tripeditable || tripsService.tripeditable();
                                 sessionStateService.setTrip(controller.trip);
                                 controller.loading = false;
-                                controller.saveState = "";
+                                controller.update();
 
                                 $timeout(function () { controller.editRefresh(); }, 0);
                             })
@@ -106,6 +113,30 @@
 
             controller.update = function () {
                 controller.saveState = "";
+
+				var statusCount = 0, regoCount = 0, leaderCount = 0, printable = 0;
+
+				for (var i = 0; i < controller.trip.participants.length; i++) {
+					var participant = controller.trip.participants[i];
+					participant.isPrintable = (participant.name || '') != '' && !participant.isRemoved;
+					participant.isPrintableLeader = participant.isPrintable && participant.isLeader;
+					participant.isPrintableStatus = participant.isPrintable && (participant.status || '') != '';
+					participant.isPrintableRego = participant.isPrintable && (participant.vehicleRego || '') != '';
+
+					printable += participant.isPrintable ? 1 : 0;
+					statusCount += participant.isPrintableStatus ? 1 : 0;
+					regoCount += participant.isPrintableRego ? 1 : 0;
+					leaderCount += participant.isPrintableLeader ? 1 : 0;
+				}
+
+				var blankcount = configService.printLines() - Math.max(1,Math.max(statusCount,regoCount)) - Math.max(1,leaderCount) - printable;
+
+				controller.printable = printable;
+				controller.printableblanklines = [];
+				for (var i = 0; i < blankcount; i++){
+					controller.printableblanklines.push({});
+				}
+
             };
 
             //-----------------------------------
@@ -169,6 +200,7 @@
                                              controller.trip = trip;
                                              controller.editSession = editSession;
                                              sessionStateService.setTrip(controller.trip);
+											 controller.update();
                                              $timeout();
                                          })
                              });
@@ -192,64 +224,8 @@
 			
             //-----------------------------------
             // Print trip
-
-            // We "print" by sending all the current trip info to an
-            // out-of-angular page 'printabletriplist.php', in a new window.
             controller.print = function print() {
-                var title = controller.trip.tripDetail.title,
-                    d = controller.trip.tripDetail.date,
-                    month = d.toLocaleString("en-nz", { month: "long" }),
-                    date = d.getDate() + ' ' + month + ' ' + d.getFullYear(),
-                    length = controller.trip.tripDetail.length.split(' ')[0],
-                    form = document.createElement('form'),
-                    participantNum = 0,
-                    noteNum = 0,
-                    hasCar;
-
-                function addField(field, value, count) {
-                    var input = document.createElement('input');
-                    input.type = 'hidden';
-                    if (count !== undefined) {
-                        input.name = field + '[' + count + ']';
-                    } else {
-                        input.name = field;
-                    }
-                    input.value = value;
-                    form.appendChild(input);
-                }
-
-                form.setAttribute("method", "post");
-                form.setAttribute("action", site.restUrl('printabletriplist', 'get'));
-                form.setAttribute("target", "_blank");
-                addField('title', title);
-                addField('date', date);
-                addField('length', length);
-
-                controller.trip.participants.forEach(function (participant) {
-                    if (participant.name !== undefined && !participant.isRemoved) {
-                        if (participant.status) {
-                            addField('note', participant.name + ': ' + participant.status, noteNum);
-                            noteNum += 1;
-                        }
-                        if (participant.isLeader) {
-                            addField('leadername', participant.name);
-                        }
-                        addField('name', participant.name, participantNum);
-                        addField('email', participant.email, participantNum);
-                        addField('phone', participant.phone, participantNum);
-                        hasCar = participant.isVehicleProvider ? "Y" : "";
-                        addField('hasCar', hasCar, participantNum);
-                        if (hasCar) {
-                            addField('numberplate', participant.name + ': ' + participant.vehicleRego, participantNum);
-                        }
-                        participantNum += 1;
-                    };
-                });
-
-                document.body.appendChild(form);
-                form.submit();
-                document.body.removeChild(form);
-
+                window.print();
             };
 
             //-----------------------------------

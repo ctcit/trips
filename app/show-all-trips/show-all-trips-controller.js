@@ -1,4 +1,4 @@
-﻿// The controller for the current selected trip
+// The controller for the current selected trip
 (function () {
     "use strict";
 
@@ -22,6 +22,10 @@
 			};
 				
             controller.newTrip = function () {
+				if (!confirm("Are you sure you want to make a new trip?")){
+					return;
+				}
+
 				tripsService.newTrip()
                     .then(function () {
 						controller.reload();

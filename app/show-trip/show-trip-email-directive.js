@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
     angular.module('tripSignupApp').directive('showTripEmail', [function () {
@@ -7,6 +7,7 @@
             function () {
 
                 var showTripEmailController = this;
+
             }];
 
         return {
@@ -17,6 +18,7 @@
                 showtripemail: '=',
                 email: '=',
                 tripeditable: '=',
+                participants: '=',
                 emailState: '=',
                 emailSend: '&',
                 isDirty: '&'

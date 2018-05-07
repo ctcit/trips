@@ -132,58 +132,6 @@ h3 {
 padding-top: 15px;
 }
 
-.printabletriplist td, th {
-background-color: white;
-}
-
-table.triplistparams {
-width: 100%;
-}
-
-table.triplistparams td {
-font-size: larger;
-border: None;
-}
-
-td.paramlabel {
-width: 7%;
-font-weight: bold;
-}
-
-table.participants {
-width: 100%;
-}
-
-table.participants td, th {
-height: 25px;
-vertical-align: middle;
-padding-left: 6px;
-}
-
-th.namecol {
-width: 35%;
-}
-
-th.emailcol {
-width: 30%;
-}
-
-th.phonecol {
-width: 20%;
-}
-
-th.carcol {
-width: 4%;
-}
-
-table.footertable {
-width: 100%;
-}
-
-table.footertable th {
-font-weight: bold;
-width: 50%;
-}
 
 @media screen and (min-width: 992px) {
 .mobile-only {
@@ -197,12 +145,3 @@ display: none !important;
 }
 }
 
-@media print {
-button, .mobileonly, .noprint {
-display: none;
-}
-
-input, textarea {
-border: none;
-}
-}
