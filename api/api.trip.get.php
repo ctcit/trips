@@ -8,27 +8,13 @@ $tripid   		= intval($_GET["tripid"]);
 $editid   		= intval($_GET["editid"]);
 $logondetails	= GetLogonDetails($con,$username);
 $userid 		= intval($logondetails["userid"]);
-$trips 			= GetTrips($con,"t.id = $tripid");
-$result 		= array();
+$trips 			= GetTrips($con,null,$tripid,$logondetails);
+$participants   = GetParticipants($con,null,$tripid,$logondetails);		
 
 if (count($trips) == 0) {
 	die("trip $tripid not found");
-}	
+}
 
-// $changes = SqlResultArray($con,"
-// 		SELECT	id,line,memberid,`timestamp`,`action`,`column`,`before`,`after`,`subject`,`body`,`emailAudit`,`guid`
-// 		FROM ".TripConfig::TripDB.".changehistory
-// 		WHERE tripid = $tripid
-// 		ORDER BY id desc");
-
-$result["trip"] = $trips[0];
-$result["participants"] = GetParticipants($con,"t.id = $tripid");		
-		
-// we assume that the user now knows about this trip
-SqlExecOrDie($con,"	UPDATE ".TripConfig::TripDB.".participants 
-			SET isEmailPending = 0 
-			WHERE tripid = $tripid and memberid = $userid");
-			
 if ($editid == null) {
 	$editid = SqlResultScalar($con,"
 				SELECT id
@@ -50,7 +36,7 @@ if ($editid == null) {
 				WHERE id=$editid");
 }
 
-$result["editid"] = $editid;
+$result = Array("trip" => $trips[0], "participants" => $participants, "editid" => $editid);
 
 header('Content-Type: application/json');
 echo json_encode($result);

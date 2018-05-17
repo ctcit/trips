@@ -61,6 +61,7 @@
 
                 if (currentState && refState) {
                     var diff = {};
+					var isNewTrip = refState.tripDetail.tripid == configService.config().NewTripId;
 
                     var tripsMetadata = metadataService.getTripsMetadata();
                     for (diff.column in tripsMetadata) {

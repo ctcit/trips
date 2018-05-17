@@ -174,6 +174,7 @@
                 showparticipants: '=',
                 tripeditable: '=',
                 tripIsOpen: '=',
+                tripIsAdHoc: '=',
                 participants: '=',
                 nonmembers: '=',
                 originalParticipants: '=',

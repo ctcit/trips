@@ -5,7 +5,7 @@ require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
 $logondetails	= GetLogonDetails($con,$username);
-$nonmembers 	= GetParticipants($con,"p.memberid is null and t.date > DATE_ADD(now(),INTERVAL -180 DAY)");
+$nonmembers 	= GetParticipants($con,"p.memberid is null and t.date > DATE_ADD(now(),INTERVAL -180 DAY)",null,null);
 $result["nonmembers"] = array();
 
 foreach ($nonmembers as $nonmember) {

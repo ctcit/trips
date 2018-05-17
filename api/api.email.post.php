@@ -13,7 +13,7 @@ $subject		= strval($post["subject"]);
 $body			= strval($post["body"]);
 $bodyparts		= array("greeting"=>"","email"=>"<p>".htmlentities($body)."</p>");
 $wheresql		= "p.tripid = $tripid and p.isRemoved = 0";
-$recipients 	= GetParticipants($con,$wheresql);	
+$recipients 	= GetParticipants($con,$wheresql,null,null);	
 $guid			= MakeGuid();
 
 SqlExecOrDie($con,"

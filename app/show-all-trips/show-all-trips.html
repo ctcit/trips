@@ -2,9 +2,9 @@
     <div class="container">
         <div class="noprint">
             <div>
-                <button ng-click="controller.newTrip()">
-                    <img src="app/assets/newtrip.png" />New Trip
-                </button>
+                <nav-to-state type="button" name="trip.showTrip" params="{ tripId: 1000000 }">
+                    <img src="app/assets/newtrip.png" />Suggest Trip
+                </nav-to-state>
                 <button ng-click="controller.newTrips()" ng-show="controller.allowNewTrips()">
                     <img src="app/assets/newtrip.png" /><img src="app/assets/newtrip.png" /><img src="app/assets/newtrip.png" />New Trips from Newletter
                 </button>

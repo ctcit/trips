@@ -190,20 +190,25 @@
 
 				controller.saveState = "Saving";
                 tripsService.putTrip(controller.tripId, controller.editSession.editId, diffs)
-                     .then(function () {
-                         return tripsService.getTrip(controller.tripId, controller.editSession.editId)
-                             .then(function(trip) {
-                                 return tripsService.getEditSession()
-                                         .then(function (editSession) {
-                                             controller.saveState = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
-                                             trip.tripEmail = controller.trip.tripEmail; // don't lose email details
-                                             controller.trip = trip;
-                                             controller.editSession = editSession;
-                                             sessionStateService.setTrip(controller.trip);
-											 controller.update();
-                                             $timeout();
-                                         })
-                             });
+                     .then(function (response) {
+						 if (ValidateResponse(response)) {
+							 controller.tripId = response.data.tripid || controller.tripId;
+							 return tripsService.getTrip(controller.tripId, controller.editSession.editId)
+								 .then(function(trip) {
+									 return tripsService.getEditSession()
+											 .then(function (editSession) {
+												 controller.saveState = "Saved " + (tripsService.lastResponseMessage() ? tripsService.lastResponseMessage() : "");
+												 trip.tripEmail = controller.trip.tripEmail; // don't lose email details
+												 controller.trip = trip;
+												 controller.editSession = editSession;
+												 sessionStateService.setTrip(controller.trip);
+												 controller.update();
+												 $timeout();
+											 })
+								 });
+						  } else {
+							controller.saveState = "FAILED " + ((response ? response.data : null) || "");
+						  }
                      }, function (data, status) {
                         controller.saveState = "FAILED " + data + " " + status;
                         $timeout();

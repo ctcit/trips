@@ -4,13 +4,10 @@ require_once( 'alastair.php' );
 require_once( 'trips.config.php' );
 require_once( 'trips.inc.php' );
 
-$action   		= strval($_GET["action"]);
-$tripid   		= intval($_GET["tripid"]);
-$editid   		= intval($_GET["editid"]);
 $logondetails	= GetLogonDetails($con,$username);
 $userid 		= intval($logondetails["userid"]);
 $where 			= "COALESCE(t.date, e.date) > DATE_ADD(now(),INTERVAL -7 DAY)";
-$trips 			= GetTrips($con,$where);
+$trips 			= GetTrips($con,$where,null,null);
 $leaders = SqlResultArray($con,"
 	SELECT	t.id as tripid, 
 			COALESCE(p.name,concat(trim(m.firstname),' ',trim(m.lastname))) as name

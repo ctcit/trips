@@ -10,7 +10,7 @@
 
 	// Insert date for upcoming trips that haven't already been added.
 	// we use nulls for most columns, but we need dates for ordering
-	$trows = SqlExecOrDie($con,"
+	$trows1 = SqlExecOrDie($con,"
 				INSERT ".TripConfig::TripDB.".trips(eventid,date,originalDate,closeDate)
 				SELECT e.id, e.date, e.date, e.date
 				FROM ".TripConfig::NewsletterDB.".events e
@@ -26,6 +26,21 @@
 				t.date = e.Date
 			WHERE e.date > now() AND e.leader is not null
 			AND e.date <> t.date AND t.date = t.originalDate ");
+
+	// Update the dates if they've changed in the events table
+	$trows2 = SqlExecOrDie($con, "
+			UPDATE " . TripConfig::TripDB . ".trips as t
+			JOIN " . TripConfig::NewsletterDB . ".events e ON t.eventid = e.id
+			SET t.closeDate = date_add(e.date, interval datediff(t.closeDate,t.Date) day),
+				t.date = e.Date
+			WHERE e.date > now() AND e.leader is not null
+			AND e.date <> t.date AND t.date = t.originalDate ");
+
+	// Update the dates if they've changed in the events table
+	$trows3 = SqlExecOrDie($con, "
+			UPDATE " . TripConfig::TripDB . ".trips as t
+			SET t.isAdHoc = 0
+			WHERE e.date > now() AND t.isAdHoc = 1");
 
 	// this excludes non-unique firstname/lastname joins
 	$prows1 = SqlExecOrDie($con,"
@@ -58,5 +73,5 @@
 		" before:$tbefore/$pbefore\n".
 		" after:$tafter/$pafter\n".
 		" added:".($tafter-$tbefore)."/".($pafter-$pbefore)."\n".
-		" affected: $trows/$prows1+$prows2\n";
+		" affected: $trows1+$trows2+$trows3/$prows1+$prows2\n";
 ?>

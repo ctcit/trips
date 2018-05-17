@@ -18,17 +18,37 @@ function GetMetadata($con) {
 	
 	$metadata["trips"]["isOpen"]["IsReadOnly"] = true;
 	$metadata["trips"]["isOpen"]["Type"] = "tinyint(1)";
-	
-	// this column is for internal use only
-	unset($metadata["participants"]["isEmailPending"]);
 	return $metadata;		
 }
 
-function GetTrips($con,$where) {
+function GetTrips($con, $where, $tripid, $logondetails) {
+	if ($tripid == TripConfig::NewTripId) {
+		return SqlResultArray($con,"
+			SELECT 
+				$tripid                          as tripid, 
+				null                             as eventid,
+				DATE_ADD(now(), INTERVAL 28 DAY) as date,
+				DATE_ADD(now(), INTERVAL 28 DAY) as closeDate,
+				1                                as isOpen,
+				'Day'                            as length,
+				'Z Station Papanui'              as departurePoint,
+				''                               as grade,
+				''                               as cost,
+				".SqlVal($logondetails['firstname']." ".$logondetails['lastname']."'s suggested trip")." 
+				                                 as title,
+				''                               as status,
+				''                               as mapHtml,
+				1                                as isAdHoc,
+				0                                as isRemoved,
+				''                               as text");
+	} else if ($where == null) {
+		$where = "t.id = $tripid";
+	}
+
 	return SqlResultArray($con,"
 		SELECT 
 			t.id as tripid, 
-			e.id as eventid,
+			t.eventid,
 			t.date,
 			t.closeDate,
 			(case when t.closeDate >= now() and t.isRemoved = 0 then 1 else 0 end) isOpen,
@@ -50,26 +70,51 @@ function GetTrips($con,$where) {
 		ORDER BY t.date");
 }
 		
-function GetParticipants($con,$where) {
+function GetParticipants($con, $where, $tripid, $logondetails) {
+	if ($tripid == TripConfig::NewTripId) {
+		return SqlResultArray($con,"
+			SELECT 
+				$tripid as participantid,
+				0 as line,
+				0 as isRemoved,
+				".$logondetails["userid"]." as memberid,
+				1 as isLeader,
+				".SqlVal($logondetails["firstname"]." ".$logondetails["lastname"])." as name,
+				m.primaryemail as email,
+				COALESCE(
+					(CASE ms.homephone WHEN '' THEN null ELSE ms.homephone END), 
+					(CASE m.mobilephone WHEN '' THEN null ELSE m.mobilephone END), 
+					(CASE m.workphone WHEN '' THEN null ELSE m.workphone END)) as phone,
+				0 as isVehicleProvider,
+				'' as vehicleRego,
+				'' as status
+			FROM      ".TripConfig::CtcDB.".members        m
+			LEFT JOIN ".TripConfig::CtcDB.".memberships    ms ON ms.id = m.membershipid
+			WHERE m.id = ".$logondetails["userid"]);
+	} else if ($where == null) {
+		$where = "t.id = $tripid";
+	}
+
 	return SqlResultArray($con,"
 		SELECT 	
-			p.id as participantid,
-			p.line,
-			p.isRemoved,
-			p.memberid,
-			p.isLeader,
-			COALESCE(p.name,concat(trim(m.firstname),' ',trim(m.lastname))) as name,
-			COALESCE(p.email, m.primaryemail) as email,
+			COALESCE(p.id,1) as participantid,
+			COALESCE(p.line,0) as line,
+			COALESCE(p.isRemoved,0) as isRemoved,
+			COALESCE(p.memberid,0) as memberid,
+			COALESCE(p.isLeader,t.isAdHoc) as isLeader,
+			COALESCE(p.name,concat(trim(m.firstname),' ',trim(m.lastname)),e.leader) as name,
+			COALESCE(p.email, m.primaryemail, e.leaderEmail) as email,
 			COALESCE(p.phone, 
+				(CASE t.isAdHoc WHEN 1 THEN e.leaderphone ELSE null END), 
 				(CASE p.isleader WHEN 1 THEN e.leaderphone ELSE null END), 
 				(CASE ms.homephone WHEN '' THEN null ELSE ms.homephone END), 
 				(CASE m.mobilephone WHEN '' THEN null ELSE m.mobilephone END), 
 				(CASE m.workphone WHEN '' THEN null ELSE m.workphone END)) as phone,
-			p.isVehicleProvider,
+			COALESCE(p.isVehicleProvider,0) as isVehicleProvider,
 			COALESCE(p.vehiclerego,'') as vehicleRego,
 			COALESCE(p.status,'') as status
 		FROM      ".TripConfig::TripDB.".trips         t 
-		JOIN      ".TripConfig::TripDB.".participants  p  ON p.tripid = t.id
+		LEFT JOIN ".TripConfig::TripDB.".participants  p  ON p.tripid = t.id
 		LEFT JOIN ".TripConfig::NewsletterDB.".events  e  ON e.id = t.eventid
 		LEFT JOIN ".TripConfig::CtcDB.".members        m  ON m.id = p.memberid
 		LEFT JOIN ".TripConfig::CtcDB.".memberships    ms ON ms.id = m.membershipid 
@@ -85,7 +130,7 @@ function SendEmail($con,$recipients,$subject,$body,$tripid,$changeid,$guid) {
 	$headers = "MIME-Version: 1.0\r\n".
 			   "Content-type: text/html;charset=UTF-8\r\n".
 			   "From: <noreply@ctc.org.nz>\r\n";
-	$trip = GetTrips($con,"t.id = $tripid");
+	$trip = GetTrips($con,null,$tripid);
 	$body["link"]   = TripConfig::EmailHasLink    ? GetTripLinkHtml($tripid)                     : "";
 	$body["detail"] = TripConfig::EmailHasDetails ? GetTripDetailsHtml($con, $tripid, $changeid) : "";
 	
@@ -119,8 +164,8 @@ function GetTripDetailsHtml($con, $tripid, $changeid)
 						FROM ".TripConfig::TripDB.".changehistory
 						WHERE tripid = $tripid and id >= $changeid and action like 'insert%'","key");
 	$metadata		= GetMetadata($con);
-	$trips			= GetTrips($con,"t.id = $tripid");
-	$participants	= GetParticipants($con,"t.id = $tripid");
+	$trips			= GetTrips($con,null,$tripid,null);
+	$participants	= GetParticipants($con,null,$tripid,null);
 	$css			= ParseCss(file_get_contents("../app/styles/trips.css"));
 	$updated		= "background-color:".$css[".updated"]["background-color"];
 	$inserted		= "background-color:".$css[".inserted"]["background-color"];

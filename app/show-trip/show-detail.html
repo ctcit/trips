@@ -34,7 +34,7 @@
                            ng-class="showDetailController.tripClass('length')" id="length" />
                 </td>
             </tr>
-            <tr>
+            <tr ng-show="!showDetailController.tripDetail.isAdHoc">
                 <th><label for="closeDate">Close Date</label></th>
                 <td>
                     <input type="date" ng-disabled="!showDetailController.tripeditable" 
@@ -67,9 +67,10 @@
                 </td>
             </tr>
             <tr>
-                <th><label for="status">Notes</label></th>
+                <th><label for="status">{{showDetailController.tripDetail.isAdHoc ? "Description" : "Notes"}}</label></th>
                 <td>
-                    <textarea ng-disabled="!showDetailController.tripeditable" ng-change="showDetailController.update()()" 
+                    <textarea ng-disabled="!showDetailController.tripeditable" 
+                            ng-change="showDetailController.update()()" 
 							ng-model="showDetailController.tripDetail.status"
                             ng-class="showDetailController.tripClass('status')" id="status"
                             ng-attr-rows="{{showDetailController.tripDetail.status.split('\n').length}}" 

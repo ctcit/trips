@@ -41,7 +41,7 @@
                 <th class="mobile-only">Status</th>
             </tr>
             <tbody ng-repeat="participant in showParticipantsController.participants | limitTo: showParticipantsController.visibleParticipants track by participant.line">
-                <tr>
+                <tr ng-show="participant.line == 0 || !showParticipantsController.tripIsAdHoc">
                     <th ng-class="showParticipantsController.participantClass(participant,'memberid')"
                         ng-click="participant.showdetail = !participant.showdetail">
                         <button ng-class="participant.showdetail ? 'open' : 'closed'" class="mobile-only"></button>

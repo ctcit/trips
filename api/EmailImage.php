@@ -42,14 +42,9 @@ if (count($change) == 1 && str_replace("-","",$change[0]["guid"]) == str_replace
 						FROM ".TripConfig::TripDB.".changehistory
 						WHERE tripid = $tripid and id >= $changeid and action like 'insert%'","key");
 		
-	// we assume that the user now knows about this trip
-	SqlExecOrDie($con,"	UPDATE ".TripConfig::TripDB.".participants 
-				SET isEmailPending = 0 
-				WHERE id = $participantid");
-	
 	$metadata = GetMetadata($con);
-	$trips = GetTrips($con,"t.id = $tripid");
-	$participants = GetParticipants($con,"t.id = $tripid");
+	$trips = GetTrips($con,null,$tripid,null);
+	$participants = GetParticipants($con,null,$tripid,null);
 	
 	// Add trip details
 	$table = array();

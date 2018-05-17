@@ -24,9 +24,6 @@
 
             }
 
-            //angular.extend(Participant.prototype, {
-            //});
-
             return Participant;
         }]
     );

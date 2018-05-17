@@ -14,7 +14,7 @@ $metadata		= GetMetadata($con);
 
 if ($action == "gettrips") {
 	$where = "COALESCE(t.date, e.date) > DATE_ADD(now(),INTERVAL -7 DAY)";
-	$trips = GetTrips($con,$where);
+	$trips = GetTrips($con,$where,null,null);
 	$leaders = SqlResultArray($con,"
 		SELECT t.id as tripid, 
 			COALESCE(p.name,concat(trim(m.firstname),' ',trim(m.lastname))) as name
@@ -60,7 +60,7 @@ if ($action == "gettrips") {
 		}
 	}
 } else if ($action == "gettrip") {
-	$trips = GetTrips($con,"t.id = $tripid");
+	$trips = GetTrips($con,null,$tripid,null);
 	if (count($trips) == 0) {
 		die("trip $tripid not found");
 	}	
@@ -84,7 +84,7 @@ if ($action == "gettrips") {
 	}
 
 	$result["trip"] = $trips[0];
-	$result["participants"] = GetParticipants($con,"t.id = $tripid");		
+	$result["participants"] = GetParticipants($con,null,$tripid,null);		
 	$result["members"] = SqlResultArray($con,"
 			SELECT	m.id,
 				concat(trim(m.firstname),' ',trim(m.lastname)) as name,
@@ -102,18 +102,13 @@ if ($action == "gettrips") {
 		                GROUP BY mr.memberid) 	     q   on q.memberid = m.id
 			WHERE ms.statusAdmin = 'Active'
 			ORDER BY name");	
-	$nonmembers = GetParticipants($con,"p.memberid is null and t.date > DATE_ADD(now(),INTERVAL -180 DAY)");
+	$nonmembers = GetParticipants($con,"p.memberid is null and t.date > DATE_ADD(now(),INTERVAL -180 DAY)",null,null);
 	
 	$result["nonmembers"] = array();
 	foreach ($nonmembers as $nonmember) {
 		$result["nonmembers"][$nonmember["name"]] = array("name" => $nonmember["name"], "email" => $nonmember["email"], "phone" => $nonmember["phone"]);
 	}
 			
-	// we assume that the user now knows about this trip
-	SqlExecOrDie($con,"	UPDATE ".TripConfig::TripDB.".participants 
-				SET isEmailPending = 0 
-				WHERE tripid = $tripid and memberid = $userid");
-				
 	if ($editid == null) {
 		$editid = SqlResultScalar($con,"
 					SELECT id

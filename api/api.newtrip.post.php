@@ -6,7 +6,7 @@ require_once( 'trips.inc.php' );
 
 $logondetails	= GetLogonDetails($con,$username);
 $userid = $logondetails['userid'];
-$title = $logondetails['firstname']." ".$logondetails['lastname']."'s new trip";
+$title = $logondetails['firstname']." ".$logondetails['lastname']."'s trip suggestion";
 
 SqlExecOrDie($con,
 	"INSERT ".TripConfig::TripDB.".trips(title,length,date,closedate,isAdHoc) 
