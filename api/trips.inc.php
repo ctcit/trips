@@ -42,6 +42,7 @@ function GetTrips($con,$where) {
 			COALESCE(t.status,'') as status,
 			COALESCE(t.mapHtml,'') as mapHtml,
 			t.isAdHoc,
+			t.maxParticipants,
 			t.isRemoved,
 			e.text
 		FROM      ".TripConfig::TripDB.".trips t 
