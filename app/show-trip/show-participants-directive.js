@@ -3,8 +3,8 @@
 
     angular.module('tripSignupApp').directive('showParticipants', [function () {
 
-        var controller = ['configService', 'currentUserService', 'membersService', 'metadataService', 'changeService', 'Participant',
-            function (configService, currentUserService, membersService, metadataService, changeService, Participant) {
+        var controller = ['$scope','configService', 'currentUserService', 'membersService', 'metadataService', 'changeService', 'Participant',
+            function ($scope, configService, currentUserService, membersService, metadataService, changeService, Participant) {
 
                 var showParticipantsController = this;
                 var currentUserId = currentUserService.getUserId();
@@ -25,6 +25,7 @@
                 showParticipantsController.everyone = $.map(everyoneByName,function(person) { return person; });
 				showParticipantsController.everyone.sort();
                 
+                // visibleParticipants - determines how many rows to display - including one to add new names (if the trip is still open)
                 showParticipantsController.visibleParticipants = 0;
                 showParticipantsController.participants.forEach(function (participant) {
                     if (!participant.isNew && participant.line >= showParticipantsController.visibleParticipants) {
@@ -43,7 +44,7 @@
                         showParticipantsController.evaluateWaitList();
                     }
                 }
-                                
+
                 showParticipantsController.evaluateWaitList = function() {
                     var participantsCount = 0;
                     var firstWaitListed = showParticipantsController.participants.find(function (participant) {
@@ -79,6 +80,30 @@
                         return participant.memberid == currentUser.id;
                     })
                 }
+
+                //-----------------
+
+                $scope.participantComparator = function(participant) {
+                    if (participant.isRemoved)
+                        return 10000 + participant.displayPriority;
+                    else if (participant.isNew)
+                        return 20000 + participant.displayPriority;
+                    else
+                        return participant.displayPriority;
+                }
+
+                $scope.$on('dragToReorder.dropped', function(evt, data) {
+                    console.log("dragToReorder.dropped " + data.prevIndex + " to " + data.newIndex);
+                    var draggedParticipant = data.item;
+                    var reorderedParticipants = data.list;
+                    if (data.prevIndex != data.newIndex) {
+                        var prevParticipantDisplayPriority = data.newIndex > 0 ? reorderedParticipants[data.newIndex - 1].displayPriority : 0;
+                        var nextParticipantDisplayPriority = data.newIndex < reorderedParticipants.length - 1 ? 
+                            reorderedParticipants[data.newIndex + 1].displayPriority : prevParticipantDisplayPriority + 1;
+                        draggedParticipant.displayPriority = (prevParticipantDisplayPriority + nextParticipantDisplayPriority) / 2;
+                        console.log("dragToReorder.dropped - new displayPriority is " + draggedParticipant.displayPriority);
+                    }
+                })
 
                 //-----------------
 

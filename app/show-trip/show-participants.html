@@ -14,7 +14,7 @@
         </button>
         <span ng-show="showParticipantsController.isDirty()() && showParticipantsController.showparticipants"
             ng-bind="showParticipantsController.saveState"></span>
-        <img ng-repeat="participant in showParticipantsController.participants" 
+        <img ng-repeat="participant in showParticipantsController.sortedParticipants" 
             ng-if="participant.isPrintable && showParticipantsController.printable >= 1 && showParticipantsController.printable <= 4"
             class="section-icon"
             src="app/assets/participant.png" />
@@ -24,7 +24,7 @@
         </span>
     </h4>
     <div class="slide" ng-show="showParticipantsController.showparticipants">
-        <table class="table table-condensed">
+        <table class="table table-condensed" drag-to-reorder="showParticipantsController.participants | orderBy:[participantComparator]">
             <tr>
                 <th></th>
                 <th class="desktop-only">Removed</th>
@@ -40,7 +40,8 @@
                 <th class="desktop-only">Notes</th>
                 <th class="mobile-only">Status</th>
             </tr>
-            <tbody ng-repeat="participant in showParticipantsController.participants | limitTo: showParticipantsController.visibleParticipants track by participant.line">
+            <tbody ng-repeat="participant in showParticipantsController.participants | orderBy:[participantComparator] | limitTo: showParticipantsController.visibleParticipants track by participant.line"
+            dtr-draggable>
                 <tr ng-if="participant.line == showParticipantsController.firstWaitListedLine">
                     <th>Wait List</th>
                 </tr>
@@ -48,7 +49,7 @@
                     <th ng-class="showParticipantsController.participantClass(participant,'memberid')"
                         ng-click="participant.showdetail = !participant.showdetail">
                         <button ng-class="participant.showdetail ? 'open' : 'closed'" class="mobile-only"></button>
-                        {{participant.line + 1}}
+                        {{$index + 1}}
                     </th>
                     <td ng-class="showParticipantsController.participantClass(participant,'isRemoved')" class="desktop-only">
                         <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox"
@@ -57,17 +58,17 @@
                     </td>
                     <td>
                         <input ng-if="participant.nameui == '(Readonly)'"
-                               ng-disabled="true"
-                               type="text" ng-model="participant.name" 
-                               ng-class="showParticipantsController.participantClass(participant,'name')"/>
+                            ng-disabled="true"
+                            type="text" ng-model="participant.name" 
+                            ng-class="showParticipantsController.participantClass(participant,'name')"/>
 
                         <input ng-if="participant.nameui != '(Readonly)'"
-                               type="text" ng-model="participant.name"
-                               list="membernames"
-                               placeholder="Start typing a name..."
-                               ng-focus="showParticipantsControllerr.participantUpdateName(participant)" 
-                               ng-change="showParticipantsController.participantUpdateName(participant)" 
-                               ng-class="showParticipantsController.participantClass(participant,'name')"/>
+                            type="text" ng-model="participant.name"
+                            list="membernames"
+                            placeholder="Start typing a name..."
+                            ng-focus="showParticipantsControllerr.participantUpdateName(participant)" 
+                            ng-change="showParticipantsController.participantUpdateName(participant)" 
+                            ng-class="showParticipantsController.participantClass(participant,'name')"/>
                     </td>
 
                     <td ng-class="showParticipantsController.participantClass(participant,'isLeader')" class="desktop-only">
@@ -110,7 +111,7 @@
                         <b ng-show="participant.status && participant.status != ''">+</b>{{participant.status}}
                     </td>
                 </tr>
-                <tr class="mobile-only">
+                <tr class="mobile-only" drag-container="true" drop-container>
                     <td colspan="3" style="padding: 0; margin: 0;">
                         <div class="slide" ng-show="participant.showdetail">
                             <table>

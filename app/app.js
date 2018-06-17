@@ -8,7 +8,8 @@
       'ngResource',
       'ui.router',
       'ui.select',
-      'ngAnimate'
+      'ngAnimate',
+      'ngDragToReorder'
     ]);
     
     tripSignupApp.config( [
