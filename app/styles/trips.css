@@ -110,21 +110,53 @@ float: right;
 }
 
 button.open {
-width: 20px;
-height: 20px;
-background: url("../assets/open.png");
-border: none;
+    width: 20px;
+    height: 20px;
+    background: url("../assets/open.png");
+    border: none;
 }
 
 button.closed {
-width: 20px;
-height: 20px;
-background: url("../assets/closed.png");
-border: none;
+    width: 20px;
+    height: 20px;
+    background: url("../assets/closed.png");
+    border: none;
+}
+
+button.moveUp {
+    width: 16px;
+    height: 12px;
+    background: url("../assets/uparrow.png");
+    border: none;
+    display: block;
+}
+
+button.moveDown {
+    width: 16px;
+    height: 12px;
+    background: url("../assets/downarrow.png");
+    border: none;
+    display: block;
+}
+
+button.moveIn {
+    width: 16px;
+    height: 16px;
+    background: url("../assets/add.png");
+    border: none;
+    display: inline;
+}
+
+button.moveOut {
+    width: 16px;
+    height: 16px;
+    background: url("../assets/minus.png");
+    border: none;
+    display: inline;
 }
 
 button {
-font-size: 14px;
+    font-size: 14px;
 }
 
 button[disabled=disabled] {

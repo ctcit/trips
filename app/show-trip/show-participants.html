@@ -24,9 +24,10 @@
         </span>
     </h4>
     <div class="slide" ng-show="showParticipantsController.showparticipants">
-        <table class="table table-condensed" drag-to-reorder="showParticipantsController.participants | orderBy:[participantComparator]">
+        <table class="table table-condensed" ng-attr-drag-to-reorder="showParticipantsController.allowMove() ? showParticipantsController.sortedParticipants: undefined">
             <tr>
                 <th></th>
+                <th ng-if="showParticipantsController.allowMove()"></th>
                 <th class="desktop-only">Removed</th>
                 <th>Name</th>
                 <th class="desktop-only">Leader</th>
@@ -40,9 +41,9 @@
                 <th class="desktop-only">Notes</th>
                 <th class="mobile-only">Status</th>
             </tr>
-            <tbody ng-repeat="participant in showParticipantsController.participants | orderBy:[participantComparator] | limitTo: showParticipantsController.visibleParticipants track by participant.line"
+            <tbody ng-repeat="participant in showParticipantsController.sortedParticipants | limitTo: showParticipantsController.visibleParticipants track by participant.line"
             dtr-draggable>
-                <tr ng-if="participant.line == showParticipantsController.firstWaitListedLine">
+                <tr ng-if="showParticipantsController.displayOrder(participant) == showParticipantsController.firstWaitListedDisplayOrder">
                     <th>Wait List</th>
                 </tr>
                 <tr>
@@ -51,9 +52,34 @@
                         <button ng-class="participant.showdetail ? 'open' : 'closed'" class="mobile-only"></button>
                         {{$index + 1}}
                     </th>
+                    <td ng-if="showParticipantsController.allowMove()">
+                        <div ng-if="showParticipantsController.showMoveButtons(participant, $index)">
+                            <div>
+                                <button class="moveUp" 
+                                    ng-disabled="!showParticipantsController.moveUpEnabled(participant, $index)" 
+                                    ng-click="showParticipantsController.moveUp(participant, $index)">
+                                </button>
+                                <button class="moveDown" 
+                                    ng-disabled="!showParticipantsController.moveDownEnabled(participant, $index)" 
+                                    ng-click="showParticipantsController.moveDown(participant, $index)">
+                                </button>
+                            </div>
+                            <div style="clear:both">
+                                <button class="moveIn"
+                                    ng-if="showParticipantsController.moveInEnabled(participant, $index)" 
+                                    ng-click="showParticipantsController.moveIn(participant, $index)">
+                                </button>
+                                <button class="moveOut" 
+                                    ng-if="showParticipantsController.moveOutEnabled(participant, $index)" 
+                                    ng-click="showParticipantsController.moveOut(participant, $index)">
+                                </button>
+                            </div>
+                            <!-- {{participant.displayPriority}} -->
+                        </div>
+                    </td>
                     <td ng-class="showParticipantsController.participantClass(participant,'isRemoved')" class="desktop-only">
                         <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox"
-                            ng-change="showParticipantsController.evaluateWaitList(); showParticipantsController.update()()" ng-model="participant.isRemoved"
+                            ng-change="showParticipantsController.evaluateWaitAndRemovedLists(); showParticipantsController.update()()" ng-model="participant.isRemoved"
                             ng-class="showParticipantsController.participantClass(participant,'isRemoved')" />
                     </td>
                     <td>
@@ -120,7 +146,7 @@
                                         <label for="isRemoved{{$index}}">Removed</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'isRemoved')">
                                         <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox" 
-                                            ng-change="showParticipantsController.evaluateWaitList(); showParticipantsController.update()()" 
+                                            ng-change="showParticipantsController.evaluateWaitAndRemovedLists(); showParticipantsController.update()()" 
                                             ng-model="participant.isRemoved" id="isRemoved{{$index}}" />
                                     </td>
                                 </tr>
