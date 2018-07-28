@@ -54,26 +54,22 @@
                     </th>
                     <td ng-if="showParticipantsController.allowMove()">
                         <div ng-if="showParticipantsController.showMoveButtons(participant, $index)">
-                            <div>
-                                <button class="moveUp" 
-                                    ng-disabled="!showParticipantsController.moveUpEnabled(participant, $index)" 
-                                    ng-click="showParticipantsController.moveUp(participant, $index)">
-                                </button>
-                                <button class="moveDown" 
-                                    ng-disabled="!showParticipantsController.moveDownEnabled(participant, $index)" 
-                                    ng-click="showParticipantsController.moveDown(participant, $index)">
-                                </button>
-                            </div>
-                            <div style="clear:both">
-                                <button class="moveIn"
-                                    ng-if="showParticipantsController.moveInEnabled(participant, $index)" 
-                                    ng-click="showParticipantsController.moveIn(participant, $index)">
-                                </button>
-                                <button class="moveOut" 
-                                    ng-if="showParticipantsController.moveOutEnabled(participant, $index)" 
-                                    ng-click="showParticipantsController.moveOut(participant, $index)">
-                                </button>
-                            </div>
+                            <!-- <button class="moveUp" 
+                                ng-disabled="!showParticipantsController.moveUpEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveUp(participant, $index)">
+                            </button> -->
+                            <button class="moveIn"
+                                ng-if="showParticipantsController.moveInEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveIn(participant, $index)">
+                            </button>
+                            <button class="moveOut" 
+                                ng-if="showParticipantsController.moveOutEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveOut(participant, $index)">
+                            </button>
+                            <!-- <button class="moveDown" 
+                                ng-disabled="!showParticipantsController.moveDownEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveDown(participant, $index)">
+                            </button> -->
                             <!-- {{participant.displayPriority}} -->
                         </div>
                     </td>

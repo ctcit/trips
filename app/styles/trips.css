@@ -129,6 +129,7 @@ button.moveUp {
     background: url("../assets/uparrow.png");
     border: none;
     display: block;
+    padding: 4px;
 }
 
 button.moveDown {
@@ -137,6 +138,7 @@ button.moveDown {
     background: url("../assets/downarrow.png");
     border: none;
     display: block;
+    padding: 4px;
 }
 
 button.moveIn {
@@ -144,7 +146,8 @@ button.moveIn {
     height: 16px;
     background: url("../assets/add.png");
     border: none;
-    display: inline;
+    display: block;
+    padding: 4px;
 }
 
 button.moveOut {
@@ -152,7 +155,8 @@ button.moveOut {
     height: 16px;
     background: url("../assets/minus.png");
     border: none;
-    display: inline;
+    display: block;
+    padding: 4px;
 }
 
 button {

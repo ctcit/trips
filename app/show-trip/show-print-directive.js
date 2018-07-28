@@ -3,8 +3,8 @@
 
     angular.module('tripSignupApp').directive('showPrint', [function () {
 
-        var controller = [
-            function () {
+        var controller = ['$scope',
+            function ($scope) {
 
                 var showPrintController = this;
 

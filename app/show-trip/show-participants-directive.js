@@ -57,10 +57,6 @@
                         return participant.displayPriority;
                 }
 
-                showParticipantsController.isEmpty = function(participant) {
-                    return participant.isNew && (participant.name || "") == "";
-                }
-
                 //-----------------
                 // wait list
 
@@ -78,6 +74,8 @@
                         (firstRemovedIndex >= 0 ? firstRemovedIndex :
                          firstEmptyIndex >= 0 ? firstEmptyIndex :
                         showParticipantsController.sortedParticipants.length ) - 1;
+
+                    showParticipantsController.updatePrintProperties();
                 }
 
                 showParticipantsController.$onChanges = function(changesObj) {
@@ -86,23 +84,48 @@
                     }
                 }
 
-                showParticipantsController.evaluateWaitAndRemovedLists();
+                showParticipantsController.isEmpty = function(participant) {
+                    return participant.isNew && (participant.name || "") == "";
+                }
+
+                showParticipantsController.isListed = function(participant) {
+                    return !participant.isRemoved && 
+                        !showParticipantsController.isEmpty(participant) && 
+                        (!showParticipantsController.firstWaitListedDisplayOrder || showParticipantsController.displayOrder(participant) < showParticipantsController.firstWaitListedDisplayOrder);
+                }
+
+                showParticipantsController.isWaitListed = function(participant) {
+                    return !participant.isRemoved && 
+                        !showParticipantsController.isEmpty(participant) && 
+                        (showParticipantsController.firstWaitListedDisplayOrder && showParticipantsController.displayOrder(participant) >= showParticipantsController.firstWaitListedDisplayOrder);
+                }
+
+                //-----------------
+                // print properties
+                showParticipantsController.updatePrintProperties = function() {
+                    showParticipantsController.sortedParticipants.forEach(function(participant) {
+                        participant.isPrintable = showParticipantsController.isListed(participant);
+                        participant.isPrintableLeader = participant.isPrintable && participant.isLeader;
+                        participant.isPrintableStatus = participant.isPrintable && (participant.status || '') != '';
+                        participant.isPrintableRego = participant.isPrintable && (participant.vehicleRego || '') != '';   
+                    });
+                }
 
                 //-----------------
                 // participants reordering (leader and webmasters only)
 
                 $scope.$on('dragToReorder.dropped', function(evt, data) {
                     var draggedParticipant = data.item;
-                    var reorderedParticipants = data.list;
-                    if (data.prevIndex != data.newIndex  && data.newIndex < showParticipantsController.maxMoveIndex) {
-                        var newPrevParticipant = data.newIndex > 0 ? reorderedParticipants[data.newIndex - 1] : null;
-                        var newNextParticipant = data.newIndex < reorderedParticipants.length - 1 ? reorderedParticipants[data.newIndex + 1] : null;
-                        showParticipantsController.moveBetween(draggedParticipant, newPrevParticipant, newNextParticipant);
+                    // there's a bit of an issue when dragging to same location: 
+                    // data.newIndex == data.prevIndex + 1, which is wrong and indistinguishable from dragging two rows down - ignoring for now
+                    if (data.newIndex >= data.prevIndex) {
+                        data.newIndex++; // account for direction of drag
                     }
-                })
+                    showParticipantsController.moveToIndex(draggedParticipant, data.prevIndex, data.newIndex);
+                });
 
                 showParticipantsController.allowMove = function() {
-                    return showParticipantsController.tripeditable;
+                    return showParticipantsController.tripeditable && showParticipantsController.maxParticipants;
                 }
 
                 showParticipantsController.showMoveButtons = function(participant, index) {
@@ -145,7 +168,7 @@
                     var newPrevIndex = fromIndex < newIndex ? newIndex : newIndex - 1;
                     var newNextIndex = fromIndex < newIndex ? newIndex + 1 : newIndex;
                     var newPrevParticipant = newPrevIndex >= 0 ? showParticipantsController.sortedParticipants[newPrevIndex] : null;
-                    var newNextParticipant = newNextIndex < showParticipantsController.maxMoveIndex ? showParticipantsController.sortedParticipants[newNextIndex] : null;
+                    var newNextParticipant = newNextIndex <= showParticipantsController.maxMoveIndex ? showParticipantsController.sortedParticipants[newNextIndex] : null;
                     showParticipantsController.moveBetween(participant, newPrevParticipant, newNextParticipant);
                 }
 
@@ -154,7 +177,7 @@
                     var prevParticipantDisplayPriority = newPrevParticipant ? newPrevParticipant.displayPriority : 0;
                     var nextParticipantDisplayPriority = newNextParticipant ? newNextParticipant.displayPriority : prevParticipantDisplayPriority + 1;
                     movedParticipant.displayPriority = (prevParticipantDisplayPriority + nextParticipantDisplayPriority) / 2;
-                    //console.log('prev: ' + prevParticipantDisplayPriority + ',  moved: ' + movedParticipant.displayPriority + ', next: ' + nextParticipantDisplayPriority);
+                    // console.log('prev: ' + prevParticipantDisplayPriority + ',  moved: ' + movedParticipant.displayPriority + ', next: ' + nextParticipantDisplayPriority);
                     showParticipantsController.evaluateWaitAndRemovedLists();
             }
 
@@ -240,7 +263,7 @@
                     }
                     var classname = 
                         (participant.isRemoved ? "isRemoved" : "") + " " + 
-                        (!participant.isRemoved && showParticipantsController.displayOrder(participant) >= showParticipantsController.firstWaitListedDisplayOrder ? "isWaitListed" : "") + " " + 
+                        (showParticipantsController.isWaitListed(participant) ? "isWaitListed" : "") + " " + 
                         (changeService.highlights[prop + participant.line] || changeService.highlights[participant.line] || "");
                     var originalParticipant = showParticipantsController.originalParticipants[participant.line];
                     if (participant.isNew) {
@@ -293,8 +316,10 @@
                     //focus and open dropdown
                     $select.activate();
                 }
-                    
 
+                //-----------------
+                 
+                showParticipantsController.evaluateWaitAndRemovedLists();
 
             }];
 
