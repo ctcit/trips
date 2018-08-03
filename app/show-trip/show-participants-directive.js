@@ -44,17 +44,8 @@
                 showParticipantsController.sortParticipants = function() {
                     showParticipantsController.sortedParticipants = showParticipantsController.participants.slice(0); // shallow clone
                     showParticipantsController.sortedParticipants.sort(function(p1, p2) {
-                        return showParticipantsController.displayOrder(p1) - showParticipantsController.displayOrder(p2);
+                        return p1.displayPriority - p2.displayPriority;
                     });
-                }
-
-                showParticipantsController.displayOrder = function(participant) {
-                    if (participant.isRemoved)
-                        return 10000 + participant.displayPriority;
-                    else if (showParticipantsController.isEmpty(participant))
-                        return 20000 + participant.displayPriority;
-                    else
-                        return participant.displayPriority;
                 }
 
                 //-----------------
@@ -63,7 +54,7 @@
                 showParticipantsController.evaluateWaitAndRemovedLists = function() {
                     showParticipantsController.sortParticipants();
                     var firstWaitListed = showParticipantsController.sortedParticipants[showParticipantsController.maxParticipants];
-                    showParticipantsController.firstWaitListedDisplayOrder = firstWaitListed && showParticipantsController.displayOrder(firstWaitListed);
+                    showParticipantsController.firstWaitListedDisplayPriority = firstWaitListed && firstWaitListed.displayPriority;
                     var firstRemovedIndex = showParticipantsController.sortedParticipants.findIndex(function(p) {
                         return p.isRemoved;
                     });
@@ -91,13 +82,13 @@
                 showParticipantsController.isListed = function(participant) {
                     return !participant.isRemoved && 
                         !showParticipantsController.isEmpty(participant) && 
-                        (!showParticipantsController.firstWaitListedDisplayOrder || showParticipantsController.displayOrder(participant) < showParticipantsController.firstWaitListedDisplayOrder);
+                        (!showParticipantsController.firstWaitListedDisplayPriority || participant.displayPriority < showParticipantsController.firstWaitListedDisplayPriority);
                 }
 
                 showParticipantsController.isWaitListed = function(participant) {
                     return !participant.isRemoved && 
                         !showParticipantsController.isEmpty(participant) && 
-                        (showParticipantsController.firstWaitListedDisplayOrder && showParticipantsController.displayOrder(participant) >= showParticipantsController.firstWaitListedDisplayOrder);
+                        (showParticipantsController.firstWaitListedDisplayPriority && participant.displayPriority >= showParticipantsController.firstWaitListedDisplayPriority);
                 }
 
                 //-----------------
@@ -121,7 +112,9 @@
                     if (data.newIndex >= data.prevIndex) {
                         data.newIndex++; // account for direction of drag
                     }
-                    showParticipantsController.moveToIndex(draggedParticipant, data.prevIndex, data.newIndex);
+                    if (data.newIndex <= showParticipantsController.maxMoveIndex ) {
+                        showParticipantsController.moveToIndex(draggedParticipant, data.prevIndex, data.newIndex);
+                    }
                 });
 
                 showParticipantsController.allowMove = function() {
@@ -148,10 +141,12 @@
                     return index < showParticipantsController.maxMoveIndex && !showParticipantsController.isEmpty(participant) && !participant.isRemoved;
                 }
 
+                // maxParticipants = max participants for this trip - move to end of the (no-wait listed) list
                 showParticipantsController.moveIn = function(participant, currentIndex) {
                     showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxParticipants - 1);
                 }
 
+                // maxParticipants = max participants for this trip - move to start of the wait list
                 showParticipantsController.moveOut = function(participant, currentIndex) {
                     showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxParticipants);
                 }
@@ -164,22 +159,51 @@
                     showParticipantsController.moveToIndex(participant, currentIndex, currentIndex + 1);
                 }
 
-                showParticipantsController.moveToIndex = function(participant, fromIndex, newIndex) {
-                    var newPrevIndex = fromIndex < newIndex ? newIndex : newIndex - 1;
-                    var newNextIndex = fromIndex < newIndex ? newIndex + 1 : newIndex;
-                    var newPrevParticipant = newPrevIndex >= 0 ? showParticipantsController.sortedParticipants[newPrevIndex] : null;
-                    var newNextParticipant = newNextIndex <= showParticipantsController.maxMoveIndex ? showParticipantsController.sortedParticipants[newNextIndex] : null;
-                    showParticipantsController.moveBetween(participant, newPrevParticipant, newNextParticipant);
+                // add new participant - added to the end of the wait list (or list if no wait list)
+                showParticipantsController.add = function(participant, currentIndex) {
+                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex);
                 }
 
-                // reorders participants by changing the displayOrder in only the moved participant (minimizes history changes?)
-                showParticipantsController.moveBetween = function(movedParticipant, newPrevParticipant, newNextParticipant) {
-                    var prevParticipantDisplayPriority = newPrevParticipant ? newPrevParticipant.displayPriority : 0;
+                // remove participant - moved to the beginning of the removed list (immediately after the wait list)
+                showParticipantsController.remove = function(participant, currentIndex) {
+                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex, showParticipantsController.maxMoveIndex + 1, showParticipantsController.maxMoveIndex + 1, 10000);
+                }
+
+                // unremove participant - moved to the end of the wait list (or list if no wait list)
+                showParticipantsController.unremove = function(participant, currentIndex) {
+                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex);
+                }
+
+                showParticipantsController.moveToIndex = function(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex, minDisplayPriority) {
+                    minPrevIndex = minPrevIndex | 0;
+                    maxNextIndex = maxNextIndex | showParticipantsController.maxMoveIndex;
+                    var newPrevIndex = fromIndex < newIndex ? newIndex : newIndex - 1;
+                    var newNextIndex = fromIndex <= newIndex ? newIndex + 1 : newIndex;
+                    var newPrevParticipant = newPrevIndex >= minPrevIndex ? showParticipantsController.sortedParticipants[newPrevIndex] : null;
+                    var newNextParticipant = newNextIndex <= maxNextIndex ? showParticipantsController.sortedParticipants[newNextIndex] : null;
+                    showParticipantsController.moveBetween(participant, newPrevParticipant, newNextParticipant, minDisplayPriority);
+                }
+
+                // reorders participants by changing the displayPriority in only the moved participant (minimizes history changes?)
+                showParticipantsController.moveBetween = function(movedParticipant, newPrevParticipant, newNextParticipant, minDisplayPriority) {
+                    minDisplayPriority = minDisplayPriority | 0;
+                    var prevParticipantDisplayPriority = newPrevParticipant ? newPrevParticipant.displayPriority : minDisplayPriority;
                     var nextParticipantDisplayPriority = newNextParticipant ? newNextParticipant.displayPriority : prevParticipantDisplayPriority + 1;
                     movedParticipant.displayPriority = (prevParticipantDisplayPriority + nextParticipantDisplayPriority) / 2;
                     // console.log('prev: ' + prevParticipantDisplayPriority + ',  moved: ' + movedParticipant.displayPriority + ', next: ' + nextParticipantDisplayPriority);
                     showParticipantsController.evaluateWaitAndRemovedLists();
-            }
+                }
+
+                //-----------------
+
+                showParticipantsController.onRemoveChanged = function(participant, index) {
+                    if (participant.isRemoved) {
+                        showParticipantsController.remove(participant, index); 
+                    } else {
+                        showParticipantsController.unremove(participant, index); 
+                    }
+                    showParticipantsController.update();
+                }
 
                 //-----------------
 
@@ -197,7 +221,7 @@
                             participant.email = currentUser.email;
                             participant.phone = currentUser.phone;
                             showParticipantsController.visibleParticipants = Math.max(i + 2, showParticipantsController.visibleParticipants);
-                            showParticipantsController.evaluateWaitAndRemovedLists();
+                            showParticipantsController.add(participant, i); 
                             showParticipantsController.update();
                             break;
                         }
@@ -218,15 +242,7 @@
                     return participant.iseditable || participant.isNew || showParticipantsController.tripeditable || showParticipantsController.userId == showParticipantsController.memberid;
                 }
 
-                showParticipantsController.participantCancelSomeoneElse = function participantCancelSomeoneElse(participant) {
-                    participant.memberid = null;
-                    participant.nameui = "(Full)";
-                    participant.name = participant.lastname;
-                    showParticipantsController.evaluateWaitAndRemovedLists();
-                    showParticipantsController.update();
-                }
-
-                showParticipantsController.participantUpdateName = function participantUpdateName(participant) {
+                showParticipantsController.participantUpdateName = function participantUpdateName(participant, index) {
 					var name = participant.name;
                     var member = membersService.getMemberByName(name);
                     if (member) {
@@ -253,7 +269,9 @@
 						}
                     }
                     showParticipantsController.visibleParticipants = Math.max(participant.line + 2, showParticipantsController.visibleParticipants);
-                    showParticipantsController.evaluateWaitAndRemovedLists();
+                    if (index > showParticipantsController.maxMoveIndex) {
+                        showParticipantsController.add(participant, index); // move to end of list (or wait list)
+                    }
                     showParticipantsController.update();
                 }
 

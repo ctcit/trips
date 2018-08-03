@@ -43,7 +43,7 @@
             </tr>
             <tbody ng-repeat="participant in showParticipantsController.sortedParticipants | limitTo: showParticipantsController.visibleParticipants track by participant.line"
             dtr-draggable>
-                <tr ng-if="showParticipantsController.displayOrder(participant) == showParticipantsController.firstWaitListedDisplayOrder">
+                <tr ng-if="participant.displayPriority == showParticipantsController.firstWaitListedDisplayPriority">
                     <th>Wait List</th>
                 </tr>
                 <tr>
@@ -70,12 +70,13 @@
                                 ng-disabled="!showParticipantsController.moveDownEnabled(participant, $index)" 
                                 ng-click="showParticipantsController.moveDown(participant, $index)">
                             </button> -->
-                            <!-- {{participant.displayPriority}} -->
                         </div>
+                        <!-- {{participant.displayPriority}} -->
                     </td>
                     <td ng-class="showParticipantsController.participantClass(participant,'isRemoved')" class="desktop-only">
                         <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox"
-                            ng-change="showParticipantsController.evaluateWaitAndRemovedLists(); showParticipantsController.update()()" ng-model="participant.isRemoved"
+                            ng-change="showParticipantsController.onRemoveChanged(participant, $index)" 
+                            ng-model="participant.isRemoved"
                             ng-class="showParticipantsController.participantClass(participant,'isRemoved')" />
                     </td>
                     <td>
@@ -88,8 +89,8 @@
                             type="text" ng-model="participant.name"
                             list="membernames"
                             placeholder="Start typing a name..."
-                            ng-focus="showParticipantsControllerr.participantUpdateName(participant)" 
-                            ng-change="showParticipantsController.participantUpdateName(participant)" 
+                            ng-focus="showParticipantsControllerr.participantUpdateName(participant, $index)" 
+                            ng-change="showParticipantsController.participantUpdateName(participant, $index)" 
                             ng-class="showParticipantsController.participantClass(participant,'name')"/>
                     </td>
 
@@ -142,7 +143,7 @@
                                         <label for="isRemoved{{$index}}">Removed</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'isRemoved')">
                                         <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox" 
-                                            ng-change="showParticipantsController.evaluateWaitAndRemovedLists(); showParticipantsController.update()()" 
+                                            ng-change="showParticipantsController.onRemoveChanged(participant, $index)" 
                                             ng-model="participant.isRemoved" id="isRemoved{{$index}}" />
                                     </td>
                                 </tr>

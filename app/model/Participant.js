@@ -16,12 +16,16 @@
                 //"isVehicleProvider": "0",
                 //"vehicleRego": "",
                 //"status": ""
+                //"displayPriority": "0"
 
                 Initialize(this, participantData, participantMetadata);
 
                 this.line = parseInt(this.line); // get this back as string - but simpler to deal with it as an number
                 this.lastname = this.name;
-                this.displayPriority = this.displayPriority | this.line + 1;
+                this.displayPriority = this.displayPriority | 
+                    (this.isRemoved ? 10000 : 
+                        this.isNew && (this.name || "") == "" ? 20000:
+                     0 ) + this.line;
             }
 
             //angular.extend(Participant.prototype, {
