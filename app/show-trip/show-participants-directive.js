@@ -112,7 +112,8 @@
                     if (data.newIndex >= data.prevIndex) {
                         data.newIndex++; // account for direction of drag
                     }
-                    if (data.newIndex <= showParticipantsController.maxMoveIndex ) {
+                    // can only drag'n'drop within list and wait list
+                    if (data.newIndex <= showParticipantsController.maxMoveIndex && data.prevIndex <= showParticipantsController.maxMoveIndex) {
                         showParticipantsController.moveToIndex(draggedParticipant, data.prevIndex, data.newIndex);
                     }
                 });
