@@ -27,7 +27,7 @@ $user = JFactory::getUser();
 $config = JFactory::getConfig();
 
 
-$con        = ($GLOBALS["___mysqli_ston"] = mysqli_connect("localhost",    $config->get("user"),  $config->get("password")));
+$con        = ($GLOBALS["___mysqli_ston"] = mysqli_connect($config->get("host"),    $config->get("user"),  $config->get("password")));
 // N.B. userid here is the JOOMLA id NOT the db id. The common ground here is username.
 $username   = array("id"=>$user->id,"name"=>$user->username);
 
@@ -42,9 +42,9 @@ function GetLogonDetails($con,$username,$roleclause="1=1")
 {
     $userrow = SqlResultArray($con,"
             SELECT primaryEmail,firstName,lastName,m.id
-            FROM ctcweb9_ctc.members             m
-            LEFT JOIN ctcweb9_ctc.members_roles  mr  on mr.memberid = m.id
-            LEFT JOIN ctcweb9_ctc.roles          r   on r.id = mr.roleid
+            FROM ctc.members             m
+            LEFT JOIN ctc.members_roles  mr  on mr.memberid = m.id
+            LEFT JOIN ctc.roles          r   on r.id = mr.roleid
             where loginname = ".SqlVal($username["name"])." and $roleclause");
 
 	if (count($userrow))

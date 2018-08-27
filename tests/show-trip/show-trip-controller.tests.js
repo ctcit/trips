@@ -172,7 +172,7 @@ describe('showTripController: ', function () {
                         "Default": null,
                         "Extra": "",
                         "Privileges": "select,insert,update,references",
-                        "Comment": "Title -- if null use the value from from ctcweb9_newsletter.event table",
+                        "Comment": "Title -- if null use the value from from newsletter.event table",
                         "IsReadOnly": false,
                         "Display": "Title"
                     },
@@ -211,7 +211,7 @@ describe('showTripController: ', function () {
                         "Default": null,
                         "Extra": "",
                         "Privileges": "select,insert,update,references",
-                        "Comment": "Departure Point -- if null use the value from from ctcweb9_newsletter.event table",
+                        "Comment": "Departure Point -- if null use the value from from newsletter.event table",
                         "IsReadOnly": false,
                         "Display": "Departure Point"
                     },
@@ -224,7 +224,7 @@ describe('showTripController: ', function () {
                         "Default": null,
                         "Extra": "",
                         "Privileges": "select,insert,update,references",
-                        "Comment": "Grade -- if null use the value from from ctcweb9_newsletter.event table",
+                        "Comment": "Grade -- if null use the value from from newsletter.event table",
                         "IsReadOnly": false,
                         "Display": "Grade"
                     },
@@ -237,7 +237,7 @@ describe('showTripController: ', function () {
                         "Default": null,
                         "Extra": "",
                         "Privileges": "select,insert,update,references",
-                        "Comment": "Cost -- if null use the value from from ctcweb9_newsletter.event table",
+                        "Comment": "Cost -- if null use the value from from newsletter.event table",
                         "IsReadOnly": false,
                         "Display": "Cost"
                     },
@@ -360,7 +360,7 @@ describe('showTripController: ', function () {
                         "Default": null,
                         "Extra": "",
                         "Privileges": "select,insert,update,references",
-                        "Comment": "Name -- if null use value from ctcweb9_ctc.members",
+                        "Comment": "Name -- if null use value from ctc.members",
                         "IsReadOnly": false,
                         "Display": "Name"
                     },
@@ -373,7 +373,7 @@ describe('showTripController: ', function () {
                         "Default": null,
                         "Extra": "",
                         "Privileges": "select,insert,update,references",
-                        "Comment": "Email -- if null use the primaryEmail value from from ctcweb9_ctc.members table",
+                        "Comment": "Email -- if null use the primaryEmail value from from ctc.members table",
                         "IsReadOnly": false,
                         "Display": "Email"
                     },
@@ -386,7 +386,7 @@ describe('showTripController: ', function () {
                         "Default": null,
                         "Extra": "",
                         "Privileges": "select,insert,update,references",
-                        "Comment": "Phone -- if null use the homePhone from from ctcweb9_ctc.memberships table",
+                        "Comment": "Phone -- if null use the homePhone from from ctc.memberships table",
                         "IsReadOnly": false,
                         "Display": "Phone"
                     },

@@ -12,9 +12,9 @@ class TripConfig
 	const AdditionalLines = 5;
 	const PrintLines = 25;
 	const EditRefreshInSec = 30;
-	const CtcDB = "ctcweb9_ctc";
-	const TripDB = "ctcweb9_trip";
-	const NewsletterDB = "ctcweb9_newsletter";
+	const CtcDB = "ctc";
+	const TripDB = "trip";
+	const NewsletterDB = "newsletter";
 }
 
 ?>
