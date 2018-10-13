@@ -1,4 +1,4 @@
-﻿// The controller for the current selected trip
+// The controller for the current selected trip
 (function () {
     "use strict";
 

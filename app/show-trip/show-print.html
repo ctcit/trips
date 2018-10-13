@@ -1,4 +1,4 @@
-﻿<main class='printabletriplist'>
+<main class='printabletriplist'>
     <h1>Christchurch Tramping Club Trip List</h1>
     <h2>{{showPrintController.tripDetail.title}}</h2>
     <table class="triplistparams">
@@ -22,14 +22,17 @@
             <th class="emailcol">Email</th>
             <th class="phonecol">Phone</th>
             <th class="carcol">Car?</th>
+            <th class="plbcol">PLB?</th>
         </tr>
         <tr ng-repeat="participant in showPrintController.participants | orderBy:'displayPriority'" ng-show="participant.isPrintable">
             <td>{{participant.name}}</td>
             <td>{{participant.email}}</td>
             <td>{{participant.phone}}</td>
             <td><span ng-show="participant.isVehicleProvider"><img src="app/assets/blacktick.png" /></span></td>
+            <td><span ng-show="participant.isPLBProvider"><img src="app/assets/blacktick.png" /></span></td>
         </tr>
         <tr ng-repeat="blankline in showPrintController.printableblanklines">
+            <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>
             <td>&nbsp;</td>

@@ -67,6 +67,7 @@ function GetParticipants($con,$where) {
 				(CASE m.mobilephone WHEN '' THEN null ELSE m.mobilephone END), 
 				(CASE m.workphone WHEN '' THEN null ELSE m.workphone END)) as phone,
 			p.isVehicleProvider,
+			p.isPLBProvider,
 			COALESCE(p.vehiclerego,'') as vehicleRego,
 			COALESCE(p.status,'') as status
 		FROM      ".TripConfig::TripDB.".trips         t 
