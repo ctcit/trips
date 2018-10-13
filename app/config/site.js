@@ -32,6 +32,7 @@
 
             return {
                 url: site_url,
+                currenttripsbaseurl: site_url + '/index.php/current-trips',
 
                 set: function(url, api) {
                     site_url = url;

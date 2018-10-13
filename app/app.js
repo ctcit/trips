@@ -56,11 +56,13 @@
     tripSignupApp.run(
         ["$rootScope", "$templateCache", "sessionStateService", 
             function ($rootScope, $templateCache, sessionStateService) {
+
             // This is meant to prevent caching of old view code, but doesn't
             // always work.
             $rootScope.$on('$viewContentLoaded', function() {
                 $templateCache.removeAll();
             });
+
             $rootScope.$on('$stateChangeStart', function(evt, to, toParams, from, fromParams) {
                 if (from.name == 'trip.showTrip' && sessionStateService.isDirty()) {
                     if (confirm(sessionStateService.isDirtyMessage() + " Do you want to exit?")) {
@@ -70,10 +72,44 @@
                     }
                 }
             });
+                
+            // Function to check if we're in an iframe. true if we are.
+            $rootScope.isInFrame = function () { 
+                try {
+                    //return false;//Testing
+                    return window.self !== window.top;
+                } catch (e) {
+                    return true;
+                }
+            }            
         }]
     );
     
+    // Add an event listener for changes in the state (i.e. route). Attempt
+    // to update the main site URL in the top window if we're running in an
+    // embedded iframe. 
+    tripSignupApp.run(
+        ['$rootScope', '$location', 'site',
+         function ($rootScope, $location, site) {
+            var goto, newLocation;
+            $rootScope.$on('$stateChangeSuccess', function () {
+                if ($rootScope.isInFrame && $rootScope.isInFrame()) {
+                    goto = $location.url();
+                    if (goto[0] === '/') {
+                        goto = goto.substring(1);
+                    }
+                    goto = goto.replace('/', '%2F');
+                    newLocation = site.currenttripsbaseurl + '?goto=' + goto;
+                    //newLocation = '../index.php/current-trips?goto=' + goto;
+                    window.top.history.pushState('string', '', newLocation);
+                    console.log('New parent url: ' + newLocation);
+                }
+            })
+         }]
+    );
+
     tripSignupApp.run(function ($state) {
         $state.go('trip');
     });
+   
 }());
