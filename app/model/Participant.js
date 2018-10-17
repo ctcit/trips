@@ -22,10 +22,24 @@
 
                 this.line = parseInt(this.line); // get this back as string - but simpler to deal with it as an number
                 this.lastname = this.name;
-                this.displayPriority = this.displayPriority | 
-                    (this.isRemoved ? 10000 : 
-                        this.isNew && (this.name || "") == "" ? 20000:
-                     0 ) + this.line;
+
+                var displayPriority = parseFloat(this.displayPriority);
+                if (this.isRemoved) {
+                    this.displayPriority = isNotSet(displayPriority) || displayPriority < 10000 || displayPriority >= 20000 ?
+                        10000 + this.line : displayPriority;
+                }
+                else if (this.isNew && (this.name || "") == "") {
+                    this.displayPriority = isNotSet(displayPriority) || displayPriority < 20000 ?
+                        20000 + this.line : displayPriority;
+                }
+                else {
+                    this.displayPriority = isNotSet(displayPriority) || displayPriority >= 10000 ?
+                        this.line : displayPriority;
+                }
+            }
+
+            function isNotSet(displayPriority) {
+                return displayPriority == null || isNaN(displayPriority)
             }
 
             //angular.extend(Participant.prototype, {

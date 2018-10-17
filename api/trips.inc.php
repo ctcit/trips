@@ -59,6 +59,7 @@ function GetParticipants($con,$where) {
 			p.isRemoved,
 			p.memberid,
 			p.isLeader,
+			p.displayPriority,
 			COALESCE(p.name,concat(trim(m.firstname),' ',trim(m.lastname))) as name,
 			COALESCE(p.email, m.primaryemail) as email,
 			COALESCE(p.phone, 
