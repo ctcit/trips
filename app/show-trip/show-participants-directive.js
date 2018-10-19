@@ -131,7 +131,7 @@
                 }
 
                 showParticipantsController.moveOutEnabled = function(participant, index) {
-                    return showParticipantsController.maxParticipants && index < showParticipantsController.maxParticipants && !showParticipantsController.isEmpty(participant) && !participant.isRemoved;
+                    return showParticipantsController.maxParticipants && showParticipantsController.maxMoveIndex >= showParticipantsController.maxParticipants && index < showParticipantsController.maxParticipants && !showParticipantsController.isEmpty(participant) && !participant.isRemoved;
                 }
 
                 showParticipantsController.moveUpEnabled = function(participant, index) {
@@ -144,25 +144,25 @@
 
                 // maxParticipants = max participants for this trip - move to end of the (no-wait listed) list
                 showParticipantsController.moveIn = function(participant, currentIndex) {
-                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxParticipants - 1);
+                    showParticipantsController.moveToIndexWithinList(participant, currentIndex, showParticipantsController.maxParticipants - 1);
                 }
 
                 // maxParticipants = max participants for this trip - move to start of the wait list
                 showParticipantsController.moveOut = function(participant, currentIndex) {
-                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxParticipants);
+                    showParticipantsController.moveToIndexWithinList(participant, currentIndex, showParticipantsController.maxParticipants);
                 }
 
                 showParticipantsController.moveUp = function(participant, currentIndex) {
-                    showParticipantsController.moveToIndex(participant, currentIndex, currentIndex - 1);
+                    showParticipantsController.moveToIndexWithinList(participant, currentIndex, currentIndex - 1);
                 }
 
                 showParticipantsController.moveDown = function(participant, currentIndex) {
-                    showParticipantsController.moveToIndex(participant, currentIndex, currentIndex + 1);
+                    showParticipantsController.moveToIndexWithinList(participant, currentIndex, currentIndex + 1);
                 }
 
                 // add new participant - added to the end of the wait list (or list if no wait list)
                 showParticipantsController.add = function(participant, currentIndex) {
-                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex);
+                    showParticipantsController.moveToIndexWithinList(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex);
                 }
 
                 // remove participant - moved to the beginning of the removed list (immediately after the wait list)
@@ -173,6 +173,12 @@
                 // unremove participant - moved to the end of the wait list (or list if no wait list)
                 showParticipantsController.unremove = function(participant, currentIndex) {
                     showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex);
+                }
+
+                showParticipantsController.moveToIndexWithinList = function(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex, minDisplayPriority) {
+                    if (newIndex <= showParticipantsController.maxMoveIndex) {
+                        showParticipantsController.moveToIndex(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex, minDisplayPriority);
+                    }
                 }
 
                 showParticipantsController.moveToIndex = function(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex, minDisplayPriority) {
