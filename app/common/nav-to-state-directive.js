@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
     // Directive to navigate to new state 

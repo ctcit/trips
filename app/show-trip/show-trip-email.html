@@ -1,4 +1,4 @@
-﻿<div ng-form="tripEmailForm">
+<div ng-form="tripEmailForm">
   <h4 class="noprint" ng-click="showTripEmailController.showtripemail = !showTripEmailController.showtripemail">
     <button ng-class="showTripEmailController.showtripemail? 'open' : 'closed'"></button>
     Trip Email
@@ -10,6 +10,13 @@
         <col style="width:15%"/>
         <col style="width:85%"/>
       </colgroup>
+      <tr>
+        <th>Recipients</th>
+        <td>
+          <span ng-repeat="participant in showTripEmailController.participants" ng-if="participant.isPrintable" 
+                ng-bind="participant.email + '; '"/>
+        </td>
+      </tr>
       <tr>
         <th>Subject</th>
         <td>

@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
     'use strict';
 
 	var site_url = null;

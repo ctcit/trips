@@ -12,8 +12,9 @@ $diffs			= $post["diffs"];
 $userid			= $logondetails["userid"];
 $trips 			= GetTrips($con,"t.id = $tripid");
 $subject		= "RE: ".$trips[0]["title"]." on ".$trips[0]["date"];
-$bodyparts		= array("greeting"=>"","diff"=>"");
-$where			= array("p.tripid = $tripid"=>1,"p.isRemoved = 0"=>1,"p.isEmailPending = 0"=>1,"COALESCE(p.memberid,0) <> $userid"=>1);
+$body			= array("greeting"=>"");
+$recipientall	= false;
+$recipientlines	= array();
 $cols			= array("guid","action","column","line","before","after","subject","body");
 $stats			= array();
 $statcounts		= array("diff"=>0,"diff"=>0,"email"=>0);
@@ -41,8 +42,11 @@ foreach ($diffs as &$diff) {
 		if (!array_key_exists($column,$metadata["trips"]) || $metadata["trips"][$column]["IsReadOnly"]) {
 			die("can't $action with column' `$column` ".json_encode($post));
 		}
-		
-		$bodyparts["diff"] = "<p>This trip list has just been updated</p>";
+
+		$body[$diff["action"]] = $column != "isRemoved" ? "<p>Trip details in this trip have just changed</p>" :
+									($insert["`after`"] == 1 ? "<p>Trip has been deleted</p>" 
+															 : "<p>Trip has been un-deleted</p>");
+		$recipientall = true;		
 		SqlExecOrDie($con,"
 			UPDATE ".TripConfig::TripDB.".trips 
 			SET `$column` = ".$insert["`after`"]." WHERE id = $tripid");
@@ -54,15 +58,18 @@ foreach ($diffs as &$diff) {
 			die("can't $action with column' `$column` ".json_encode($post));
 		}
 		
-		$bodyparts["diff"] = "<p>This trip list has just been updated</p>";
-		
 		if($diff["action"] == "insertparticipant") {
-			unset($where["COALESCE(p.memberid,0) <> $userid"]);
+			$body[$diff["action"]] = "<p>Someone has just signed up to this trip</p>";
 			if (!array_key_exists($line,$newlines)) {
 				$newlines[$line] = ++$nextline;
 			}
 			$line = $newlines[$line];
 		}
+		else {
+			$body[$diff["action"]] = "Participant details in this trip have just changed";
+		}
+
+		$recipientlines []= $line;
 		
 		SqlExecOrDie($con,"
 			INSERT ".TripConfig::TripDB.".participants(tripid,line,`$column`) 
@@ -83,12 +90,17 @@ foreach ($diffs as &$diff) {
 	$stats[$stat] = (++$statcounts[$stat])." $stat(s)";
 }
 
-$wheresql = implode(" and ",array_keys($where));
-$recipients = GetParticipants($con,$wheresql);	
+$recipientsql = "p.tripid = $tripid and ".
+				($recipientall ? "p.isRemoved = 0" 
+							   : ("(p.isLeader = 1 or p.line in (".implode(",",$recipientlines)."))"));
+$recipients = GetParticipants($con,$recipientsql);	
 $changeid = $diffs[0]["id"];
+$body["link"] = "";
+$body["detail"] = "";
+$body["editinfo"] = $post["editinfo"];
 
-SendEmail($con,$recipients,$subject,$bodyparts,$tripid,$changeid,$guid);
+SendEmail($con,$recipients,$subject,$body,$tripid,$changeid,$guid);
 	
 header('Content-Type: application/json');
-echo json_encode(array("result"=>implode(", ",$stats)));
+echo json_encode(array("result"=>implode(", ",$stats)."recipients:".count($recipients)));
 ?>
