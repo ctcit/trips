@@ -217,7 +217,9 @@
 					controller.printableblanklines.push({});
 				}
 
-                $timeout(function () { window.print(); }, 0);
+                // some times the print content doesn't appear - attempt to sync things up before opening print window
+                $timeout();
+                $timeout(function () { window.print(); }, 100);
                 
             };
 
