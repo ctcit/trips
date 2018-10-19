@@ -204,10 +204,10 @@
 
                 //--------
                 // set up for printing
-				var printable = controller.trip.participants.filter(function(p) { p.isPrintable }).length;
-				var statusCount = controller.trip.participants.filter(function(p) { p.isPrintableStatus }).length;
-				var regoCount = controller.trip.participants.filter(function(p) { p.isPrintableRego }).length;
-				var leaderCount = controller.trip.participants.filter(function(p) { p.isPrintableLeader }).length;
+				var printable = controller.trip.participants.filter(function(p) { return p.isPrintable; }).length;
+				var statusCount = controller.trip.participants.filter(function(p) { return p.isPrintableStatus; }).length;
+				var regoCount = controller.trip.participants.filter(function(p) { return p.isPrintableRego; }).length;
+				var leaderCount = controller.trip.participants.filter(function(p) { return p.isPrintableLeader; }).length;
 
 				var blankcount = configService.printLines() - Math.max(1,Math.max(statusCount,regoCount)) - Math.max(1,leaderCount) - printable;
 
@@ -217,7 +217,8 @@
 					controller.printableblanklines.push({});
 				}
 
-                window.print();
+                $timeout(function () { window.print(); }, 0);
+                
             };
 
             //-----------------------------------
