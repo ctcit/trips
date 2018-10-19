@@ -113,30 +113,6 @@
 
             controller.update = function () {
                 controller.saveState = "";
-
-				var statusCount = 0, regoCount = 0, leaderCount = 0, printable = 0;
-
-				for (var i = 0; i < controller.trip.participants.length; i++) {
-					var participant = controller.trip.participants[i];
-					participant.isPrintable = (participant.name || '') != '' && !participant.isRemoved;
-					participant.isPrintableLeader = participant.isPrintable && participant.isLeader;
-					participant.isPrintableStatus = participant.isPrintable && (participant.status || '') != '';
-					participant.isPrintableRego = participant.isPrintable && (participant.vehicleRego || '') != '';
-
-					printable += participant.isPrintable ? 1 : 0;
-					statusCount += participant.isPrintableStatus ? 1 : 0;
-					regoCount += participant.isPrintableRego ? 1 : 0;
-					leaderCount += participant.isPrintableLeader ? 1 : 0;
-				}
-
-				var blankcount = configService.printLines() - Math.max(1,Math.max(statusCount,regoCount)) - Math.max(1,leaderCount) - printable;
-
-				controller.printable = printable;
-				controller.printableblanklines = [];
-				for (var i = 0; i < blankcount; i++){
-					controller.printableblanklines.push({});
-				}
-
             };
 
             //-----------------------------------
@@ -225,6 +201,22 @@
             //-----------------------------------
             // Print trip
             controller.print = function print() {
+
+                //--------
+                // set up for printing
+				var printable = controller.trip.participants.filter(function(p) { p.isPrintable }).length;
+				var statusCount = controller.trip.participants.filter(function(p) { p.isPrintableStatus }).length;
+				var regoCount = controller.trip.participants.filter(function(p) { p.isPrintableRego }).length;
+				var leaderCount = controller.trip.participants.filter(function(p) { p.isPrintableLeader }).length;
+
+				var blankcount = configService.printLines() - Math.max(1,Math.max(statusCount,regoCount)) - Math.max(1,leaderCount) - printable;
+
+				controller.printable = printable;
+				controller.printableblanklines = [];
+				for (var i = 0; i < blankcount; i++){
+					controller.printableblanklines.push({});
+				}
+
                 window.print();
             };
 

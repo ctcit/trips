@@ -42,6 +42,7 @@ function GetTrips($con,$where) {
 			COALESCE(t.status,'') as status,
 			COALESCE(t.mapHtml,'') as mapHtml,
 			t.isAdHoc,
+			t.maxParticipants,
 			t.isRemoved,
 			e.text
 		FROM      ".TripConfig::TripDB.".trips t 
@@ -58,6 +59,7 @@ function GetParticipants($con,$where) {
 			p.isRemoved,
 			p.memberid,
 			p.isLeader,
+			p.displayPriority,
 			COALESCE(p.name,concat(trim(m.firstname),' ',trim(m.lastname))) as name,
 			COALESCE(p.email, m.primaryemail) as email,
 			COALESCE(p.phone, 

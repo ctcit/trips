@@ -24,6 +24,10 @@
                         $(this).attr('rows', $(this).val().split('\n').length);
                     });
                 };
+
+                showDetailController.maxParticipantsChange2 = function(maxParticipants) {
+                    showDetailController.maxParticipantsChange(maxParticipants);
+                }
             }];
 
         return {
@@ -35,6 +39,7 @@
                 tripeditable: '=',
                 tripDetail: '=',
                 originalTripDetail: '=',
+                maxParticipantsChange: '&',
                 update: '&'
             },
             controller: controller,

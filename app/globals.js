@@ -22,7 +22,8 @@ function Initialize(obj, source, metadata) {
 
 function ToSql(value, metadata)
 {
-    return  metadata.Type == "tinyint(1)" ? (value ? 1 : 0) :
+    return  !metadata ? value :
+            metadata.Type == "tinyint(1)" ? (value ? 1 : 0) :
             metadata.Type == "date" ?   (UtcDate(value).toISOString().substr(0,10)) : value;
 }
 

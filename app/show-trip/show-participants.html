@@ -14,7 +14,7 @@
         </button>
         <span ng-show="showParticipantsController.isDirty()() && showParticipantsController.showparticipants"
             ng-bind="showParticipantsController.saveState"></span>
-        <img ng-repeat="participant in showParticipantsController.participants"
+        <img ng-repeat="participant in showParticipantsController.sortedParticipants" 
             ng-if="participant.isPrintable && showParticipantsController.printable >= 1 && showParticipantsController.printable <= 4"
             class="section-icon"
             src="app/assets/participant.png" />
@@ -24,9 +24,10 @@
         </span>
     </h4>
     <div class="slide" ng-show="showParticipantsController.showparticipants">
-        <table class="table table-condensed">
+        <table class="table table-condensed" ng-attr-drag-to-reorder="showParticipantsController.allowMove() ? showParticipantsController.sortedParticipants: undefined">
             <tr>
                 <th></th>
+                <th ng-if="showParticipantsController.allowMove()"></th>
                 <th class="desktop-only">Removed</th>
                 <th>Name</th>
                 <th class="desktop-only">Leader</th>
@@ -43,31 +44,57 @@
                 <th class="desktop-only">Notes</th>
                 <th class="mobile-only">Status</th>
             </tr>
-            <tbody ng-repeat="participant in showParticipantsController.participants | limitTo: showParticipantsController.visibleParticipants track by participant.line">
+            <tbody ng-repeat="participant in showParticipantsController.sortedParticipants | limitTo: showParticipantsController.visibleParticipants track by participant.line"
+            dtr-draggable>
+                <tr ng-if="participant.displayPriority == showParticipantsController.firstWaitListedDisplayPriority">
+                    <th>Wait List</th>
+                </tr>
                 <tr>
                     <th ng-class="showParticipantsController.participantClass(participant,'memberid')"
                         ng-click="participant.showdetail = !participant.showdetail">
                         <button ng-class="participant.showdetail ? 'open' : 'closed'" class="mobile-only"></button>
-                        {{participant.line + 1}}
+                        {{$index + 1}}
                     </th>
+                    <td ng-if="showParticipantsController.allowMove()">
+                        <div ng-if="showParticipantsController.showMoveButtons(participant, $index)">
+                            <!-- <button class="moveUp" 
+                                ng-disabled="!showParticipantsController.moveUpEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveUp(participant, $index)">
+                            </button> -->
+                            <button class="moveIn"
+                                ng-if="showParticipantsController.moveInEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveIn(participant, $index)">
+                            </button>
+                            <button class="moveOut" 
+                                ng-if="showParticipantsController.moveOutEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveOut(participant, $index)">
+                            </button>
+                            <!-- <button class="moveDown" 
+                                ng-disabled="!showParticipantsController.moveDownEnabled(participant, $index)" 
+                                ng-click="showParticipantsController.moveDown(participant, $index)">
+                            </button> -->
+                        </div>
+                        <!-- {{participant.displayPriority}} -->
+                    </td>
                     <td ng-class="showParticipantsController.participantClass(participant,'isRemoved')" class="desktop-only">
                         <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox"
-                            ng-change="showParticipantsController.update()()" ng-model="participant.isRemoved"
+                            ng-change="showParticipantsController.onRemoveChanged(participant, $index)" 
+                            ng-model="participant.isRemoved"
                             ng-class="showParticipantsController.participantClass(participant,'isRemoved')" />
                     </td>
                     <td>
                         <input ng-if="participant.nameui == '(Readonly)'"
-                               ng-disabled="true"
-                               type="text" ng-model="participant.name"
-                               ng-class="showParticipantsController.participantClass(participant,'name')"/>
+                            ng-disabled="true"
+                            type="text" ng-model="participant.name" 
+                            ng-class="showParticipantsController.participantClass(participant,'name')"/>
 
                         <input ng-if="participant.nameui != '(Readonly)'"
-                               type="text" ng-model="participant.name"
-                               list="membernames"
-                               placeholder="Start typing a name..."
-                               ng-focus="showParticipantsControllerr.participantUpdateName(participant)" 
-                               ng-change="showParticipantsController.participantUpdateName(participant)" 
-                               ng-class="showParticipantsController.participantClass(participant,'name')"/>
+                            type="text" ng-model="participant.name"
+                            list="membernames"
+                            placeholder="Start typing a name..."
+                            ng-focus="showParticipantsControllerr.participantUpdateName(participant, $index)" 
+                            ng-change="showParticipantsController.participantUpdateName(participant, $index)" 
+                            ng-class="showParticipantsController.participantClass(participant,'name')"/>
                     </td>
 
                     <td ng-class="showParticipantsController.participantClass(participant,'isLeader')" class="desktop-only">
@@ -116,7 +143,7 @@
                         <b ng-show="participant.status && participant.status != ''">+</b>{{participant.status}}
                     </td>
                 </tr>
-                <tr class="mobile-only">
+                <tr class="mobile-only" drag-container="true" drop-container>
                     <td colspan="3" style="padding: 0; margin: 0;">
                         <div class="slide" ng-show="participant.showdetail">
                             <table>
@@ -124,21 +151,27 @@
                                     <th>
                                         <label for="isRemoved{{$index}}">Removed</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'isRemoved')">
-                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox" ng-change="showParticipantsController.update()()" ng-model="participant.isRemoved" id="isRemoved{{$index}}" />
+                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox" 
+                                            ng-change="showParticipantsController.onRemoveChanged(participant, $index)" 
+                                            ng-model="participant.isRemoved" id="isRemoved{{$index}}" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>
                                         <label for="isLeader{{$index}}">Leader</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'leader')">
-                                        <input ng-disabled="!showParticipantsController.tripeditable" type="checkbox" ng-change="showParticipantsController.update()()" ng-model="participant.isLeader" id="isLeader{{$index}}" />
+                                        <input ng-disabled="!showParticipantsController.tripeditable" type="checkbox" 
+                                        ng-change="showParticipantsController.update()()" 
+                                        ng-model="participant.isLeader" id="isLeader{{$index}}" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>
                                         <label for="email{{$index}}">Email</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'email')">
-                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="email" ng-change="showParticipantsController.update()()" ng-model="participant.email" id="email{{$index}}"
+                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="email" 
+                                            ng-change="showParticipantsController.update()()" 
+                                            ng-model="participant.email" id="email{{$index}}"
                                             name="Memail{{$index}}" />
                                         <div ng-show="tripParticipantsForm['Memail' + $index].$error.email">Invalid Email</div>
                                     </td>
@@ -147,14 +180,18 @@
                                     <th>
                                         <label for="phone{{$index}}">Phone</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'phone')">
-                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="text" ng-change="showParticipantsController.update()()" ng-model="participant.phone" id="phone{{$index}}" />
+                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="text" 
+                                            ng-change="showParticipantsController.update()()" 
+                                            ng-model="participant.phone" id="phone{{$index}}" />
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>
                                         <label for="isVehicleProvider{{$index}}">Car</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'isVehicleProvider')">
-                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox" ng-change="showParticipantsController.update()()" ng-model="participant.isVehicleProvider"
+                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="checkbox" 
+                                            ng-change="showParticipantsController.update()()" 
+                                            ng-model="participant.isVehicleProvider"
                                             id="isVehicleProvider{{$index}}" />
                                     </td>
                                 </tr>
@@ -162,7 +199,9 @@
                                     <th>
                                         <label for="vehicleRego{{$index}}">Rego</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'vehicleRego')">
-                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="text" ng-change="showParticipantsController.update()()" ng-model="participant.vehicleRego"
+                                        <input ng-disabled="!showParticipantsController.participantEnabled(participant)" type="text" 
+                                            ng-change="showParticipantsController.update()()" 
+                                            ng-model="participant.vehicleRego"
                                             id="isLeader{{$index}}" />
                                     </td>
                                 </tr>
@@ -178,7 +217,9 @@
                                     <th>
                                         <label for="status{{$index}}">Notes</label></th>
                                     <td ng-class="showParticipantsController.participantClass(participant,'status')">
-                                        <textarea ng-disabled="!showParticipantsController.participantEnabled(participant)" type="text" ng-change="showParticipantsController.update()()" ng-model="participant.status" id="status{{$index}}"
+                                        <textarea ng-disabled="!showParticipantsController.participantEnabled(participant)" type="text" 
+                                            ng-change="showParticipantsController.update()()" 
+                                            ng-model="participant.status" id="status{{$index}}"
                                             ng-attr-rows="{{participant.status.split('\n').length}}" ng-focus="showParticipantsController.textAreaFocus('status'+$index)"></textarea>
                                     </td>
                                 </tr>
