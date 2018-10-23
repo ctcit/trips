@@ -55,10 +55,10 @@
                     showParticipantsController.sortParticipants();
                     var firstWaitListed = showParticipantsController.sortedParticipants[showParticipantsController.maxParticipants];
                     showParticipantsController.firstWaitListedDisplayPriority = firstWaitListed && firstWaitListed.displayPriority;
-                    var firstRemovedIndex = showParticipantsController.sortedParticipants.findIndex(function(p) {
+                    var firstRemovedIndex = showParticipantsController.sortedParticipants.findIndex2(function(p) {
                         return p.isRemoved;
                     });
-                    var firstEmptyIndex = showParticipantsController.sortedParticipants.findIndex(function(p) {
+                    var firstEmptyIndex = showParticipantsController.sortedParticipants.findIndex2(function(p) {
                         return showParticipantsController.isEmpty(p);
                     });
                     showParticipantsController.maxMoveIndex = 
