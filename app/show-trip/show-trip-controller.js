@@ -92,23 +92,30 @@
                 controller.warnings.length = 0;
 
                 if (trip.tripDetail.isRemoved) {
-                    controller.warnings.push('This trip is DELETED. Contact the leader for more information.');
+                    generateWarning('This trip is DELETED. Contact the leader for more information.');
                 } else if (!trip.tripDetail.isOpen) {
-                    controller.warnings.push('This trip is CLOSED. Contact the leader for more information.');
+                    generateWarning('This trip is CLOSED. Contact the leader for more information.');
                 }
 
                 editSession.edits.forEach(function (edit) {
 					if (edit.id != editSession.editId) {
-						controller.warnings.push('This is also being ' +
+						generateWarning('This is also being ' +
 							(parseInt(edit.isdirty) ? 'edited' : 'looked at') +
 							' by ' + membersService.getMember(edit.memberid).name);
 					}
                 });
 
                 editSession.modifications.forEach(function (modification, i) {
-                    controller.warnings.push('This has just been saved by ' + membersService.getMember(modification.memberid).name +
+                    generateWarning('This has just been saved by ' + membersService.getMember(modification.memberid).name +
                                 ' - this may be now out-of-date.');
                 });
+            }
+
+            // add warning ensuring no duplicates
+            function generateWarning(warning) {
+                if (controller.warnings.indexOf(warning) < 0) {
+                    controller.warnings.push(warning);
+                }
             }
 
             controller.update = function () {
