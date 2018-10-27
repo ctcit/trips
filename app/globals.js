@@ -2,7 +2,13 @@ var dow = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 var moy = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 function ValidateResponse(response) {
-    return response && response.data && typeof (response.data) == "object";
+    if (response && response.data) {
+        if (typeof (response.data) == "object")
+            return true;
+
+        alert("Error returned by server: " + response.data)
+        throw "Error returned by server: " + response.data;
+    }
 }
 
 function Initialize(obj, source, metadata) {
