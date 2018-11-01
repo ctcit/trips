@@ -10,7 +10,7 @@
     if (!site_url) {
         // Set global constant site.url from window.location
         var full_url = window.location.href;
-		var pathMatcher = new RegExp('(.*?)/(tripsignup[^/]*)');
+		var pathMatcher = new RegExp('(.*?)/(trips[^/]*)');
 		var bits = pathMatcher.exec(full_url);
 
 		site_url = 'invalidurl';
