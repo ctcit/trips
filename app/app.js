@@ -99,7 +99,7 @@
                     }
                     goto = goto.replace('/', '%2F');
                     newLocation = site.currenttripsbaseurl + '?goto=' + goto;
-                    //newLocation = '../index.php/current-trips?goto=' + goto;
+                    //newLocation = '../index.php/trip-signup?goto=' + goto;
                     window.top.history.pushState('string', '', newLocation);
                     console.log('New parent url: ' + newLocation);
                 }

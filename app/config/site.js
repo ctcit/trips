@@ -10,7 +10,7 @@
     if (!site_url) {
         // Set global constant site.url from window.location
         var full_url = window.location.href;
-		var pathMatcher = new RegExp('(.*?)/(tripsignup[^/]*)');
+		var pathMatcher = new RegExp('(.*?)/(trips[^/]*)');
 		var bits = pathMatcher.exec(full_url);
 
 		site_url = 'invalidurl';
@@ -32,7 +32,7 @@
 
             return {
                 url: site_url,
-                currenttripsbaseurl: site_url + '/index.php/current-trips',
+                currenttripsbaseurl: site_url + '/index.php/trip-signup',
 
                 set: function(url, api) {
                     site_url = url;

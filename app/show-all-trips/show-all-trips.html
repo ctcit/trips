@@ -8,6 +8,9 @@
                 <button ng-click="controller.newTrips()" ng-show="controller.allowNewTrips()">
                     <img src="app/assets/newtrip.png" /><img src="app/assets/newtrip.png" /><img src="app/assets/newtrip.png" />New Trips from Newletter
                 </button>
+                <button ng-click="controller.revokeRole()" ng-show="controller.allowRevokeRole()">
+                    <img src="app/assets/revoke.png" />Revoke Role
+                </button>
             </div>
         </div>
         <div ng-repeat="group in controller.groups">

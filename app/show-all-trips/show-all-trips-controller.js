@@ -9,7 +9,7 @@
 		currentUserService,membersService) {
 
             var controller = this;
-			var allowNewTrips = false;
+			var currentUserHasRole = false;
 
             controller.groups = [];
 
@@ -39,7 +39,21 @@
 						});
 			};
 			controller.allowNewTrips = function(){
-				return allowNewTrips;
+				return currentUserHasRole;
+			};
+			
+			controller.revokeRole = function(){
+				var me = membersService.getMembers().filter(function (member) {
+                    return member.id == currentUserService.getUserId();
+				});
+				if (me.length > 0) {
+					me[0].role = null;
+					currentUserHasRole = false;
+				}
+			};
+
+			controller.allowRevokeRole = function(){
+				return currentUserHasRole;
 			};
 			
             $q.all([
@@ -49,7 +63,7 @@
 				membersService.load()
             ])
             .then(function() {			
-				allowNewTrips = membersService.getMembers().some(function (member) {
+				currentUserHasRole = membersService.getMembers().some(function (member) {
                     return member.id == currentUserService.getUserId() && member.role != null;
                 });
 				controller.reload();
