@@ -68,7 +68,8 @@
                             var participants = data.participants ? data.participants.map(function (participant) {
                                 return new Participant(participant, metadataService.getParticipantsMetadata());
                             }) : [];
-                            // add additional particpant lines; also preserve participants in their original line position
+
+                            // add additional participant lines; also preserve participants in their original line position
                             var maxLine = participants
                                 .map(function (participant) { return participant.line; })
                                 .reduce(function (previous, current) { return Math.max(previous, current); }, 0);
@@ -80,7 +81,16 @@
                             tempParticipants.forEach(function (participant) {
                                 participants[participant.line] = participant;
                             })
-
+                            // ensure displayPriority is unique and fix if not
+                            var sortedParticipants = participants.slice(0); // shallow clone
+                            sortedParticipants.sort(function(p1, p2) {
+                                return p1.displayPriority - p2.displayPriority;
+                            });
+                            for (var i = 1; i < sortedParticipants.length; i++) {
+                                if (sortedParticipants[i].displayPriority <= sortedParticipants[i-1].displayPriority) {
+                                    sortedParticipants[i].displayPriority = sortedParticipants[i-1].displayPriority + 0.01;
+                                }
+                            }
 
                             tripeditable = false;
                             membersService.getMembers().some(function (member) {

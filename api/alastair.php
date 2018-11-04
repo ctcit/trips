@@ -1,23 +1,5 @@
 <?php
-/*
-require_once( '/home1/ctcweb9/public_html/globals.php' );
-require_once( '/home1/ctcweb9/public_html/configuration.php' );
-require_once( '/home1/ctcweb9/public_html/includes/joomla.php' );
-require_once( '/home1/ctcweb9/public_html/includes/sef.php' ); // What is sef.php??
 
-
-// mainframe is an API workhorse, lots of 'core' interaction routines
-$con        = mysql_connect("localhost",   $mosConfig_user, $mosConfig_password);
-$mainframe  = new mosMainFrame( $database, '', '.' );
-$mainframe->initSession();
-$userobj    = $mainframe->getUser();
-$username   = array("id"=>$userobj->id,"name"=>$userobj->username);
-
-if (!$con)
-{
-    die('mysql_connect failed');
-}
-*/
 define('_JEXEC', 1);
 define('JPATH_BASE', dirname(dirname(__DIR__)));// Assume we are two leveld down in website
 require_once ( JPATH_BASE.'/includes/defines.php' );

@@ -2,7 +2,13 @@ var dow = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 var moy = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
 function ValidateResponse(response) {
-    return response && response.data && typeof (response.data) == "object";
+    if (response && response.data) {
+        if (typeof (response.data) == "object")
+            return true;
+
+        alert("Error returned by server: " + response.data)
+        throw "Error returned by server: " + response.data;
+    }
 }
 
 function Initialize(obj, source, metadata) {
@@ -22,7 +28,8 @@ function Initialize(obj, source, metadata) {
 
 function ToSql(value, metadata)
 {
-    return  metadata.Type == "tinyint(1)" ? (value ? 1 : 0) :
+    return  !metadata ? value :
+            metadata.Type == "tinyint(1)" ? (value ? 1 : 0) :
             metadata.Type == "date" ?   (UtcDate(value).toISOString().substr(0,10)) : value;
 }
 
@@ -54,3 +61,26 @@ function AnimationSlide() {
         }
     }
 }
+
+// IE11 doesn't support findIndex
+Array.prototype.findIndex2 = function(predicate, thisArg) {
+    if (this === null) {
+        throw new TypeError('Cannot read property \'findIndex\' of null');
+    }
+
+    if (typeof predicate !== "function") {
+        throw new TypeError(typeof predicate + ' is not a function');
+    }
+
+    var arrLength = this.length;
+    var index = -1;
+
+    for (var i = 0; i < arrLength; i++) {
+        if (predicate.call(thisArg, this[i], i, this)) {
+            index = i;
+            break;
+        }
+    }
+
+    return index;
+};

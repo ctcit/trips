@@ -62,7 +62,8 @@
                 <th><label for="grade">Grade</label></th>
                 <td>
                     <input type="text" ng-disabled="!showDetailController.tripeditable" 
-						   ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.grade"
+						   ng-change="showDetailController.update()()" 
+						   ng-model="showDetailController.tripDetail.grade"
                            ng-class="showDetailController.tripClass('grade')" id="grade" />
                 </td>
             </tr>
@@ -98,10 +99,22 @@
 							<li>Paste it below:</li>
 						</ol>
 						<textarea type="text" ng-disabled="!showDetailController.tripeditable" 
-								ng-change="showDetailController.update()()" ng-model="showDetailController.tripDetail.mapHtml"
-								ng-class="showDetailController.tripClass('mapHtml')" id="mapHtml" rows="4"></textarea>
+								ng-change="showDetailController.update()()" 
+								ng-model="showDetailController.tripDetail.mapHtml"
+								ng-class="showDetailController.tripClass('mapHtml')" 
+								id="mapHtml" rows="4"></textarea>
 					</div>
 					<div  class="slide" ng-show="showDetailController.showmap" ng-bind-html="showDetailController.tripDetail.mapHtml | unsafe"></div>
+                </td>
+            </tr>
+            <tr>
+                <th><label for="maxParticipants">Maximum Participants</label></th>
+                <td>
+                    <input type="number" name="limit" min="1" ng-disabled="!showDetailController.tripeditable" 
+                           ng-change="showDetailController.update()()" 
+                           ng-model="showDetailController.tripDetail.maxParticipants"
+                           ng-class="showDetailController.tripClass('maxParticipants')" 
+						   id="maxParticipants" />
                 </td>
             </tr>
         </table>

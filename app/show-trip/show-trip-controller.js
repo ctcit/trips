@@ -92,51 +92,34 @@
                 controller.warnings.length = 0;
 
                 if (trip.tripDetail.isRemoved) {
-                    controller.warnings.push('This trip is DELETED. Contact the leader for more information.');
+                    generateWarning('This trip is DELETED. Contact the leader for more information.');
                 } else if (!trip.tripDetail.isOpen) {
-                    controller.warnings.push('This trip is CLOSED. Contact the leader for more information.');
+                    generateWarning('This trip is CLOSED. Contact the leader for more information.');
                 }
 
                 editSession.edits.forEach(function (edit) {
 					if (edit.id != editSession.editId) {
-						controller.warnings.push('This is also being ' +
+						generateWarning('This is also being ' +
 							(parseInt(edit.isdirty) ? 'edited' : 'looked at') +
 							' by ' + membersService.getMember(edit.memberid).name);
 					}
                 });
 
                 editSession.modifications.forEach(function (modification, i) {
-                    controller.warnings.push('This has just been saved by ' + membersService.getMember(modification.memberid).name +
+                    generateWarning('This has just been saved by ' + membersService.getMember(modification.memberid).name +
                                 ' - this may be now out-of-date.');
                 });
             }
 
+            // add warning ensuring no duplicates
+            function generateWarning(warning) {
+                if (controller.warnings.indexOf(warning) < 0) {
+                    controller.warnings.push(warning);
+                }
+            }
+
             controller.update = function () {
                 controller.saveState = "";
-
-				var statusCount = 0, regoCount = 0, leaderCount = 0, printable = 0;
-
-				for (var i = 0; i < controller.trip.participants.length; i++) {
-					var participant = controller.trip.participants[i];
-					participant.isPrintable = (participant.name || '') != '' && !participant.isRemoved;
-					participant.isPrintableLeader = participant.isPrintable && participant.isLeader;
-					participant.isPrintableStatus = participant.isPrintable && (participant.status || '') != '';
-					participant.isPrintableRego = participant.isPrintable && (participant.vehicleRego || '') != '';
-
-					printable += participant.isPrintable ? 1 : 0;
-					statusCount += participant.isPrintableStatus ? 1 : 0;
-					regoCount += participant.isPrintableRego ? 1 : 0;
-					leaderCount += participant.isPrintableLeader ? 1 : 0;
-				}
-
-				var blankcount = configService.printLines() - Math.max(1,Math.max(statusCount,regoCount)) - Math.max(1,leaderCount) - printable;
-
-				controller.printable = printable;
-				controller.printableblanklines = [];
-				for (var i = 0; i < blankcount; i++){
-					controller.printableblanklines.push({});
-				}
-
             };
 
             //-----------------------------------
@@ -225,7 +208,26 @@
             //-----------------------------------
             // Print trip
             controller.print = function print() {
-                window.print();
+
+                //--------
+                // set up for printing
+				var printable = controller.trip.participants.filter(function(p) { return p.isPrintable; }).length;
+				var statusCount = controller.trip.participants.filter(function(p) { return p.isPrintableStatus; }).length;
+				var regoCount = controller.trip.participants.filter(function(p) { return p.isPrintableRego; }).length;
+				var leaderCount = controller.trip.participants.filter(function(p) { return p.isPrintableLeader; }).length;
+
+				var blankcount = configService.printLines() - Math.max(1,Math.max(statusCount,regoCount)) - Math.max(1,leaderCount) - printable;
+
+				controller.printable = printable;
+				controller.printableblanklines = [];
+				for (var i = 0; i < blankcount; i++){
+					controller.printableblanklines.push({});
+				}
+
+                // some times the print content doesn't appear - attempt to sync things up before opening print window
+                $timeout();
+                $timeout(function () { window.print(); }, 100);
+                
             };
 
             //-----------------------------------

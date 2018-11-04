@@ -12,6 +12,9 @@
                 this.participants = participants;
                 this.nonmembers = nonmembers;
 
+                var maxParticipants = parseInt(this.tripDetail.maxParticipants);
+                this.tripDetail.maxParticipants = !isNaN(maxParticipants) ? maxParticipants : undefined;
+
             }
 
             //angular.extend(Trip.prototype, {
