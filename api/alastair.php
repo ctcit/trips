@@ -1,23 +1,5 @@
 <?php
-/*
-require_once( '/home1/ctcweb9/public_html/globals.php' );
-require_once( '/home1/ctcweb9/public_html/configuration.php' );
-require_once( '/home1/ctcweb9/public_html/includes/joomla.php' );
-require_once( '/home1/ctcweb9/public_html/includes/sef.php' ); // What is sef.php??
 
-
-// mainframe is an API workhorse, lots of 'core' interaction routines
-$con        = mysql_connect("localhost",   $mosConfig_user, $mosConfig_password);
-$mainframe  = new mosMainFrame( $database, '', '.' );
-$mainframe->initSession();
-$userobj    = $mainframe->getUser();
-$username   = array("id"=>$userobj->id,"name"=>$userobj->username);
-
-if (!$con)
-{
-    die('mysql_connect failed');
-}
-*/
 define('_JEXEC', 1);
 define('JPATH_BASE', dirname(dirname(__DIR__)));// Assume we are two leveld down in website
 require_once ( JPATH_BASE.'/includes/defines.php' );
@@ -27,7 +9,7 @@ $user = JFactory::getUser();
 $config = JFactory::getConfig();
 
 
-$con        = ($GLOBALS["___mysqli_ston"] = mysqli_connect("localhost",    $config->get("user"),  $config->get("password")));
+$con        = ($GLOBALS["___mysqli_ston"] = mysqli_connect($config->get("host"),    $config->get("user"),  $config->get("password")));
 // N.B. userid here is the JOOMLA id NOT the db id. The common ground here is username.
 $username   = array("id"=>$user->id,"name"=>$user->username);
 
@@ -42,9 +24,9 @@ function GetLogonDetails($con,$username,$roleclause="1=1")
 {
     $userrow = SqlResultArray($con,"
             SELECT primaryEmail,firstName,lastName,m.id
-            FROM ctcweb9_ctc.members             m
-            LEFT JOIN ctcweb9_ctc.members_roles  mr  on mr.memberid = m.id
-            LEFT JOIN ctcweb9_ctc.roles          r   on r.id = mr.roleid
+            FROM ctc.members             m
+            LEFT JOIN ctc.members_roles  mr  on mr.memberid = m.id
+            LEFT JOIN ctc.roles          r   on r.id = mr.roleid
             where loginname = ".SqlVal($username["name"])." and $roleclause");
 
 	if (count($userrow))
