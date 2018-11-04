@@ -1,8 +1,5 @@
 <?php
 
-// make sure that characters above 0x7F don't trip us up
-mysqli_query($con, "SET CHARACTER SET utf8");
-
 function GetMetadata($con) {
 	$metadata = array(
 		"trips"        => SqlResultArray($con,"show full columns from ".TripConfig::TripDB.".trips","Field"),

@@ -17,6 +17,7 @@ if (!$con)
 {
     die('mysql_connect failed');
 }
+$con->set_charset('utf8mb4');
 
 
 
