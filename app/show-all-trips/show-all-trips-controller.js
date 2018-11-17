@@ -13,6 +13,7 @@
 
             controller.groups = [];
 
+			controller.suggestedTripId = 1000000
 			controller.reload = function () {
 				tripsService.getTripGroups()
 					.then(function (groups) {
@@ -52,6 +53,7 @@
 				allowNewTrips = membersService.getMembers().some(function (member) {
                     return member.id == currentUserService.getUserId() && member.role != null;
                 });
+				controller.suggestedTripId = 1000000 + currentUserService.getUserId();
 				controller.reload();
 			});
 

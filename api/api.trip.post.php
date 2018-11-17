@@ -130,7 +130,7 @@ if ($eventid == null) {
     $eventid = ((is_null($___mysqli_res = mysqli_insert_id($con))) ? false : $___mysqli_res);
 }
 
-if ($tripid == TripConfig::NewTripId) {
+if ($tripid >= TripConfig::NewTripId) {
 	SqlExecOrDie($con,"
 			insert ".TripConfig::TripDB.".trips(date,closeDate,isAdHoc,eventid)
 			values(".$event["date"].",".$event["closeDate"].",1,$eventid)");

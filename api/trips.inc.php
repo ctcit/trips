@@ -22,7 +22,7 @@ function GetMetadata($con) {
 }
 
 function GetTrips($con, $where, $tripid, $logondetails) {
-	if ($tripid == TripConfig::NewTripId) {
+	if ($tripid >= TripConfig::NewTripId) {
 		return SqlResultArray($con,"
 			SELECT 
 				$tripid                          as tripid, 
@@ -71,7 +71,7 @@ function GetTrips($con, $where, $tripid, $logondetails) {
 }
 		
 function GetParticipants($con, $where, $tripid, $logondetails) {
-	if ($tripid == TripConfig::NewTripId) {
+	if ($tripid >= TripConfig::NewTripId) {
 		return SqlResultArray($con,"
 			SELECT 
 				$tripid as participantid,

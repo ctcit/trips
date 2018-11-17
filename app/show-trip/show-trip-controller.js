@@ -23,6 +23,7 @@
 
             var controller = this;
 
+            console.log("sp" + $stateParams.tripId)
             controller.tripId = $stateParams.tripId;
 
             controller.tripeditable = false;
@@ -46,6 +47,7 @@
                     })
             ])
             .then(function() {
+                console.log("a" + controller.tripId)
                 tripsService.getTrip(controller.tripId)
                     .then(function(trip) {
 

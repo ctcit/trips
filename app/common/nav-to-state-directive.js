@@ -4,10 +4,11 @@
     // Directive to navigate to new state 
     angular.module('tripSignupApp').directive('navToState', [function () {
 
-        var controller = ['$scope', '$state',
-            function ($scope, $state) {
+        var controller = ['$scope', '$state','currentUserService',
+            function ($scope, $state,currentUserService) {
                 // get the url for the specified state via the $state service
                 var paramsObj = $scope.$eval(this.params); // convert string to object
+
                 var url = $state.href(this.name, paramsObj);
                 url = url.replace('#/', ''); // trim leading part of url (I guess this is added again elsewhere?)
                 this.url = encodeURIComponent(url);
@@ -16,7 +17,9 @@
                     // This is the key -> preventing default navigation
                     event.preventDefault();
 
-                    $state.go(this.name, paramsObj);
+                    $state.go(
+                        this.name, 
+                        paramsObj && paramsObj.tripId === 1000000 ? {tripId: 1000000+currentUserService.getUserId()} : paramsObj);
                 };
             }];
 
