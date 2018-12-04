@@ -27,7 +27,7 @@ $user = JFactory::getUser();
 $config = JFactory::getConfig();
 
 
-$con        = ($GLOBALS["___mysqli_ston"] = mysqli_connect("localhost",    $config->get("user"),  $config->get("password")));
+$con        = ($GLOBALS["___mysqli_ston"] = mysqli_connect($config->get("host"),    $config->get("user"),  $config->get("password")));
 // N.B. userid here is the JOOMLA id NOT the db id. The common ground here is username.
 $username   = array("id"=>$user->id,"name"=>$user->username);
 
