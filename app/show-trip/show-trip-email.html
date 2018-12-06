@@ -5,6 +5,11 @@
     <img src="app/assets/email.png" class="section-icon" />
   </h4>
   <div class="noprint slide" ng-show="showTripEmailController.showtripemail">
+     <p><b>To send a trip email, please copy and paste the following recipients list into the "To" field of a new email in your email client or webmail:</b></p>
+     <p>
+          <span ng-repeat="participant in showTripEmailController.participants" ng-if="participant.isPrintable" 
+                                                                                             ng-bind="participant.email + '; '"/></p>
+      <!-- PENDING: Temperarily disabled the trip-email form until we get email sending via AWS working, as currently lots of people don't receive emails sent this way, so we don't want trip leaders to use it!
     <table class="table table-condensed">
       <colgroup>
         <col style="width:15%"/>
@@ -48,5 +53,6 @@
         </td>
       </tr>
     </table>
+      -->
   </div>
 </div>
