@@ -11,7 +11,7 @@ const paramsConfig = {
         "app/**/*.html:3:stage/app",
         "app/**/*.js:3:stage/app",
         "app/assets/*.*:1:stage/app/assets",
-        "app/styles/*.*:3:stage/styles",
+        "app/styles/*.*:3:stage/app/styles",
         "third-party/**/*.*:3:stage/third-party",
     ]
 }
