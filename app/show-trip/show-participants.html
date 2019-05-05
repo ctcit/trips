@@ -5,6 +5,7 @@
             Participants
         </div>
         <button ng-click="showParticipantsController.signMeUp();"
+            ng-disabled="busy"
             ng-show="!showParticipantsController.ImSignedUp() && showParticipantsController.tripIsOpen && showParticipantsController.showparticipants">
             <img src="app/assets/pen.gif" />Sign Me Up
         </button>
@@ -94,6 +95,7 @@
                             placeholder="Start typing a name..."
                             ng-focus="showParticipantsControllerr.participantUpdateName(participant, $index)" 
                             ng-change="showParticipantsController.participantUpdateName(participant, $index)" 
+                            ng-blur="showParticipantsController.participantSaveName(participant, $index)" 
                             ng-class="showParticipantsController.participantClass(participant,'name')"/>
                     </td>
 

@@ -6,9 +6,10 @@
         var controller = ['$scope','configService', 'currentUserService', 'membersService', 'metadataService', 'changeService', 'Participant',
             function ($scope, configService, currentUserService, membersService, metadataService, changeService, Participant) {
 
+                var busy = false;
                 var showParticipantsController = this;
                 var currentUserId = currentUserService.getUserId();
-				var everyoneByName = {};
+                var everyoneByName = {};
 
                 //-----------------
                 // members and non-members lists
@@ -54,7 +55,7 @@
                 showParticipantsController.evaluateWaitAndRemovedLists = function() {
                     showParticipantsController.sortParticipants();
                     var firstWaitListed = showParticipantsController.sortedParticipants[showParticipantsController.maxParticipants];
-                    showParticipantsController.firstWaitListedDisplayPriority = firstWaitListed && firstWaitListed.displayPriority;
+                    showParticipantsController.firstWaitListedDisplayPriority = firstWaitListed && !firstWaitListed.isRemoved && firstWaitListed.displayPriority;
                     var firstRemovedIndex = showParticipantsController.sortedParticipants.findIndex2(function(p) {
                         return p.isRemoved;
                     });
@@ -162,7 +163,7 @@
 
                 // add new participant - added to the end of the wait list (or list if no wait list)
                 showParticipantsController.add = function(participant, currentIndex) {
-                    showParticipantsController.moveToIndexWithinList(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex);
+                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex + 1);
                 }
 
                 // remove participant - moved to the beginning of the removed list (immediately after the wait list)
@@ -219,11 +220,12 @@
                 }
 
                 showParticipantsController.signMeUp = function signMeUp() {
+                    busy = true;
                     for (var i = 0; i < showParticipantsController.participants.length; i++) {
                         var participant = showParticipantsController.participants[i];
                         if (showParticipantsController.isEmpty(participant)) {
                             var currentUser = currentUserService.getUser();
-                            participant.memberid = currentUser.id;
+                            participant.memberid = currentUserId;
                             participant.name = currentUser.name;
                             participant.email = currentUser.email;
                             participant.phone = currentUser.phone;
@@ -233,13 +235,14 @@
                             break;
                         }
                     }
+                    busy = false;
                 }
 
                 showParticipantsController.ImSignedUp = function ImSignedUp() {
                     var currentUser = currentUserService.getUser();
                     return 	showParticipantsController.participants &&
 							showParticipantsController.participants.some(function(participant) {
-                        return participant.memberid == currentUser.id;
+                        return participant.memberid == currentUserId;
                     })
                 }
 
@@ -275,6 +278,11 @@
 								}));
 						}
                     }
+                    showParticipantsController.visibleParticipants = Math.max(participant.line + 2, showParticipantsController.visibleParticipants);
+                    showParticipantsController.update();
+                }
+
+                showParticipantsController.participantSaveName = function participantSaveName(participant, index) {
                     showParticipantsController.visibleParticipants = Math.max(participant.line + 2, showParticipantsController.visibleParticipants);
                     if (index > showParticipantsController.maxMoveIndex) {
                         showParticipantsController.add(participant, index); // move to end of list (or wait list)
