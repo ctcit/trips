@@ -114,7 +114,7 @@
                         data.newIndex++; // account for direction of drag
                     }
                     // can only drag'n'drop within list and wait list
-                    if (data.newIndex <= showParticipantsController.maxMoveIndex && data.prevIndex <= showParticipantsController.maxMoveIndex) {
+                    if (draggedParticipant && data.newIndex <= showParticipantsController.maxMoveIndex && data.prevIndex <= showParticipantsController.maxMoveIndex) {
                         showParticipantsController.moveToIndex(draggedParticipant, data.prevIndex, data.newIndex);
                     }
                 });
@@ -168,7 +168,7 @@
 
                 // remove participant - moved to the beginning of the removed list (immediately after the wait list)
                 showParticipantsController.remove = function(participant, currentIndex) {
-                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex, showParticipantsController.maxMoveIndex + 1, showParticipantsController.maxMoveIndex + 1, 10000);
+                    showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex, showParticipantsController.maxMoveIndex + 1, showParticipantsController.maxMoveIndex + 1);
                 }
 
                 // unremove participant - moved to the end of the wait list (or list if no wait list)
@@ -176,30 +176,32 @@
                     showParticipantsController.moveToIndex(participant, currentIndex, showParticipantsController.maxMoveIndex + 1, 0, showParticipantsController.maxMoveIndex);
                 }
 
-                showParticipantsController.moveToIndexWithinList = function(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex, minDisplayPriority) {
+                showParticipantsController.moveToIndexWithinList = function(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex) {
                     if (newIndex <= showParticipantsController.maxMoveIndex) {
-                        showParticipantsController.moveToIndex(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex, minDisplayPriority);
+                        showParticipantsController.moveToIndex(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex);
                     }
                 }
 
-                showParticipantsController.moveToIndex = function(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex, minDisplayPriority) {
+                showParticipantsController.moveToIndex = function(participant, fromIndex, newIndex, minPrevIndex, maxNextIndex) {
                     minPrevIndex = minPrevIndex | 0;
                     maxNextIndex = maxNextIndex | showParticipantsController.maxMoveIndex;
                     var newPrevIndex = fromIndex < newIndex ? newIndex : newIndex - 1;
                     var newNextIndex = fromIndex <= newIndex ? newIndex + 1 : newIndex;
                     var newPrevParticipant = newPrevIndex >= minPrevIndex ? showParticipantsController.sortedParticipants[newPrevIndex] : null;
                     var newNextParticipant = newNextIndex <= maxNextIndex ? showParticipantsController.sortedParticipants[newNextIndex] : null;
-                    showParticipantsController.moveBetween(participant, newPrevParticipant, newNextParticipant, minDisplayPriority);
+                    showParticipantsController.moveBetween(participant, newPrevParticipant, newNextParticipant);
                 }
 
                 // reorders participants by changing the displayPriority in only the moved participant (minimizes history changes?)
-                showParticipantsController.moveBetween = function(movedParticipant, newPrevParticipant, newNextParticipant, minDisplayPriority) {
-                    minDisplayPriority = minDisplayPriority | 0;
-                    var prevParticipantDisplayPriority = newPrevParticipant ? newPrevParticipant.displayPriority : minDisplayPriority;
-                    var nextParticipantDisplayPriority = newNextParticipant ? newNextParticipant.displayPriority : prevParticipantDisplayPriority + 1;
-                    movedParticipant.displayPriority = (prevParticipantDisplayPriority + nextParticipantDisplayPriority) / 2;
+                showParticipantsController.moveBetween = function(movedParticipant, newPrevParticipant, newNextParticipant) {
+                    var minDisplayPriority = (newPrevParticipant && movedParticipant.isInSameSubList(newPrevParticipant)) ? 
+                        newPrevParticipant.displayPriority : movedParticipant.minDisplayPriority();
+                    var maxDisplayPriority = (newNextParticipant && movedParticipant.isInSameSubList(newNextParticipant)) ? 
+                        newNextParticipant.displayPriority : movedParticipant.maxDisplayPriority();
+                    movedParticipant.displayPriority = Participant.betweenDisplayPriorities(minDisplayPriority, maxDisplayPriority);
                     // console.log('prev: ' + prevParticipantDisplayPriority + ',  moved: ' + movedParticipant.displayPriority + ', next: ' + nextParticipantDisplayPriority);
                     showParticipantsController.evaluateWaitAndRemovedLists();
+                    Participant.dumpDisplayPriorities(showParticipantsController.sortedParticipants);
                 }
 
                 //-----------------

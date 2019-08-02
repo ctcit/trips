@@ -25,7 +25,7 @@
         </span>
     </h4>
     <div class="slide" ng-show="showParticipantsController.showparticipants">
-        <table class="table table-condensed" ng-attr-drag-to-reorder="showParticipantsController.allowMove() ? showParticipantsController.sortedParticipants: undefined">
+        <table class="table table-condensed" ng-attr-drag-to-reorder="showParticipantsController.allowMove() ? showParticipantsController.sortedParticipants : []">
             <tr>
                 <th></th>
                 <th ng-if="showParticipantsController.allowMove()"></th>

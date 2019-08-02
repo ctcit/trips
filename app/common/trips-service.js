@@ -86,11 +86,7 @@
                             sortedParticipants.sort(function(p1, p2) {
                                 return p1.displayPriority - p2.displayPriority;
                             });
-                            for (var i = 1; i < sortedParticipants.length; i++) {
-                                if (sortedParticipants[i].displayPriority <= sortedParticipants[i-1].displayPriority) {
-                                    sortedParticipants[i].displayPriority = sortedParticipants[i-1].displayPriority + 0.01;
-                                }
-                            }
+                            Participant.ensureValidDisplayPriorities(sortedParticipants);
 
                             tripeditable = false;
                             membersService.getMembers().some(function (member) {
