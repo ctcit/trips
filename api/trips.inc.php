@@ -88,6 +88,8 @@ function SendEmail($con,$recipients,$subject,$body,$tripid,$changeid,$guid) {
 	$trip = GetTrips($con,"t.id = $tripid");
 	$body["link"]   = TripConfig::EmailHasLink    ? GetTripLinkHtml($tripid)                     : "";
 	$body["detail"] = TripConfig::EmailHasDetails ? GetTripDetailsHtml($con, $tripid, $changeid) : "";
+
+	// $myfile = file_put_contents('email_dump.html', $body["detail"].PHP_EOL , LOCK_EX);
 	
 	foreach ($recipients as $recipient) {
 
@@ -108,6 +110,16 @@ function SendEmail($con,$recipients,$subject,$body,$tripid,$changeid,$guid) {
 	SqlExecOrDie($con,"UPDATE ".TripConfig::TripDB.".changehistory SET emailAudit = $emailauditSql WHERE id = $changeid");
 }
 
+function participant_sort($participant_a, $participant_b) {
+    if ($participant_a["displayPriority"] < $participant_b["displayPriority"]) {
+		return -1;
+	} elseif ($participant_a["displayPriority"] > $participant_b["displayPriority"]) {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+ 
 function GetTripDetailsHtml($con, $tripid, $changeid)
 {
 	$updates		= SqlResultArray($con,
@@ -147,7 +159,15 @@ function GetTripDetailsHtml($con, $tripid, $changeid)
 	}
 	$detail .= "</tr>";
 
+	$maxParticipants = $trips[0]["maxParticipants"];
+	$position = 0;
+	usort($participants, "participant_sort");
 	foreach ($participants as $participant) {
+		$position++;
+		if ($maxParticipants > 0 && $position == $maxParticipants + 1) {
+			$detail .= "<tr><td><b>Wait List</b></td></tr>";
+		}
+
 		$detail .= "<tr>";
 		foreach ($metadata["participants"] as $field => $col) {
 			$style = $border.
@@ -156,13 +176,14 @@ function GetTripDetailsHtml($con, $tripid, $changeid)
 						(array_key_exists($field.$participant["line"],$updates) ? $updated :""));
 
 			if ($field == "line") {
-				$detail .= "<td style='$style'>".($participant[$field]+1)."</td>";
+				$detail .= "<td style='$style'>".($position)."</td>";
 			} else if ($col["Display"] != "" && $col["Type"] == "tinyint(1)") {
 				$detail .= "<td style='$style'>".($participant[$field] == 1 ? "Yes" : "")."</td>";
 			} else if ($col["Display"] != "") {
 				$detail .= "<td style='$style'>".htmlentities($participant[$field])."</td>";
 			}
 		}
+		// $detail .= "<td>DP = ".($participant["displayPriority"])."</td>";
 		$detail .= "</tr>";
 	}
 
